@@ -17,7 +17,7 @@ void mortonDecode(uint64_t morton, int& x, int& y, int& z);
 // ---------------------
 inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z){
 	uint64_t answer = 0;
-	for (uint64_t i = 0; i < (sizeof(int) * CHAR_BIT); ++i) {
+	for (uint64_t i = 0; i < (sizeof(uint64_t)* CHAR_BIT)/3; ++i) {
 		answer |= ((x & ((uint64_t)1 << i)) << 2*i) | ((y & ((uint64_t)1 << i)) << (2*i + 1)) | ((z & ((uint64_t)1 << i)) << (2*i + 2));
 	}
 	return answer;
