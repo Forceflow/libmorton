@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	morton_decode_magicbits.stop();
-	cout << "Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() - morton_LUT.getTotalTimeMs() << " ms" << endl;
+	cout << "Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() - morton_LUT.getTotalTimeMs() << " ms" << endl; // we subtract morton code generation time with LUT-based method
 
 	Timer morton_decode_for;
 	morton_decode_for.reset();
@@ -112,6 +112,5 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	morton_decode_for.stop();
-	cout << "For-loop method: " << morton_decode_for.getTotalTimeMs() - morton_LUT.getTotalTimeMs() << " ms" << endl;
+	cout << "For-loop method: " << morton_decode_for.getTotalTimeMs() - morton_LUT.getTotalTimeMs() << " ms" << endl; // we subtract morton code generation time with LUT method
 }
-	

@@ -10,6 +10,7 @@
 
 using namespace std;
 
+// Methods you can use:
 // encode a given (x,y,z) coordinate to a 64-bit morton code
 inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z); // slowest
 inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned int z); // faster
@@ -17,8 +18,8 @@ inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z)
 
 // decode a given morton code into X,Y,Z coordinates
 inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // slowest
-inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z);
-inline unsigned int mortonDecode_magicbits_X(uint64_t morton); // faster
+inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // faster
+inline unsigned int mortonDecode_magicbits_X(uint64_t morton);
 inline unsigned int mortonDecode_magicbits_Y(uint64_t morton);
 inline unsigned int mortonDecode_magicbits_Z(uint64_t morton);
 
@@ -54,8 +55,8 @@ inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned 
 // -------------------------
 static const uint32_t morton256_x[256] =
 {
-	0x00000000, 
-	0x00000001, 0x00000008, 0x00000009, 0x00000040, 0x00000041, 0x00000048, 0x00000049, 0x00000200, 
+	0x00000000,
+	0x00000001, 0x00000008, 0x00000009, 0x00000040, 0x00000041, 0x00000048, 0x00000049, 0x00000200,
 	0x00000201, 0x00000208, 0x00000209, 0x00000240, 0x00000241, 0x00000248, 0x00000249, 0x00001000,
 	0x00001001, 0x00001008, 0x00001009, 0x00001040, 0x00001041, 0x00001048, 0x00001049, 0x00001200,
 	0x00001201, 0x00001208, 0x00001209, 0x00001240, 0x00001241, 0x00001248, 0x00001249, 0x00008000,
@@ -163,7 +164,7 @@ static const uint32_t morton256_z[256] = {
 
 inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z){
 	uint64_t answer = 0;
-	answer =	morton256_z[(z >> 16) & 0xFF ] |
+	answer =		morton256_z[(z >> 16) & 0xFF ] |
 				morton256_y[(y >> 16) & 0xFF ] |
 				morton256_x[(x >> 16) & 0xFF ];
 	answer = answer << 48 |
