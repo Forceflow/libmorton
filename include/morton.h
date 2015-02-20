@@ -178,7 +178,7 @@ inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z)
 }
 
 // DECODE WITH MAGIC BITS
-unsigned int getThirdBits(uint64_t x){
+inline unsigned int getThirdBits(uint64_t x){
 	x &= 0x9249249249249249;
 	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
 	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
