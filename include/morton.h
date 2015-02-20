@@ -6,12 +6,16 @@
 
 using namespace std;
 
-uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z);
-uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned int z);
-uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z);
-void mortonDecode(uint64_t morton, int& x, int& y, int& z);
-
 // encode a given (x,y,z) coordinate to a 64-bit morton code
+inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z); // slowest
+inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned int z); // faster
+inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z); // fastest
+
+// decode a given morton code into X,Y,Z coordinates
+inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // slowest
+inline unsigned int mortonDecode_magicbits_X(uint64_t morton); // faster
+inline unsigned int mortonDecode_magicbits_Y(uint64_t morton);
+inline unsigned int mortonDecode_magicbits_Z(uint64_t morton);
 
 // VERSION WITH FOR LOOP
 // ---------------------
@@ -45,7 +49,6 @@ inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned 
 
 // VERSION WITH LOOKUP TABLE
 // -------------------------
-
 static const uint32_t morton256_x[256] =
 {
 	0x00000000, 
@@ -171,8 +174,31 @@ inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z)
 	return answer;
 }
 
+// DECODE WITH MAGIC BITS
+unsigned int getThirdBits(uint64_t x){
+	x &= 0x9249249249249249;
+	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
+	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
+	x = (x ^ (x >> 8)) & 0xFF0000FF0000FF;
+	x = (x ^ (x >> 16)) & 0xFFFF;
+	return (unsigned int) x;
+}
+
+inline unsigned int mortonDecode_magicbits_X(uint64_t morton){
+	return getThirdBits(morton);
+}
+
+inline unsigned int mortonDecode_magicbits_Y(uint64_t morton){
+	return getThirdBits(morton >> 1);
+}
+
+inline unsigned int mortonDecode_magicbits_Z(uint64_t morton){
+	return getThirdBits(morton >> 2);
+}
+
+// DECODE WITH FOR LOOP
 // decode a given 64-bit morton code to an integer (x,y,z) coordinate
-inline void mortonDecode(uint64_t morton, int& x, int& y, int& z){
+inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
 	x = 0;
 	y = 0;
 	z = 0;

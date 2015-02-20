@@ -34,7 +34,8 @@ struct Timer {
 #pragma optimize( "", off )
 int main(int argc, char *argv[]) {
 	size_t total = MAX*MAX*MAX;
-	cout << "Generating " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "Running morton encoding / decoding tests ..." << endl;
+	cout << "+++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
 
 	Timer morton_LUT;
 	morton_LUT.reset();
@@ -74,5 +75,43 @@ int main(int argc, char *argv[]) {
 	}
 	morton_for.stop();
 	cout << "For-loop method: " << morton_for.getTotalTimeMs() << " ms" << endl;
+
+	cout << "+++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+
+	Timer morton_decode_magicbits;
+	morton_decode_magicbits.reset();
+	morton_decode_magicbits.start();
+	for (size_t i = 0; i < MAX; i++){
+		for (size_t j = 0; j < MAX; j++){
+			for (size_t k = 0; k < MAX; k++){
+				uint64_t s = mortonEncode_LUT(i, j, k);
+				if (i != mortonDecode_magicbits_X(s) || j != mortonDecode_magicbits_Y(s) || k != mortonDecode_magicbits_Z(s)){
+					cout << "Encode and decode don't match" << endl;
+				}
+			}
+		}
+	}
+	morton_decode_magicbits.stop();
+	cout << "Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() - morton_LUT.getTotalTimeMs() << " ms" << endl;
+
+	Timer morton_decode_for;
+	morton_decode_for.reset();
+	morton_decode_for.start();
+	for (size_t i = 0; i < MAX; i++){
+		for (size_t j = 0; j < MAX; j++){
+			for (size_t k = 0; k < MAX; k++){
+				uint64_t s = mortonEncode_LUT(i, j, k);
+				unsigned int x = 0;
+				unsigned int y = 0;
+				unsigned int z = 0;
+				mortonDecode_for(s, x, y, z);
+				if (i != x || j != y || k != z){
+					cout << "Encode and decode don't match" << endl;
+				}
+			}
+		}
+	}
+	morton_decode_for.stop();
+	cout << "For-loop method: " << morton_decode_for.getTotalTimeMs() - morton_LUT.getTotalTimeMs() << " ms" << endl;
 }
 	
