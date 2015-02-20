@@ -1,3 +1,7 @@
+// Various methods of computing morton codes
+// Check http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/ for more info
+// by Jeroen Baert - jeroen.baert@cs.kuleuven.be - www.forceflow.be
+
 #ifndef MORTON_H_
 #define MORTON_H_
 
@@ -13,6 +17,7 @@ inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z)
 
 // decode a given morton code into X,Y,Z coordinates
 inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // slowest
+inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z);
 inline unsigned int mortonDecode_magicbits_X(uint64_t morton); // faster
 inline unsigned int mortonDecode_magicbits_Y(uint64_t morton);
 inline unsigned int mortonDecode_magicbits_Z(uint64_t morton);
@@ -192,6 +197,12 @@ inline unsigned int mortonDecode_magicbits_Y(uint64_t morton){
 
 inline unsigned int mortonDecode_magicbits_Z(uint64_t morton){
 	return getThirdBits(morton >> 2);
+}
+
+inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
+	x = mortonDecode_magicbits_X(morton);
+	y = mortonDecode_magicbits_Y(morton);
+	z = mortonDecode_magicbits_Z(morton);
 }
 
 // DECODE WITH FOR LOOP
