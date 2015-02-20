@@ -27,7 +27,6 @@ inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z)
 	return answer;
 }
 
-
 // VERSION WITH MAGIC BITS
 // -----------------------
 inline uint64_t splitBy3(int a){
@@ -45,7 +44,6 @@ inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned 
 	answer |= splitBy3(x) | splitBy3(y) << 1 | splitBy3(z) << 2;
 	return answer;
 }
-
 
 // VERSION WITH LOOKUP TABLE
 // -------------------------
