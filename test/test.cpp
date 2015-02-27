@@ -6,6 +6,7 @@ using namespace std;
 
 #define MAX 256
 
+// Timer struct for easy timing
 struct Timer {
 	clock_t Start;
 	clock_t Elapsed;
@@ -31,6 +32,7 @@ struct Timer {
 	}
 };
 
+// Don't optimize this, since the loops themselves are useless - we're testing
 #pragma optimize( "", off )
 int main(int argc, char *argv[]) {
 	size_t total = MAX*MAX*MAX;

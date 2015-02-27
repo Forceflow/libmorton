@@ -11,19 +11,36 @@
 using namespace std;
 
 // encode a given (x,y,z) coordinate to a 64-bit morton code
+inline uint64_t mortonEncode(unsigned int x, unsigned int y, unsigned int z); // default (points to fastest)
+// different methods
 inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z); // slowest
 inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned int z); // faster
 inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z); // fastest
 
 // decode a given morton code into X,Y,Z coordinates
+inline uint64_t mortonDecode(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // default (points to fastest)
+// different methods
 inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // slowest
-inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z);
-inline unsigned int mortonDecode_magicbits_X(uint64_t morton); // faster
+inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // fastest
+inline unsigned int mortonDecode_magicbits_X(uint64_t morton); 
 inline unsigned int mortonDecode_magicbits_Y(uint64_t morton);
 inline unsigned int mortonDecode_magicbits_Z(uint64_t morton);
 
-// VERSION WITH FOR LOOP
-// ---------------------
+
+// default version pointing to fastest algorithm
+inline uint64_t mortonEncode(unsigned int x, unsigned int y, unsigned int z){
+	mortonEncode_LUT(x, y, z);
+}
+
+// default version pointing to fastest algorithm
+inline uint64_t mortonDecode(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
+	mortonDecode_magicbits(morton, x, y, z);
+}
+
+// ENCODING ALGORITHMS
+// ###################
+
+// Version with for loop
 inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z){
 	uint64_t answer = 0;
 	for (uint64_t i = 0; i < (sizeof(uint64_t)* CHAR_BIT)/3; ++i) {
@@ -32,8 +49,7 @@ inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z)
 	return answer;
 }
 
-// VERSION WITH MAGIC BITS
-// -----------------------
+// Version with magic bits
 inline uint64_t splitBy3(int a){
 	uint64_t x = a & 0x1fffff;
 	x = (x | x << 32) & 0x1f00000000ffff;
@@ -50,8 +66,7 @@ inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned 
 	return answer;
 }
 
-// VERSION WITH LOOKUP TABLE
-// -------------------------
+// Version with lookup table
 static const uint32_t morton256_x[256] =
 {
 	0x00000000, 
@@ -177,7 +192,10 @@ inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z)
 	return answer;
 }
 
-// DECODE WITH MAGIC BITS
+// DECODING
+// ########
+
+// Decoding with magic bits
 inline unsigned int getThirdBits(uint64_t x){
 	x &= 0x9249249249249249;
 	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
@@ -205,8 +223,7 @@ inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned in
 	z = mortonDecode_magicbits_Z(morton);
 }
 
-// DECODE WITH FOR LOOP
-// decode a given 64-bit morton code to an integer (x,y,z) coordinate
+// Decoding with for loop
 inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
 	x = 0;
 	y = 0;
