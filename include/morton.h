@@ -10,6 +10,7 @@
 
 using namespace std;
 
+// Methods you can use:
 // encode a given (x,y,z) coordinate to a 64-bit morton code
 inline uint64_t mortonEncode(unsigned int x, unsigned int y, unsigned int z); // default (points to fastest)
 // different methods
@@ -21,11 +22,10 @@ inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z)
 inline uint64_t mortonDecode(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // default (points to fastest)
 // different methods
 inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // slowest
-inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // fastest
-inline unsigned int mortonDecode_magicbits_X(uint64_t morton); 
+inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z);
+inline unsigned int mortonDecode_magicbits_X(uint64_t morton); // faster
 inline unsigned int mortonDecode_magicbits_Y(uint64_t morton);
 inline unsigned int mortonDecode_magicbits_Z(uint64_t morton);
-
 
 // default version pointing to fastest algorithm
 inline uint64_t mortonEncode(unsigned int x, unsigned int y, unsigned int z){
@@ -178,7 +178,7 @@ static const uint32_t morton256_z[256] = {
 
 inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z){
 	uint64_t answer = 0;
-	answer =	morton256_z[(z >> 16) & 0xFF ] |
+	answer =		morton256_z[(z >> 16) & 0xFF ] |
 				morton256_y[(y >> 16) & 0xFF ] |
 				morton256_x[(x >> 16) & 0xFF ];
 	answer = answer << 48 |
