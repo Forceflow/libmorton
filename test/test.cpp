@@ -1,4 +1,5 @@
 #include "../include/morton.h"
+#include "../include/morton_alternatives.h"
 #include <iostream>
 #include <iomanip>
 
