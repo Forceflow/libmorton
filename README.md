@@ -1,7 +1,9 @@
-mortoncode_tests
+Libmorton
 ================
 
-Testing various morton encoding/decoding implementations.
+Library for various morton encoding/decoding implementations.
+
+Cuda version separately, since it serves a slightly different purpose (batch encoding/decoding large batches of coordinates).
 
 See this blogpost for explanation and benchmarks:
 
