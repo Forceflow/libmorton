@@ -68,10 +68,6 @@
   <ItemGroup>
     <ClCompile Include="..\test\test.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\include\morton.h" />
-    <ClInclude Include="..\include\morton_alternatives.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
