@@ -5,13 +5,14 @@
 #include <iomanip>
 #include <inttypes.h>
 
-#define MAX 300 // This saves
+#define MAX 256 // MAX x MAX x MAX coordinates will be tested / generated
+const size_t total = MAX*MAX*MAX;
 double LUT_ms = 0; // save LUT timing
 
 using namespace std;
 
 void checkCorrectness(){
-	printf("+++ Checking correctness of encoding methods ... ");
+	printf("++ Checking correctness of encoding methods ... ");
 	int failures = 0;
 	for (size_t i = 0; i < 16; i++){
 		for (size_t j = 0; j < 16; j++){
@@ -29,10 +30,9 @@ void checkCorrectness(){
 	if (failures != 0){printf("Correctness test failed \n");} else {printf("Passed. \n");}
 }
 
-#pragma optimize( "", off )
-void performanceTestLinear(){
-	const size_t total = MAX*MAX*MAX;
-	cout << "+++ Encoding " << MAX << "^3 morton codes in LINEAR fashion (" << total << " in total)" << endl;
+#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+void encodePerformanceTestLinear(){
+	cout << "++ Encoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 
 	Timer morton_LUT, morton_magicbits, morton_for;
 	morton_LUT.reset(); morton_LUT.start();
@@ -70,10 +70,9 @@ void performanceTestLinear(){
 	cout << " For-loop method: " << morton_for.getTotalTimeMs() << " ms" << endl;
 }
 
-#pragma optimize( "", off )
-void performanceTestRandom(){
-	const size_t total = MAX*MAX*MAX;
-	cout << "+++ Encoding " << MAX << "^3 morton codes in RANDOM fashion (" << total << " in total)" << endl;
+#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+void encodePerformanceTestRandom(){
+	cout << "++ Encoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
 
 	// generate random coordinates in double array (because we're fancy like that)
 	cout << " Generating random coordinates ... ";
@@ -102,52 +101,45 @@ void performanceTestRandom(){
 	cout << " For-loop method: " << morton_for.getTotalTimeMs() << " ms" << endl;
 
 	// Get rid of memory
-	for (int i = 0; i < total; i++){
-		free(arr[i]);
-	}
+	for (int i = 0; i < total; i++){free(arr[i]);}
 	free(arr);
 }
 
-// Don't optimize this, since the loops themselves are useless and will be 
-int main(int argc, char *argv[]) {
-
-	checkCorrectness();
-	performanceTestLinear();
-	performanceTestRandom();
-
-	const size_t total = MAX*MAX*MAX;
-
-	cout << "+++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
-	Timer morton_decode_magicbits;
-	morton_decode_magicbits.reset();morton_decode_magicbits.start();
+#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+void decodePerformanceTestLinear(){
+	cout << "++ Decoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
+	Timer morton_decode_magicbits, morton_decode_for;
+	morton_decode_magicbits.reset(); morton_decode_magicbits.start();
 	for (size_t i = 0; i < MAX; i++){
 		for (size_t j = 0; j < MAX; j++){
 			for (size_t k = 0; k < MAX; k++){
 				uint64_t s = mortonEncode_LUT(i, j, k);
-				if (i != mortonDecode_magicbits_X(s) || j != mortonDecode_magicbits_Y(s) || k != mortonDecode_magicbits_Z(s)){
-					cout << " Encode and decode don't match" << endl;
-				}
+				mortonDecode_magicbits_X(s);
+				mortonDecode_magicbits_Y(s);
+				mortonDecode_magicbits_Z(s);
 			}
 		}
 	}
 	morton_decode_magicbits.stop();
 	cout << " Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() - LUT_ms << " ms" << endl; // subtract morton code generation time with LUT-based method
 
-	Timer morton_decode_for;
-	morton_decode_for.reset();
-	morton_decode_for.start();
+	morton_decode_for.reset(); morton_decode_for.start();
 	for (size_t i = 0; i < MAX; i++){
 		for (size_t j = 0; j < MAX; j++){
 			for (size_t k = 0; k < MAX; k++){
 				uint64_t s = mortonEncode_LUT(i, j, k);
-				unsigned int x,y,z = 0;
+				unsigned int x, y, z = 0;
 				mortonDecode_for(s, x, y, z);
-				if (i != x || j != y || k != z){
-					cout << " Encode and decode don't match" << endl;
-				}
 			}
 		}
 	}
 	morton_decode_for.stop();
 	cout << " For-loop method: " << morton_decode_for.getTotalTimeMs() - LUT_ms << " ms" << endl; // subtract morton code generation time with LUT method
+}
+
+int main(int argc, char *argv[]) {
+	checkCorrectness();
+	encodePerformanceTestLinear();
+	encodePerformanceTestRandom();
+	decodePerformanceTestLinear();
 }
