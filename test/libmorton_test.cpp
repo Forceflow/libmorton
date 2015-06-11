@@ -110,31 +110,21 @@ void decodePerformanceTestLinear(){
 	cout << "++ Decoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 	Timer morton_decode_magicbits, morton_decode_for;
 	morton_decode_magicbits.reset(); morton_decode_magicbits.start();
-	for (size_t i = 0; i < MAX; i++){
-		for (size_t j = 0; j < MAX; j++){
-			for (size_t k = 0; k < MAX; k++){
-				uint64_t s = mortonEncode_LUT(i, j, k);
-				mortonDecode_magicbits_X(s);
-				mortonDecode_magicbits_Y(s);
-				mortonDecode_magicbits_Z(s);
-			}
-		}
+	for (size_t i = 0; i < total; i++){
+		mortonDecode_magicbits_X(i);
+		mortonDecode_magicbits_Y(i);
+		mortonDecode_magicbits_Z(i);
 	}
 	morton_decode_magicbits.stop();
-	cout << " Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() - LUT_ms << " ms" << endl; // subtract morton code generation time with LUT-based method
+	cout << " Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() << " ms" << endl; 
 
 	morton_decode_for.reset(); morton_decode_for.start();
-	for (size_t i = 0; i < MAX; i++){
-		for (size_t j = 0; j < MAX; j++){
-			for (size_t k = 0; k < MAX; k++){
-				uint64_t s = mortonEncode_LUT(i, j, k);
-				unsigned int x, y, z = 0;
-				mortonDecode_for(s, x, y, z);
-			}
-		}
+	for (size_t i = 0; i < total; i++){
+		unsigned int x, y, z = 0;
+		mortonDecode_for(i, x, y, z);
 	}
 	morton_decode_for.stop();
-	cout << " For-loop method: " << morton_decode_for.getTotalTimeMs() - LUT_ms << " ms" << endl; // subtract morton code generation time with LUT method
+	cout << " For-loop method: " << morton_decode_for.getTotalTimeMs() << " ms" << endl;
 }
 
 int main(int argc, char *argv[]) {
