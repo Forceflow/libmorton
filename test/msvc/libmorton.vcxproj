@@ -66,10 +66,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\test.cpp" />
+    <ClCompile Include="..\libmorton_test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\test.h" />
+    <ClInclude Include="..\libmorton_test.h" />
+    <ClInclude Include="..\util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
