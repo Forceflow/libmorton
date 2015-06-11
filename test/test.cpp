@@ -2,10 +2,11 @@
 #include "../include/morton_alternatives.h"
 #include <iostream>
 #include <iomanip>
+#include <inttypes.h>
 
 using namespace std;
 
-#define MAX 256
+#define MAX 16
 
 // Timer struct for easy timing
 struct Timer {
@@ -33,7 +34,7 @@ struct Timer {
 	}
 };
 
-// Don't optimize this, since the loops themselves are useless - we're testing
+// Don't optimize this, since the loops themselves are useless and will be 
 #pragma optimize( "", off )
 int main(int argc, char *argv[]) {
 	size_t total = MAX*MAX*MAX;
@@ -46,7 +47,11 @@ int main(int argc, char *argv[]) {
 	for(size_t i = 0; i < MAX; i++){
 		for(size_t j = 0; j < MAX; j++){
 			for(size_t k = 0; k < MAX; k++){
-				mortonEncode_LUT(i,j,k);
+				uint64_t s = mortonEncode_LUT(i,j,k);
+				printf("%" PRId64 ", ", s);
+				if (k % 16 == 0){
+					printf("\n");
+				}
 			}
 		}
 	}
