@@ -5,13 +5,17 @@
 #include <iomanip>
 #include <inttypes.h>
 
-#define MAX 256 // MAX x MAX x MAX coordinates will be tested / generated
-const size_t total = MAX*MAX*MAX;
+#define MAX 16 // MAX x MAX x MAX coordinates will be tested / generated
+const size_t total = MAX*MAX*MAX; // We need this a lot. 
 double LUT_ms = 0; // save LUT timing
 
 using namespace std;
 
-void checkCorrectness(){
+void checkDecodeCorrectness(){
+
+}
+
+void checkEncodeCorrectness(){
 	printf("++ Checking correctness of encoding methods ... ");
 	int failures = 0;
 	for (size_t i = 0; i < 16; i++){
@@ -128,7 +132,7 @@ void decodePerformanceTestLinear(){
 }
 
 int main(int argc, char *argv[]) {
-	checkCorrectness();
+	checkEncodeCorrectness();
 	encodePerformanceTestLinear();
 	encodePerformanceTestRandom();
 	decodePerformanceTestLinear();
