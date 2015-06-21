@@ -1,18 +1,25 @@
-// Utility libraries
+// Libmorton Tests
+// This is a program designed to test and benchmark the functionality offered by the libmorton library
+//
+// Jeroen Baert 2015
+
+// Utility headers
 #include "util.h"
 #include "libmorton_test.h"
+// Standard headers
 #include <iostream>
 #include <iomanip>
 #include <inttypes.h>
 
-#define MAX 16 // MAX x MAX x MAX coordinates will be tested / generated
+// Configuration
+// MAX x MAX x MAX coordinates will be tested / generated
+#define MAX 16 
 const size_t total = MAX*MAX*MAX; // We need this a lot. 
-double LUT_ms = 0; // save LUT timing
 
 using namespace std;
 
 void checkDecodeCorrectness(){
-
+	printf("++ Checking correctness of decoding methods ... ");
 }
 
 void checkEncodeCorrectness(){
@@ -21,10 +28,13 @@ void checkEncodeCorrectness(){
 	for (size_t i = 0; i < 16; i++){
 		for (size_t j = 0; j < 16; j++){
 			for (size_t k = 0; k < 16; k++){
+				// correct code
 				uint64_t correct_code = control_morton[k + (j * 16) + (i * 16 * 16)];
+				// result all our encoding methods give
 				uint64_t lut_result = mortonEncode_LUT(i, j, k);
 				uint64_t magicbits_result = mortonEncode_magicbits(i, j, k);
 				uint64_t for_result = mortonEncode_for(i, j, k);
+				// error messages if any code does not match correct result.
 				if (lut_result != correct_code){printf(" Problem with correctness of LUT based method: %zu does not match %zu \n", lut_result, correct_code); failures++;}
 				if (magicbits_result != correct_code){printf(" Problem with correctness of Magicbits based method: %zu does not match %zu \n", magicbits_result, correct_code); failures++;}
 				if (for_result != correct_code){printf(" Problem with correctness of Magicbits based method: %zu does not match %zu \n", for_result, correct_code); failures++;}
@@ -34,6 +44,7 @@ void checkEncodeCorrectness(){
 	if (failures != 0){printf("Correctness test failed \n");} else {printf("Passed. \n");}
 }
 
+// Test performance of encoding methods for a linear stream of coordinates
 #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 void encodePerformanceTestLinear(){
 	cout << "++ Encoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
@@ -49,7 +60,6 @@ void encodePerformanceTestLinear(){
 	}
 	morton_LUT.stop();
 	cout << " LUT-based method: " << morton_LUT.getTotalTimeMs() << " ms" << endl;
-	LUT_ms = morton_LUT.getTotalTimeMs();
 
 	morton_magicbits.reset(); morton_magicbits.start();
 	for (size_t i = 0; i < MAX; i++){
@@ -74,6 +84,7 @@ void encodePerformanceTestLinear(){
 	cout << " For-loop method: " << morton_for.getTotalTimeMs() << " ms" << endl;
 }
 
+// Test performance of encoding methods for a random stream of coordinates
 #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 void encodePerformanceTestRandom(){
 	cout << "++ Encoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
