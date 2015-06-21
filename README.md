@@ -1,7 +1,7 @@
 Libmorton
 ================
 
-Library for for encoding/decoding coordinates to/from the Morton order (also known as [the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)).
+Library for for encoding/decoding coordinates to/from 64-bit Morton order codes (also known as [the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)).
 
 You can use the library by including *morton.h*. This will always include the most efficient way to date. The header *morton_alternatives.h* contains older /alternative implementations.
 
