@@ -131,7 +131,7 @@ static const uint32_t morton256_z[256] = {
 // encoding with lookup table
 inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z){
 	uint64_t answer = 0;
-	answer =		morton256_z[(z >> 16) & 0xFF ] |
+	answer =	morton256_z[(z >> 16) & 0xFF ] |
 				morton256_y[(y >> 16) & 0xFF ] |
 				morton256_x[(x >> 16) & 0xFF ];
 	answer = answer << 48 |
