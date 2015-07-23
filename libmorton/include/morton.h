@@ -36,34 +36,68 @@ inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z)
 	return answer;
 }
 
-// tables for decoding
+inline void mortonDecode_LUT(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
+	x = 0;
+	y = 0;
+	z = 0;
+	x = x | decode_morton512_x[morton & 0x1ff] 
+		| (decode_morton512_x[((morton >> 9) & 0x1ff)] << 3)
+		| (decode_morton512_x[((morton >> 18) & 0x1ff)] << 6)
+		| (decode_morton512_x[((morton >> 27) & 0x1ff)] << 9)
+		| (decode_morton512_x[((morton >> 36) & 0x1ff)] << 12)
+		| (decode_morton512_x[((morton >> 46) & 0x1ff)] << 15)
+		| (decode_morton512_x[((morton >> 54) & 0x1ff)] << 18);
+	y = y | decode_morton512_y[morton & 0x1ff]
+		| (decode_morton512_y[((morton >> 9) & 0x1ff)] << 3)
+		| (decode_morton512_y[((morton >> 18) & 0x1ff)] << 6)
+		| (decode_morton512_y[((morton >> 27) & 0x1ff)] << 9)
+		| (decode_morton512_y[((morton >> 36) & 0x1ff)] << 12)
+		| (decode_morton512_y[((morton >> 46) & 0x1ff)] << 15)
+		| (decode_morton512_y[((morton >> 54) & 0x1ff)] << 18);
+	z = z | decode_morton512_z[morton & 0x1ff]
+		| (decode_morton512_z[((morton >> 9) & 0x1ff)] << 3)
+		| (decode_morton512_z[((morton >> 18) & 0x1ff)] << 6)
+		| (decode_morton512_z[((morton >> 27) & 0x1ff)] << 9)
+		| (decode_morton512_z[((morton >> 36) & 0x1ff)] << 12)
+		| (decode_morton512_z[((morton >> 46) & 0x1ff)] << 15)
+		| (decode_morton512_z[((morton >> 54) & 0x1ff)] << 18);
 
-// Decoding with magic bits
-inline unsigned int getThirdBits(uint64_t x){
-	x &= 0x9249249249249249;
-	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
-	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
-	x = (x ^ (x >> 8)) & 0xFF0000FF0000FF;
-	x = (x ^ (x >> 16)) & 0xFFFF;
-	return (unsigned int) x;
-}
-
-inline unsigned int mortonDecode_magicbits_X(uint64_t morton){
-	return getThirdBits(morton);
-}
-
-inline unsigned int mortonDecode_magicbits_Y(uint64_t morton){
-	return getThirdBits(morton >> 1);
-}
-
-inline unsigned int mortonDecode_magicbits_Z(uint64_t morton){
-	return getThirdBits(morton >> 2);
-}
-
-inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
-	x = mortonDecode_magicbits_X(morton);
-	y = mortonDecode_magicbits_Y(morton);
-	z = mortonDecode_magicbits_Z(morton);
+	//uint64_t part = morton & 0x1ff;
+	//x = x | decode_morton512_x[part];
+	//y = y | decode_morton512_y[part];
+	//z = z | decode_morton512_z[part];
+	//part = (morton >> 9) & 0x1ff;
+	//x = x | (decode_morton512_x[part] << 3);
+	//y = y | (decode_morton512_y[part] << 3);
+	//z = z | (decode_morton512_z[part] << 3);
+	//part = (morton >> 18) & 0x1ff;
+	//x = x | (decode_morton512_x[part] << 6);
+	//y = y | (decode_morton512_y[part] << 6);
+	//z = z | (decode_morton512_z[part] << 6);
+	//part = (morton >> 27) & 0x1ff;
+	//x = x | (decode_morton512_x[part] << 9);
+	//y = y | (decode_morton512_y[part] << 9);
+	//z = z | (decode_morton512_z[part] << 9);
+	//part = (morton >> 27) & 0x1ff;
+	//x = x | (decode_morton512_x[part] << 9);
+	//y = y | (decode_morton512_y[part] << 9);
+	//z = z | (decode_morton512_z[part] << 9);
+	//part = (morton >> 36) & 0x1ff;
+	//x = x | (decode_morton512_x[part] << 12);
+	//y = y | (decode_morton512_y[part] << 12);
+	//z = z | (decode_morton512_z[part] << 12);
+	//part = (morton >> 46) & 0x1ff;
+	//x = x | (decode_morton512_x[part] << 15);
+	//y = y | (decode_morton512_y[part] << 15);
+	//z = z | (decode_morton512_z[part] << 15);
+	//part = (morton >> 46) & 0x1ff;
+	//x = x | (decode_morton512_x[part] << 15);
+	//y = y | (decode_morton512_y[part] << 15);
+	//z = z | (decode_morton512_z[part] << 15);
+	//part = (morton >> 54) & 0x1ff;
+	//x = x | (decode_morton512_x[part] << 18);
+	//y = y | (decode_morton512_y[part] << 18);
+	//z = z | (decode_morton512_z[part] << 18);
 }
 
 // define default methods
@@ -72,7 +106,7 @@ inline uint64_t mortonEncode(unsigned int x, unsigned int y, unsigned int z){
 }
 
 inline uint64_t mortonDecode(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
-	mortonDecode_magicbits(morton, x, y, z);
+	mortonDecode_LUT(morton, x, y, z);
 }
 
 #endif // MORTON_H_

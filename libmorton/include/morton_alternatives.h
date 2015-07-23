@@ -38,6 +38,34 @@ inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned 
 	return answer;
 }
 
+// Decoding with magic bits
+inline unsigned int getThirdBits(uint64_t x){
+	x &= 0x9249249249249249;
+	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
+	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
+	x = (x ^ (x >> 8)) & 0xFF0000FF0000FF;
+	x = (x ^ (x >> 16)) & 0xFFFF;
+	return (unsigned int)x;
+}
+
+inline unsigned int mortonDecode_magicbits_X(uint64_t morton){
+	return getThirdBits(morton);
+}
+
+inline unsigned int mortonDecode_magicbits_Y(uint64_t morton){
+	return getThirdBits(morton >> 1);
+}
+
+inline unsigned int mortonDecode_magicbits_Z(uint64_t morton){
+	return getThirdBits(morton >> 2);
+}
+
+inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
+	x = mortonDecode_magicbits_X(morton);
+	y = mortonDecode_magicbits_Y(morton);
+	z = mortonDecode_magicbits_Z(morton);
+}
+
 // Decoding with for loop
 inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
 	x = 0;
