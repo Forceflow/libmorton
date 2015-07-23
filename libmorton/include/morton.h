@@ -62,6 +62,7 @@ inline void mortonDecode_LUT(uint64_t morton, unsigned int& x, unsigned int& y, 
 		| (decode_morton512_z[((morton >> 46) & 0x1ff)] << 15)
 		| (decode_morton512_z[((morton >> 54) & 0x1ff)] << 18);
 
+	// can make this faster with intrinsic LZC
 	//uint64_t part = morton & 0x1ff;
 	//x = x | decode_morton512_x[part];
 	//y = y | decode_morton512_y[part];
