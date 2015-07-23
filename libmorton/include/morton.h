@@ -22,17 +22,17 @@ inline unsigned int mortonDecode_Z(uint64_t morton);
 // encoding with lookup table
 inline uint64_t mortonEncode_LUT(unsigned int x, unsigned int y, unsigned int z){
 	uint64_t answer = 0;
-	answer =	morton256_z[(z >> 16) & 0xFF ] |
-				morton256_y[(y >> 16) & 0xFF ] |
-				morton256_x[(x >> 16) & 0xFF ];
+	answer = encode_morton256_z[(z >> 16) & 0xFF ] |
+			 encode_morton256_y[(y >> 16) & 0xFF] |
+			 encode_morton256_x[(x >> 16) & 0xFF];
 	answer = answer << 48 |
-				morton256_z[(z >> 8) & 0xFF ] |
-				morton256_y[(y >> 8) & 0xFF ] |
-				morton256_x[(x >> 8) & 0xFF ];
+			 encode_morton256_z[(z >> 8) & 0xFF] |
+			 encode_morton256_y[(y >> 8) & 0xFF] |
+			 encode_morton256_x[(x >> 8) & 0xFF];
 	answer = answer << 24 |
-				morton256_z[(z) & 0xFF ] |
-				morton256_y[(y) & 0xFF ] |
-				morton256_x[(x) & 0xFF ];
+			 encode_morton256_z[(z)& 0xFF] |
+			 encode_morton256_y[(y)& 0xFF] |
+			 encode_morton256_x[(x)& 0xFF];
 	return answer;
 }
 
