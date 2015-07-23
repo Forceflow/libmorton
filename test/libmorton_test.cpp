@@ -23,12 +23,17 @@ static void checkDecodeCorrectness(){
 	int failures = 0;
 	for (size_t i = 0; i < 4096; i++){
 		unsigned int correct_x = control_coords[i][0], correct_y = control_coords[i][1], correct_z = control_coords[i][2];
+		unsigned int x_result_lut, y_result_lut, z_result_lut;
 		unsigned int x_result_magicbits, y_result_magicbits, z_result_magicbits;
 		unsigned int x_result_for, y_result_for, z_result_for;
+		mortonDecode_LUT(i, x_result_lut, y_result_lut, z_result_lut);
 		mortonDecode_magicbits(i, x_result_magicbits, y_result_magicbits, z_result_magicbits);
 		mortonDecode_for(i, x_result_for, y_result_for, z_result_for);
+		if (x_result_lut != correct_x || y_result_lut != correct_y || z_result_lut != correct_z)
+		{printf(" Problem with correctness of for LUT-table based decoding: %u, %u, %u does not match %u,%u,%u",
+				x_result_lut, y_result_lut, z_result_lut, correct_x, correct_y, correct_z);}
 		if (x_result_magicbits != correct_x || y_result_magicbits != correct_y || z_result_magicbits != correct_z)
-		{printf(" Problem with correctness of for loop-based decoding: %u, %u, %u does not match %u,%u,%u",
+		{printf(" Problem with correctness of for magicbits-based decoding: %u, %u, %u does not match %u,%u,%u",
 			x_result_magicbits, y_result_magicbits, z_result_magicbits, correct_x, correct_y, correct_z);}
 		if ( x_result_for != correct_x || y_result_for != correct_y || z_result_for != correct_z)
 		{printf(" Problem with correctness of for loop-based decoding: %u, %u, %u does not match %u,%u,%u", 
@@ -141,7 +146,15 @@ static void decodePerformanceTestLinear(){
 	cout << "++ Decoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 
 	// Init timers
-	Timer morton_decode_magicbits, morton_decode_for;
+	Timer morton_decode_LUT,morton_decode_magicbits, morton_decode_for;
+	// Test magicbits method
+	morton_decode_LUT.reset(); morton_decode_LUT.start();
+	for (size_t i = 0; i < total; i++){
+		unsigned int x, y, z = 0;
+		mortonDecode_LUT(i,x,y,z);
+	}
+	morton_decode_LUT.stop();
+	cout << " LUT method: " << morton_decode_LUT.getTotalTimeMs() << " ms" << endl;
 	
 	// Test magicbits method
 	morton_decode_magicbits.reset(); morton_decode_magicbits.start();
@@ -175,7 +188,17 @@ static void decodePerformanceTestRandom(){
 	cout << " done." << endl;
 
 	// init timers
-	Timer morton_decode_magicbits, morton_decode_for;
+	Timer morton_decode_LUT,morton_decode_magicbits, morton_decode_for;
+
+	// Test LUT method
+	morton_decode_LUT.reset(); morton_decode_LUT.start();
+	for (size_t i = 0; i < total; i++){
+		size_t current = arr[i];
+		unsigned int x, y, z = 0;
+		mortonDecode_LUT(current, x, y, z);
+	}
+	morton_decode_LUT.stop();
+	cout << " LUT method: " << morton_decode_LUT.getTotalTimeMs() << " ms" << endl;
 
 	// Test magicbits method
 	morton_decode_magicbits.reset(); morton_decode_magicbits.start();
@@ -191,8 +214,9 @@ static void decodePerformanceTestRandom(){
 	// Test for loop method
 	morton_decode_for.reset(); morton_decode_for.start();
 	for (size_t i = 0; i < total; i++){
+		size_t current = arr[i];
 		unsigned int x, y, z = 0;
-		mortonDecode_for(i, x, y, z);
+		mortonDecode_for(current, x, y, z);
 	}
 	morton_decode_for.stop();
 	cout << " For-loop method: " << morton_decode_for.getTotalTimeMs() << " ms" << endl;
@@ -202,9 +226,9 @@ static void decodePerformanceTestRandom(){
 }
 
 int main(int argc, char *argv[]) {
-	checkEncodeCorrectness();
-	encodePerformanceTestLinear();
-	encodePerformanceTestRandom();
+	//checkEncodeCorrectness();
+	//encodePerformanceTestLinear();
+	//encodePerformanceTestRandom();
 	checkDecodeCorrectness();
 	decodePerformanceTestLinear();
 	decodePerformanceTestRandom();

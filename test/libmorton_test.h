@@ -1,5 +1,5 @@
-#ifndef TEST_H_
-#define TEST_H_
+#ifndef LIBMORTON_TEST_H_
+#define LIBMORTON_TEST_H_
 
 // Load library we're going to test
 #include "../libmorton/include/morton.h"
