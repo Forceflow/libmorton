@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../libmorton/include/morton.h"
+#include "../libmorton/include/morton_alternatives.h"
 
 using namespace std;
 
