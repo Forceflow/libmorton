@@ -9,9 +9,9 @@
 #include <limits.h>
 
 // Version with for loop
-inline uint64_t mortonEncode_for(const uint32_t x, const uint32_t y, const uint32_t z){
+inline uint64_t morton3D_Encode_for(const uint32_t x, const uint32_t y, const uint32_t z){
 	uint64_t answer = 0;
-	for (uint64_t i = 0; i < (sizeof(uint64_t)* CHAR_BIT) / 3; ++i) {
+	for (uint64_t i = 0; i < (sizeof(uint64_t)* 8) / 3; ++i) {
 		answer |= ((x & ((uint64_t)1 << i)) << 2 * i) | ((y & ((uint64_t)1 << i)) << (2 * i + 1)) | ((z & ((uint64_t)1 << i)) << (2 * i + 2));
 	}
 	return answer;
@@ -28,9 +28,8 @@ inline uint64_t splitBy3(const uint32_t a){
 	return x;
 }
 
-inline uint64_t mortonEncode_magicbits(const uint32_t x, const uint32_t y, const uint32_t z){
-	uint64_t answer = 0;
-	answer |= splitBy3(x) | splitBy3(y) << 1 | splitBy3(z) << 2;
+inline uint64_t morton3D_Encode_magicbits(const uint32_t x, const uint32_t y, const uint32_t z){
+	uint64_t answer = 0 | splitBy3(x) | splitBy3(y) << 1 | splitBy3(z) << 2;
 	return answer;
 }
 
@@ -44,26 +43,26 @@ inline uint32_t getThirdBits(const uint64_t a){
 	return (uint32_t) x;
 }
 
-inline uint32_t mortonDecode_magicbits_X(const uint64_t morton){
+inline uint32_t morton3D_Decode_X_magicbits(const uint64_t morton){
 	return getThirdBits(morton);
 }
 
-inline uint32_t mortonDecode_magicbits_Y(const uint64_t morton){
+inline uint32_t morton3D_Decode_Y_magicbits(const uint64_t morton){
 	return getThirdBits(morton >> 1);
 }
 
-inline uint32_t mortonDecode_magicbits_Z(const uint64_t morton){
+inline uint32_t morton3D_Decode_Z_magicbits(const uint64_t morton){
 	return getThirdBits(morton >> 2);
 }
 
-inline void mortonDecode_magicbits(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
-	x = mortonDecode_magicbits_X(morton);
-	y = mortonDecode_magicbits_Y(morton);
-	z = mortonDecode_magicbits_Z(morton);
+inline void morton3D_Decode_magicbits(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
+	x = morton3D_Decode_X_magicbits(morton);
+	y = morton3D_Decode_Y_magicbits(morton);
+	z = morton3D_Decode_Z_magicbits(morton);
 }
 
 // Decoding with for loop
-inline void mortonDecode_for(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
+inline void morton3D_Decode_for(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
 	x = 0;
 	y = 0;
 	z = 0;
