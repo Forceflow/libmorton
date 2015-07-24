@@ -1,9 +1,9 @@
 Libmorton
 ================
 
-Library for for encoding/decoding coordinates to/from 64-bit Morton order codes (also known as [the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)).
+Library with methods to encode/decode 64-bit morton codes from/to 32-bit (x,y,z) coordinates. Morton order is also known as Z-order or [the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)).
 
-You can use the library by including *morton.h*. This will always include the most efficient way to date. The header *morton_alternatives.h* contains older /alternative implementations.
+You can use the library by including *libmorton/morton.h*. This will always include the most efficient way to date. The header *morton_alternatives.h* contains older /alternative implementations.
 
 Cuda version is being devleoped separately, since it serves a slightly different purpose (batch encoding/decoding large batches of coordinates) and will not be a header-only library.
 
