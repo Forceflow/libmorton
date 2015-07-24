@@ -20,8 +20,8 @@ inline uint32_t morton3D_Decode_Z(const uint64_t morton);
 
 // encoding with lookup table
 inline uint64_t morton3D_Encode_LUT(const uint32_t x, const uint32_t y, const uint32_t z){
-	uint64_t answer = 0;
-	answer = encode_morton256_z[(z >> 16) & 0xFF ] |
+	uint64_t answer = 
+			 encode_morton256_z[(z >> 16) & 0xFF ] |
 			 encode_morton256_y[(y >> 16) & 0xFF] |
 			 encode_morton256_x[(x >> 16) & 0xFF];
 	answer = answer << 48 |
