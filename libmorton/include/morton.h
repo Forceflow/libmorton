@@ -5,7 +5,13 @@
 #include <stdint.h>
 #include "morton_lookup_tables.h"
 
+#if _MSC_VER
+#include <intrin.h>
+#endif
+
 using namespace std;
+
+//#define LIBMORTON_USE_INTRINSICS
 
 // THESE DEFAULT METHODS WILL ALWAYS POINT TO THE FASTEST IMPLEMENTED METHOD
 // -------------------------------------------------------------------------
@@ -36,6 +42,61 @@ inline uint64_t morton3D_Encode_LUT(const uint32_t x, const uint32_t y, const ui
 }
 
 inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
+	// can probably make this faster by using lzc intrinsic! 
+
+	// For Microsoft compilers use _BitScanForward & _BitScanReverse.
+	// For GCC use __builtin_ffs, __builtin_clz, __builtin_ctz.
+
+#ifdef LIBMORTON_USE_INTRINSICS
+	// use bit manipulation intrinsic to find out first bit, for early termination
+	unsigned long firstbit_location = 0;
+
+#if _MSC_VER
+	if (_BitScanReverse(&firstbit_location, (unsigned long) (morton >> 32))){ // check first part of morton code
+		firstbit_location = 32 + firstbit_location;
+	} else if ( ! _BitScanReverse(&firstbit_location, (unsigned long) (morton & 0xFFFFFFFF))){ // also test last part of morton code
+		x = 0; y = 0; z = 0;
+		return;
+	}
+#endif
+	
+	uint64_t part = morton & 0x1ff;
+	x = 0 | decode_morton512_x[part];
+	y = 0 | decode_morton512_y[part];
+	z = 0 | decode_morton512_z[part];
+	if (firstbit_location < 9) return;
+	part = (morton >> 9) & 0x1ff;
+	x = x | (decode_morton512_x[part] << 3);
+	y = y | (decode_morton512_y[part] << 3);
+	z = z | (decode_morton512_z[part] << 3);
+	if (firstbit_location < 18) return;
+	part = (morton >> 18) & 0x1ff;
+	x = x | (decode_morton512_x[part] << 6);
+	y = y | (decode_morton512_y[part] << 6);
+	z = z | (decode_morton512_z[part] << 6);
+	if (firstbit_location < 27) return;
+	part = (morton >> 27) & 0x1ff;
+	x = x | (decode_morton512_x[part] << 9);
+	y = y | (decode_morton512_y[part] << 9);
+	z = z | (decode_morton512_z[part] << 9);
+	if (firstbit_location < 36) return;
+	part = (morton >> 36) & 0x1ff;
+	x = x | (decode_morton512_x[part] << 12);
+	y = y | (decode_morton512_y[part] << 12);
+	z = z | (decode_morton512_z[part] << 12);
+	if (firstbit_location < 46) return;
+	part = (morton >> 46) & 0x1ff;
+	x = x | (decode_morton512_x[part] << 15);
+	y = y | (decode_morton512_y[part] << 15);
+	z = z | (decode_morton512_z[part] << 15);
+	if (firstbit_location < 54) return;
+	part = (morton >> 54) & 0x1ff;
+	x = x | (decode_morton512_x[part] << 18);
+	y = y | (decode_morton512_y[part] << 18);
+	z = z | (decode_morton512_z[part] << 18);
+	return;
+#else
+	// standard portable version
 	x = 0 | decode_morton512_x[morton & 0x1ff]
 		| (decode_morton512_x[((morton >> 9) & 0x1ff)] << 3)
 		| (decode_morton512_x[((morton >> 18) & 0x1ff)] << 6)
@@ -57,48 +118,7 @@ inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y,
 		| (decode_morton512_z[((morton >> 36) & 0x1ff)] << 12)
 		| (decode_morton512_z[((morton >> 46) & 0x1ff)] << 15)
 		| (decode_morton512_z[((morton >> 54) & 0x1ff)] << 18);
-
-	// can probably make this faster by using lzc intrinsic! 
-
-	// For Microsoft compilers use _BitScanForward & _BitScanReverse.
-	// For GCC use __builtin_ffs, __builtin_clz, __builtin_ctz.
-
-	//uint64_t part = morton & 0x1ff;
-	//x = x | decode_morton512_x[part];
-	//y = y | decode_morton512_y[part];
-	//z = z | decode_morton512_z[part];
-	//part = (morton >> 9) & 0x1ff;
-	//x = x | (decode_morton512_x[part] << 3);
-	//y = y | (decode_morton512_y[part] << 3);
-	//z = z | (decode_morton512_z[part] << 3);
-	//part = (morton >> 18) & 0x1ff;
-	//x = x | (decode_morton512_x[part] << 6);
-	//y = y | (decode_morton512_y[part] << 6);
-	//z = z | (decode_morton512_z[part] << 6);
-	//part = (morton >> 27) & 0x1ff;
-	//x = x | (decode_morton512_x[part] << 9);
-	//y = y | (decode_morton512_y[part] << 9);
-	//z = z | (decode_morton512_z[part] << 9);
-	//part = (morton >> 27) & 0x1ff;
-	//x = x | (decode_morton512_x[part] << 9);
-	//y = y | (decode_morton512_y[part] << 9);
-	//z = z | (decode_morton512_z[part] << 9);
-	//part = (morton >> 36) & 0x1ff;
-	//x = x | (decode_morton512_x[part] << 12);
-	//y = y | (decode_morton512_y[part] << 12);
-	//z = z | (decode_morton512_z[part] << 12);
-	//part = (morton >> 46) & 0x1ff;
-	//x = x | (decode_morton512_x[part] << 15);
-	//y = y | (decode_morton512_y[part] << 15);
-	//z = z | (decode_morton512_z[part] << 15);
-	//part = (morton >> 46) & 0x1ff;
-	//x = x | (decode_morton512_x[part] << 15);
-	//y = y | (decode_morton512_y[part] << 15);
-	//z = z | (decode_morton512_z[part] << 15);
-	//part = (morton >> 54) & 0x1ff;
-	//x = x | (decode_morton512_x[part] << 18);
-	//y = y | (decode_morton512_y[part] << 18);
-	//z = z | (decode_morton512_z[part] << 18);
+#endif
 }
 
 inline uint32_t morton3D_Decode_X_LUT(const uint64_t morton){
