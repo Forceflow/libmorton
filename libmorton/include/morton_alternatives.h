@@ -8,12 +8,8 @@
 #include <stdint.h>
 #include <limits.h>
 
-inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z); // slowest
-inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned int z); // faster
-inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z); // slowest
-
 // Version with for loop
-inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z){
+inline uint64_t mortonEncode_for(const uint32_t x, const uint32_t y, const uint32_t z){
 	uint64_t answer = 0;
 	for (uint64_t i = 0; i < (sizeof(uint64_t)* CHAR_BIT) / 3; ++i) {
 		answer |= ((x & ((uint64_t)1 << i)) << 2 * i) | ((y & ((uint64_t)1 << i)) << (2 * i + 1)) | ((z & ((uint64_t)1 << i)) << (2 * i + 2));
@@ -22,7 +18,7 @@ inline uint64_t mortonEncode_for(unsigned int x, unsigned int y, unsigned int z)
 }
 
 // Version with magic bits
-inline uint64_t splitBy3(int a){
+inline uint64_t splitBy3(const uint32_t a){
 	uint64_t x = a & 0x1fffff;
 	x = (x | x << 32) & 0x1f00000000ffff;
 	x = (x | x << 16) & 0x1f0000ff0000ff;
@@ -32,42 +28,42 @@ inline uint64_t splitBy3(int a){
 	return x;
 }
 
-inline uint64_t mortonEncode_magicbits(unsigned int x, unsigned int y, unsigned int z){
+inline uint64_t mortonEncode_magicbits(const uint32_t x, const uint32_t y, const uint32_t z){
 	uint64_t answer = 0;
 	answer |= splitBy3(x) | splitBy3(y) << 1 | splitBy3(z) << 2;
 	return answer;
 }
 
 // Decoding with magic bits
-inline unsigned int getThirdBits(uint64_t x){
-	x &= 0x9249249249249249;
+inline uint32_t getThirdBits(const uint64_t a){
+	uint64_t x = a & 0x9249249249249249;
 	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
 	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
 	x = (x ^ (x >> 8)) & 0xFF0000FF0000FF;
 	x = (x ^ (x >> 16)) & 0xFFFF;
-	return (unsigned int)x;
+	return (uint32_t) x;
 }
 
-inline unsigned int mortonDecode_magicbits_X(uint64_t morton){
+inline uint32_t mortonDecode_magicbits_X(const uint64_t morton){
 	return getThirdBits(morton);
 }
 
-inline unsigned int mortonDecode_magicbits_Y(uint64_t morton){
+inline uint32_t mortonDecode_magicbits_Y(const uint64_t morton){
 	return getThirdBits(morton >> 1);
 }
 
-inline unsigned int mortonDecode_magicbits_Z(uint64_t morton){
+inline uint32_t mortonDecode_magicbits_Z(const uint64_t morton){
 	return getThirdBits(morton >> 2);
 }
 
-inline void mortonDecode_magicbits(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
+inline void mortonDecode_magicbits(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
 	x = mortonDecode_magicbits_X(morton);
 	y = mortonDecode_magicbits_Y(morton);
 	z = mortonDecode_magicbits_Z(morton);
 }
 
 // Decoding with for loop
-inline void mortonDecode_for(uint64_t morton, unsigned int& x, unsigned int& y, unsigned int& z){
+inline void mortonDecode_for(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
 	x = 0;
 	y = 0;
 	z = 0;

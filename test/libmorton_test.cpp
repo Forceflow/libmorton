@@ -8,8 +8,6 @@
 #include "libmorton_test.h"
 // Standard headers
 #include <iostream>
-#include <iomanip>
-#include <inttypes.h>
 
 // Configuration
 // MAX x MAX x MAX coordinates will be tested / generated
@@ -226,9 +224,9 @@ static void decodePerformanceTestRandom(){
 }
 
 int main(int argc, char *argv[]) {
-	//checkEncodeCorrectness();
-	//encodePerformanceTestLinear();
-	//encodePerformanceTestRandom();
+	checkEncodeCorrectness();
+	encodePerformanceTestLinear();
+	encodePerformanceTestRandom();
 	checkDecodeCorrectness();
 	decodePerformanceTestLinear();
 	decodePerformanceTestRandom();
