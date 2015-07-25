@@ -42,11 +42,13 @@ inline uint64_t morton3D_Encode_LUT(const uint32_t x, const uint32_t y, const ui
 }
 
 inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
-	// For Microsoft compilers use _BitScanForward & _BitScanReverse.
-	// For GCC use __builtin_ffs, __builtin_clz, __builtin_ctz.
 	x = 0; y = 0; z = 0;
 
+
 #ifdef LIBMORTON_USE_INTRINSICS
+	// For Microsoft compilers use _BitScanForward & _BitScanReverse.
+	// For GCC use __builtin_ffs, __builtin_clz, __builtin_ctz.
+
 	// use bit manipulation intrinsic to find out first bit, for early termination
 	unsigned long firstbit_location;
 
@@ -55,21 +57,11 @@ inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y,
 	// Does the pragma stop the compiler from optimizing this?
 	// is it cheaper to do this using the 64 bit one
 	if (_BitScanReverse(&firstbit_location, (morton >> 32))){ // check first part of morton code
-		firstbit_location = 32 + firstbit_location;
+		firstbit_location += 32;
 	} else if ( ! _BitScanReverse(&firstbit_location, (morton & 0xFFFFFFFF))){ // also test last part of morton code
 		return;
 	}
 #endif
-	//uint64_t part;
-	//int shiftback = 0;
-	//for (int i = 0; firstbit_location >= i; i += 9){
-	//	uint64_t part = ((morton >> i) & 0x1ff);
-	//	x = x | decode_morton512_x[part] << shiftback;
-	//	y = y | decode_morton512_y[part] << shiftback;
-	//	z = z | decode_morton512_z[part] << shiftback;
-	//	shiftback = shiftback + 3;
-	//}
-	//return;
 
 	x = x | decode_morton512_x[morton & 0x1ff];
 	y = y | decode_morton512_y[morton & 0x1ff];
