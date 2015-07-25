@@ -10,9 +10,8 @@
 #include <iostream>
 
 // Configuration
-// MAX x MAX x MAX coordinates will be tested / generated
-#define MAX 256 
-static const size_t total = MAX*MAX*MAX; // We need this a lot. 
+size_t MAX;
+size_t total; 
 
 using namespace std;
 
@@ -153,7 +152,7 @@ static void encodePerformanceTestRandom(){
 }
 
 // Test performance of decoding a linear set of morton codes
-#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+//#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 static void decodePerformanceTestLinear(){
 	cout << "++ Decoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 
@@ -192,7 +191,7 @@ static void decodePerformanceTestLinear(){
 }
 
 // Test performance of decoding a random set of morton codes
-#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+// #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 static void decodePerformanceTestRandom(){
 	cout << "++ Decoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
 
@@ -247,12 +246,16 @@ static void decodePerformanceTestRandom(){
 int main(int argc, char *argv[]) {
 	cout << "LIBMORTON TEST SUITE" << endl;
 	cout << "--------------------" << endl;
-	// encoding
-	checkEncodeCorrectness();
-	encodePerformanceTestLinear();
-	encodePerformanceTestRandom();
-	// decoding
-	checkDecodeCorrectness();
-	decodePerformanceTestLinear();
-	decodePerformanceTestRandom();
+	for (int i = 32; i <= 256; i = i * 2){
+		MAX = i;
+		total = MAX*MAX*MAX;
+		// encoding
+		checkEncodeCorrectness();
+		encodePerformanceTestLinear();
+		encodePerformanceTestRandom();
+		// decoding
+		checkDecodeCorrectness();
+		decodePerformanceTestLinear();
+		decodePerformanceTestRandom();
+	}
 }
