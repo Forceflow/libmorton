@@ -11,7 +11,7 @@
 
 using namespace std;
 
-//#define LIBMORTON_USE_INTRINSICS
+// #define LIBMORTON_USE_INTRINSICS
 
 // THESE DEFAULT METHODS WILL ALWAYS POINT TO THE FASTEST IMPLEMENTED METHOD
 // -------------------------------------------------------------------------
@@ -52,6 +52,9 @@ inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y,
 	unsigned long firstbit_location = 0;
 
 #if _MSC_VER
+	// are the casts necessary? and the blanking in the second one?
+	// Does the pragma stop the compiler from optimizing this?
+	// is it cheaper to do this using the 64 bit one
 	if (_BitScanReverse(&firstbit_location, (unsigned long) (morton >> 32))){ // check first part of morton code
 		firstbit_location = 32 + firstbit_location;
 	} else if ( ! _BitScanReverse(&firstbit_location, (unsigned long) (morton & 0xFFFFFFFF))){ // also test last part of morton code
@@ -59,7 +62,8 @@ inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y,
 		return;
 	}
 #endif
-	
+
+	// maybe better to do this in for loop?
 	uint64_t part = morton & 0x1ff;
 	x = 0 | decode_morton512_x[part];
 	y = 0 | decode_morton512_y[part];
