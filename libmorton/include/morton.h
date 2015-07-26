@@ -11,7 +11,7 @@
 
 using namespace std;
 
-//#define LIBMORTON_USE_INTRINSICS
+#define LIBMORTON_USE_INTRINSICS
 
 // THESE DEFAULT METHODS WILL ALWAYS POINT TO THE FASTEST IMPLEMENTED METHOD
 // -------------------------------------------------------------------------
@@ -43,15 +43,12 @@ inline uint64_t morton3D_Encode_LUT(const uint32_t x, const uint32_t y, const ui
 
 inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
 	x = 0; y = 0; z = 0;
-
-
 #ifdef LIBMORTON_USE_INTRINSICS
 	// For Microsoft compilers use _BitScanForward & _BitScanReverse.
 	// For GCC use __builtin_ffs, __builtin_clz, __builtin_ctz.
 
 	// use bit manipulation intrinsic to find out first bit, for early termination
 	unsigned long firstbit_location;
-
 #if _MSC_VER
 	// are the casts necessary? and the blanking in the second one?
 	// Does the pragma stop the compiler from optimizing this?
@@ -62,7 +59,6 @@ inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y,
 		return;
 	}
 #endif
-
 	x = x | decode_morton512_x[morton & 0x1ff];
 	y = y | decode_morton512_y[morton & 0x1ff];
 	z = z | decode_morton512_z[morton & 0x1ff];
@@ -91,7 +87,6 @@ inline void morton3D_Decode_LUT(const uint64_t morton, uint32_t& x, uint32_t& y,
 	y = y | (decode_morton512_y[((morton >> 54) & 0x1ff)] << 18);
 	z = z | (decode_morton512_z[((morton >> 54) & 0x1ff)] << 18);
 	return;
-
 #else
 	// standard portable version
 	x = 0 | decode_morton512_x[morton & 0x1ff]
