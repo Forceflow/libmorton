@@ -1,10 +1,14 @@
-#include <iostream>
-#include "../libmorton/include/morton.h"
-#include "../libmorton/include/morton_alternatives.h"
+#include "../../libmorton/include/morton.h"
 
-using namespace std;
 
-void generateMortonToCoordinateTables(){
+// must be a multiple of three
+void generate3DDecodeTables(size_t how_many_bits, uint8_t* x_table, uint8_t* y_table, uint8_t* z_table, bool print_tables){
+	// how many items we going to make need?
+	size_t total = how_many_bits << 2;
+	x_table = (uint8_t*) malloc(total * sizeof(uint8_t));
+	y_table = (uint8_t*) malloc(total * sizeof(uint8_t));
+	z_table = (uint8_t*) malloc(total * sizeof(uint8_t));
+
 	//generate 9-bit morton to X table
 	printf("\n X TABLE \n");
 	for (size_t i = 0; i < 512; i++){
@@ -26,8 +30,4 @@ void generateMortonToCoordinateTables(){
 		if (i % 16 == 0){ printf("\n"); }
 		printf("%u,", result_z);
 	}
-}
-
-int main(int argc, char *argv[]) {
-	generateMortonToCoordinateTables();
 }
