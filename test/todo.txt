@@ -1,0 +1,4 @@
+- Check other intrinsics
+- Work early termination intrinsics into for loop with #define
+- Some flexibility in generating LUT Tables
+- Work on 2D versions of everything
