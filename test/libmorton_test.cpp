@@ -23,9 +23,9 @@ static void checkDecodeCorrectness(){
 		uint32_t x_result_lut, y_result_lut, z_result_lut;
 		uint32_t x_result_magicbits, y_result_magicbits, z_result_magicbits;
 		uint32_t x_result_for, y_result_for, z_result_for;
-		morton3D_Decode_LUT(i, x_result_lut, y_result_lut, z_result_lut);
+		morton3D_64_Decode_LUT(i, x_result_lut, y_result_lut, z_result_lut);
 		morton3D_Decode_magicbits(i, x_result_magicbits, y_result_magicbits, z_result_magicbits);
-		morton3D_Decode_for(i, x_result_for, y_result_for, z_result_for);
+		morton3D_64_Decode_for(i, x_result_for, y_result_for, z_result_for);
 		if (x_result_lut != correct_x || y_result_lut != correct_y || z_result_lut != correct_z)
 		{printf("    Problem with correctness of for LUT-table based decoding: %u, %u, %u does not match %u,%u,%u",
 		x_result_lut, y_result_lut, z_result_lut, correct_x, correct_y, correct_z); failures++;}
@@ -48,9 +48,9 @@ static void checkEncodeCorrectness(){
 				// correct code
 				uint64_t correct_code = control_morton[k + (j * 16) + (i * 16 * 16)];
 				// result all our encoding methods give
-				uint64_t lut_result = morton3D_Encode_LUT(i, j, k);
-				uint64_t magicbits_result = morton3D_Encode_magicbits(i, j, k);
-				uint64_t for_result = morton3D_Encode_for(i, j, k);
+				uint64_t lut_result = morton3D_64_Encode_LUT(i, j, k);
+				uint64_t magicbits_result = morton3D_64_Encode_magicbits(i, j, k);
+				uint64_t for_result = morton3D_64_Encode_for(i, j, k);
 				// error messages if any code does not match correct result.
 				if (lut_result != correct_code){printf("    Problem with correctness of LUT based encoding: %zu does not match %zu \n", lut_result, correct_code); failures++; }
 				if (magicbits_result != correct_code){printf("    Problem with correctness of Magicbits based encoding: %zu does not match %zu \n", magicbits_result, correct_code); failures++;}
@@ -71,7 +71,7 @@ static void encodePerformanceTestLinear(){
 	for (size_t i = 0; i < MAX; i++){
 		for (size_t j = 0; j < MAX; j++){
 			for (size_t k = 0; k < MAX; k++){
-				morton3D_Encode_LUT(i, j, k);
+				morton3D_64_Encode_LUT(i, j, k);
 			}
 		}
 	}
@@ -82,7 +82,7 @@ static void encodePerformanceTestLinear(){
 	for (size_t i = 0; i < MAX; i++){
 		for (size_t j = 0; j < MAX; j++){
 			for (size_t k = 0; k < MAX; k++){
-				morton3D_Encode_magicbits(i, j, k);
+				morton3D_64_Encode_magicbits(i, j, k);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ static void encodePerformanceTestLinear(){
 	for (size_t i = 0; i < MAX; i++){
 		for (size_t j = 0; j < MAX; j++){
 			for (size_t k = 0; k < MAX; k++){
-				morton3D_Encode_for(i, j, k);
+				morton3D_64_Encode_for(i, j, k);
 			}
 		}
 	}
@@ -127,18 +127,18 @@ static void encodePerformanceTestRandom(){
 
 	// Start testing performance
 	morton_LUT.reset(); morton_LUT.start();
-	for (size_t i = 0; i < total; i++){ morton3D_Encode_LUT(random_x[i], random_y[i], random_z[i]); }
+	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_LUT(random_x[i], random_y[i], random_z[i]); }
 	morton_LUT.stop();
 	cout << "    LUT-based method: " << morton_LUT.getTotalTimeMs() << " ms" << endl;
 
 	morton_magicbits.reset(); morton_magicbits.start();
-	for (size_t i = 0; i < total; i++){ morton3D_Encode_magicbits(random_x[i], random_y[i], random_z[i]); }
+	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_magicbits(random_x[i], random_y[i], random_z[i]); }
 	morton_magicbits.stop();
 	cout << "    Magic bits-based method: " << morton_magicbits.getTotalTimeMs() << " ms" << endl;
 
 #if MAX<=256
 	morton_for.reset(); morton_for.start();
-	for (size_t i = 0; i < total; i++){ morton3D_Encode_for(random_x[i], random_y[i], random_z[i]); }
+	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_for(random_x[i], random_y[i], random_z[i]); }
 	morton_for.stop();
 	cout << "    For-loop method: " << morton_for.getTotalTimeMs() << " ms" << endl;
 #else
@@ -162,7 +162,7 @@ static void decodePerformanceTestLinear(){
 	morton_decode_LUT.reset(); morton_decode_LUT.start();
 	for (size_t i = 0; i < total; i++){
 		uint32_t x, y, z = 0;
-		morton3D_Decode_LUT(i,x,y,z);
+		morton3D_64_Decode_LUT(i,x,y,z);
 	}
 	morton_decode_LUT.stop();
 	cout << "    LUT method: " << morton_decode_LUT.getTotalTimeMs() << " ms" << endl;
@@ -181,7 +181,7 @@ static void decodePerformanceTestLinear(){
 	morton_decode_for.reset(); morton_decode_for.start();
 	for (size_t i = 0; i < total; i++){
 		uint32_t x, y, z = 0;
-		morton3D_Decode_for(i, x, y, z);
+		morton3D_64_Decode_for(i, x, y, z);
 	}
 	morton_decode_for.stop();
 	cout << "    For-loop method: " << morton_decode_for.getTotalTimeMs() << " ms" << endl;
@@ -209,7 +209,7 @@ static void decodePerformanceTestRandom(){
 	for (size_t i = 0; i < total; i++){
 		uint64_t current = arr[i];
 		uint32_t x, y, z = 0;
-		morton3D_Decode_LUT(current, x, y, z);
+		morton3D_64_Decode_LUT(current, x, y, z);
 	}
 	morton_decode_LUT.stop();
 	cout << "    LUT method: " << morton_decode_LUT.getTotalTimeMs() << " ms" << endl;
@@ -218,9 +218,9 @@ static void decodePerformanceTestRandom(){
 	morton_decode_magicbits.reset(); morton_decode_magicbits.start();
 	for (size_t i = 0; i < total; i++){
 		uint64_t current = arr[i];
-		morton3D_Decode_X_magicbits(current);
-		morton3D_Decode_Y_magicbits(current);
-		morton3D_Decode_Z_magicbits(current);
+		morton3D_64_Decode_X_magicbits(current);
+		morton3D_64_Decode_Y_magicbits(current);
+		morton3D_64_Decode_Z_magicbits(current);
 	}
 	morton_decode_magicbits.stop();
 	cout << "    Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() << " ms" << endl;
@@ -231,7 +231,7 @@ static void decodePerformanceTestRandom(){
 	for (size_t i = 0; i < total; i++){
 		uint64_t current = arr[i];
 		unsigned int x, y, z = 0;
-		morton3D_Decode_for(current, x, y, z);
+		morton3D_64_Decode_for(current, x, y, z);
 	}
 	morton_decode_for.stop();
 	cout << "    For-loop method: " << morton_decode_for.getTotalTimeMs() << " ms" << endl;

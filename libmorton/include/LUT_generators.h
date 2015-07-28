@@ -9,9 +9,11 @@ void generate3DDecodeTables(size_t how_many_bits, uint8_t* x_table, uint8_t* y_t
 	x_table = (uint8_t*) malloc(total * sizeof(uint8_t));
 	y_table = (uint8_t*) malloc(total * sizeof(uint8_t));
 	z_table = (uint8_t*) malloc(total * sizeof(uint8_t));
+	// how many kilobytes will this take?
+	float = total * sizeof(uint8_t)
 
 	if (print_tables){
-		printf("Generating tables for %llu bits, each table will contain %llu entries at 8 bit per entry. n", how_many_bits, total);
+		printf("Generating tables for %llu bits, each table will contain %llu entries at 8 bit per entry, totaling to %f kilobyte per table. /n", how_many_bits, total);
 	}
 
 	//generate 9-bit morton to X table
