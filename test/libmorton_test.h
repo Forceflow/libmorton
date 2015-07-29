@@ -2,8 +2,8 @@
 #define LIBMORTON_TEST_H_
 
 // Load library we're going to test
-#include "../libmorton/include/morton.h"
-#include "../libmorton/include/morton_alternatives.h"
+#include "../libmorton/include/morton3D.h"
+#include "../libmorton/include/morton3D_alternatives.h"
 
 // correct morton codes for 16 x 16 x 16, with z running fastest, then y, then x (4096 in total)
 static const int control_morton[4096] =
