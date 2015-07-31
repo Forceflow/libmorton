@@ -1,6 +1,6 @@
 // Libmorton - Methods to encode/decode 64-bit morton codes from/to 32-bit (x,y,z) coordinates
-#ifndef MORTON_H_
-#define MORTON_H_
+#ifndef MORTON3D_H_
+#define MORTON3D_H_
 
 #include <stdint.h>
 #include "morton3D_lookup_tables.h"
@@ -164,4 +164,4 @@ inline uint32_t morton3D_64_Decode_Z(const uint64_t morton){
 	return morton3D_64_Decode_Z_LUT(morton);
 }
 
-#endif // MORTON_H_
+#endif // MORTON3D_H_
