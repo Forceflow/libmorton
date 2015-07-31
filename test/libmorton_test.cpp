@@ -15,7 +15,7 @@ size_t total;
 
 using namespace std;
 
-static void checkDecodeCorrectness(){
+static void check3D_DecodeCorrectness(){
 	printf("++ Checking correctness of decoding methods ... ");
 	size_t failures = 0;
 	for (size_t i = 0; i < 4096; i++){
@@ -24,7 +24,7 @@ static void checkDecodeCorrectness(){
 		uint32_t x_result_magicbits, y_result_magicbits, z_result_magicbits;
 		uint32_t x_result_for, y_result_for, z_result_for;
 		morton3D_64_Decode_LUT(i, x_result_lut, y_result_lut, z_result_lut);
-		morton3D_Decode_magicbits(i, x_result_magicbits, y_result_magicbits, z_result_magicbits);
+		morton3D_64_Decode_magicbits(i, x_result_magicbits, y_result_magicbits, z_result_magicbits);
 		morton3D_64_Decode_for(i, x_result_for, y_result_for, z_result_for);
 		if (x_result_lut != correct_x || y_result_lut != correct_y || z_result_lut != correct_z)
 		{printf("    Problem with correctness of for LUT-table based decoding: %u, %u, %u does not match %u,%u,%u",
@@ -39,7 +39,7 @@ static void checkDecodeCorrectness(){
 	if (failures != 0){ printf("Correctness test failed %llu times \n", failures); } else { printf("Passed. \n"); }
 }
 
-static void checkEncodeCorrectness(){
+static void check3D_EncodeCorrectness(){
 	printf("++ Checking correctness of encoding methods ... ");
 	int failures = 0;
 	for (size_t i = 0; i < 16; i++){
@@ -63,7 +63,7 @@ static void checkEncodeCorrectness(){
 
 // Test performance of encoding methods for a linear stream of coordinates
 #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
-static void encodePerformanceTestLinear(){
+static void Encode_3D_LinearPerf(){
 	cout << "++ Encoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 
 	Timer morton_LUT, morton_magicbits, morton_for;
@@ -107,7 +107,7 @@ static void encodePerformanceTestLinear(){
 
 // Test performance of encoding methods for a random stream of coordinates
 #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
-static void encodePerformanceTestRandom(){
+static void Encode_3D_RandomPerf(){
 	cout << "++ Encoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
 
 	// generate random coordinates in double array (because we're fancy like that)
@@ -153,7 +153,7 @@ static void encodePerformanceTestRandom(){
 
 // Test performance of decoding a linear set of morton codes
 //#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
-static void decodePerformanceTestLinear(){
+static void Decode_3D_LinearPerf(){
 	cout << "++ Decoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 
 	// Init timers
@@ -171,7 +171,7 @@ static void decodePerformanceTestLinear(){
 	morton_decode_magicbits.reset(); morton_decode_magicbits.start();
 	for (size_t i = 0; i < total; i++){
 		uint32_t x, y, z = 0;
-		morton3D_Decode_magicbits(i,x,y,z);
+		morton3D_64_Decode_magicbits(i,x,y,z);
 	}
 	morton_decode_magicbits.stop();
 	cout << "    Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() << " ms" << endl; 
@@ -192,7 +192,7 @@ static void decodePerformanceTestLinear(){
 
 // Test performance of decoding a random set of morton codes
 // #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
-static void decodePerformanceTestRandom(){
+static void Decode_3D_RandomPerf(){
 	cout << "++ Decoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
 
 	// generate random coordinates in array
@@ -218,9 +218,8 @@ static void decodePerformanceTestRandom(){
 	morton_decode_magicbits.reset(); morton_decode_magicbits.start();
 	for (size_t i = 0; i < total; i++){
 		uint64_t current = arr[i];
-		morton3D_64_Decode_X_magicbits(current);
-		morton3D_64_Decode_Y_magicbits(current);
-		morton3D_64_Decode_Z_magicbits(current);
+		uint32_t x, y, z = 0;
+		morton3D_64_Decode_magicbits(i, x, y, z);
 	}
 	morton_decode_magicbits.stop();
 	cout << "    Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() << " ms" << endl;
@@ -246,16 +245,21 @@ static void decodePerformanceTestRandom(){
 int main(int argc, char *argv[]) {
 	cout << "LIBMORTON TEST SUITE" << endl;
 	cout << "--------------------" << endl;
+#ifdef LIBMORTON_USE_INTRINSICS
+	cout << "++ Using hardware intrinsics." << endl;
+#else
+	cout << "++ Not using hardware intrinsics."<< endl;
+#endif
 	for (int i = 32; i <= 256; i = i * 2){
 		MAX = i;
 		total = MAX*MAX*MAX;
 		// encoding
-		checkEncodeCorrectness();
-		encodePerformanceTestLinear();
-		encodePerformanceTestRandom();
+		check3D_EncodeCorrectness();
+		Encode_3D_LinearPerf();
+		Encode_3D_RandomPerf();
 		// decoding
-		checkDecodeCorrectness();
-		decodePerformanceTestLinear();
-		decodePerformanceTestRandom();
+		check3D_DecodeCorrectness();
+		Decode_3D_LinearPerf();
+		Decode_3D_RandomPerf();
 	}
 }

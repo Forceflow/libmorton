@@ -8,16 +8,26 @@
 #include <stdint.h>
 #include <limits.h>
 
-// Version with for loop
-inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const uint32_t z){
-	uint64_t answer = 0;
-	for (uint64_t i = 0; i < (sizeof(uint64_t)* 8) / 3; ++i) {
-		answer |= ((x & ((uint64_t)1 << i)) << 2 * i) | ((y & ((uint64_t)1 << i)) << (2 * i + 1)) | ((z & ((uint64_t)1 << i)) << (2 * i + 2));
+inline uint32_t morton3D_32_Encode_for(const uint16_t x, const uint16_t y, const uint16_t z){
+	uint32_t answer = 0;
+	for (uint32_t i = 0; i < 10; ++i) {
+		answer |=((x & (0x1 << i)) << 2 * i)
+			   | ((y & (0x1 << i)) << ((2 * i) + 1))
+			   | ((z & (0x1 << i)) << ((2 * i) + 2));
 	}
 	return answer;
 }
 
-// Version with magic bits
+inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const uint32_t z){
+	uint64_t answer = 0;
+	for (uint64_t i = 0; i < 21; ++i) {
+		answer |=((x & (0x1 << i)) << 2 * i) 
+			   | ((y & (0x1 << i)) << ((2*i) + 1)) 
+			   | ((z & (0x1 << i)) << ((2*i) + 2));
+	}
+	return answer;
+}
+
 inline uint64_t splitBy3(const uint32_t a){
 	uint64_t x = a & 0x1fffff;
 	x = (x | x << 32) & 0x1f00000000ffff;
@@ -33,7 +43,6 @@ inline uint64_t morton3D_64_Encode_magicbits(const uint32_t x, const uint32_t y,
 	return answer;
 }
 
-// Decoding with magic bits
 inline uint32_t getThirdBits(const uint64_t a){
 	uint64_t x = a & 0x9249249249249249;
 	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
@@ -61,12 +70,11 @@ inline void morton3D_64_Decode_magicbits(const uint64_t morton, uint32_t& x, uin
 	z = morton3D_64_Decode_Z_magicbits(morton);
 }
 
-// Decoding with for loop
 inline void morton3D_64_Decode_for(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
 	x = 0;
 	y = 0;
 	z = 0;
-	for (uint64_t i = 0; i < (sizeof(uint64_t) * CHAR_BIT) / 3; ++i) {
+	for (uint64_t i = 0; i < 21; ++i) {
 		x |= ((morton & (uint64_t(1ull) << uint64_t((3ull * i) + 0ull))) >> uint64_t(((3ull * i) + 0ull) - i));
 		y |= ((morton & (uint64_t(1ull) << uint64_t((3ull * i) + 1ull))) >> uint64_t(((3ull * i) + 1ull) - i));
 		z |= ((morton & (uint64_t(1ull) << uint64_t((3ull * i) + 2ull))) >> uint64_t(((3ull * i) + 2ull) - i));

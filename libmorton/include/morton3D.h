@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define LIBMORTON_USE_INTRINSICS
+//#define LIBMORTON_USE_INTRINSICS
 
 // THESE DEFAULT METHODS WILL ALWAYS POINT TO THE FASTEST IMPLEMENTED METHOD
 // -------------------------------------------------------------------------
