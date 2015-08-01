@@ -1,9 +1,20 @@
 #include "../../libmorton/include/morton.h"
 
 
+void generate2D_EncodeLUT(size_t how_many_bits){
+
+}
+
+void generate3D_EncodeLUT(size_t how_many_bits, uint32_t* x_table, uint32_t* y_table, uint32_t* z_table, bool print_tables){
+	// how many items
+	size_t total = how_many_bits << 2;
+
+
+}
+
 // Generate a decode tables for 3D morton code
 // how_many_bits should be a multiple of three
-void generate3DDecodeTables(size_t how_many_bits, uint8_t* x_table, uint8_t* y_table, uint8_t* z_table, bool print_tables){
+void generate3D_DecodeLUT(size_t how_many_bits, uint8_t* x_table, uint8_t* y_table, uint8_t* z_table, bool print_tables){
 	// how many items we going to make need?
 	size_t total = how_many_bits << 2;
 	x_table = (uint8_t*) malloc(total * sizeof(uint8_t));
