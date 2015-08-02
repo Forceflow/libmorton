@@ -9,9 +9,9 @@
 #endif
 
 // 32-bit morton code for loop
-inline uint32_t morton2D_32_Encode_for(const uint16_t x, const uint16_t y){
-	uint32_t answer = 0;
-	for (uint64_t i = 0; i < 16; ++i) {
+inline uint_fast32_t morton2D_32_Encode_for(const uint16_t x, const uint16_t y){
+	uint_fast32_t answer = 0;
+	for (uint_fast64_t i = 0; i < 16; ++i) {
 		answer |=((x & ((0x1 << i)) << (2*i))
 			   | ((y & ((0x1 << i)) << ((2*i) + 1));
 	}
@@ -19,9 +19,9 @@ inline uint32_t morton2D_32_Encode_for(const uint16_t x, const uint16_t y){
 }
 
 // 64-bit morton code for loop
-inline uint64_t morton2D_64_Encode_for(const uint32_t x, const uint32_t y){
-	uint64_t answer = 0;
-	for (uint64_t i = 0; i < 32; ++i) {
+inline uint_fast64_t morton2D_64_Encode_for(const uint_fast32_t x, const uint_fast32_t y){
+	uint_fast64_t answer = 0;
+	for (uint_fast64_t i = 0; i < 32; ++i) {
 		answer |=((x & ((0x1 << i)) << (2*i)) 
 			   | ((y & ((0x1 << i)) << ((2*i) + 1));
 	}

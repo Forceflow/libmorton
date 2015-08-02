@@ -74,10 +74,10 @@ inline void morton3D_64_Decode_for(const uint64_t morton, uint32_t& x, uint32_t&
 	x = 0;
 	y = 0;
 	z = 0;
-	for (uint64_t i = 0; i < 21; ++i) {
-		x |= ((morton & (uint64_t(1ull) << uint64_t((3ull * i) + 0ull))) >> uint64_t(((3ull * i) + 0ull) - i));
-		y |= ((morton & (uint64_t(1ull) << uint64_t((3ull * i) + 1ull))) >> uint64_t(((3ull * i) + 1ull) - i));
-		z |= ((morton & (uint64_t(1ull) << uint64_t((3ull * i) + 2ull))) >> uint64_t(((3ull * i) + 2ull) - i));
+	for (uint64_t i = 0; i < 21; i++) {
+		x |= (morton & (1ull << 3*i)) >> ((2*i));
+		y |= (morton & (1ull << ((3*i)+1))) >> ((2*i)+1);
+		z |= (morton & (1ull << ((3*i)+2))) >> ((2*i)+2);
 	}
 }
 
