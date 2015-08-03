@@ -45,13 +45,17 @@ static void check3D_EncodeCorrectness(){
 	for (size_t i = 0; i < 16; i++){
 		for (size_t j = 0; j < 16; j++){
 			for (size_t k = 0; k < 16; k++){
-				// correct code
+				// fetch correct code
 				uint_fast64_t correct_code = control_morton[k + (j * 16) + (i * 16 * 16)];
+
 				// result all our encoding methods give
+				uint_fast64_t lut_shifted_result = morton3D_64_Encode_LUT_shifted(i, j, k);
 				uint_fast64_t lut_result = morton3D_64_Encode_LUT(i, j, k);
 				uint_fast64_t magicbits_result = morton3D_64_Encode_magicbits(i, j, k);
 				uint_fast64_t for_result = morton3D_64_Encode_for(i, j, k);
+
 				// error messages if any code does not match correct result.
+				if (lut_shifted_result != correct_code){ printf("    Problem with correctness of LUT based encoding: %zu does not match %zu \n", lut_shifted_result, correct_code); failures++; }
 				if (lut_result != correct_code){printf("    Problem with correctness of LUT based encoding: %zu does not match %zu \n", lut_result, correct_code); failures++; }
 				if (magicbits_result != correct_code){printf("    Problem with correctness of Magicbits based encoding: %zu does not match %zu \n", magicbits_result, correct_code); failures++;}
 				if (for_result != correct_code){printf("    Problem with correctness of Magicbits based encoding: %zu does not match %zu \n", for_result, correct_code); failures++;}
@@ -61,48 +65,30 @@ static void check3D_EncodeCorrectness(){
 	if (failures != 0){printf("Correctness test failed \n");} else {printf("Passed. \n");}
 }
 
+#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+template <typename morton, typename coord>
+static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord)){
+	Timer t;
+	t.reset(); t.start();
+	for (size_t i = 0; i < MAX; i++){
+		for (size_t j = 0; j < MAX; j++){
+			for (size_t k = 0; k < MAX; k++){
+				function(i, j, k);
+			}
+		}
+	}
+	t.stop();
+	return t.getTotalTimeMs();
+}
+
 // Test performance of encoding methods for a linear stream of coordinates
 #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 static void Encode_3D_LinearPerf(){
 	cout << "++ Encoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
-
-	Timer morton_LUT, morton_magicbits, morton_for;
-	morton_LUT.reset(); morton_LUT.start();
-	for (size_t i = 0; i < MAX; i++){
-		for (size_t j = 0; j < MAX; j++){
-			for (size_t k = 0; k < MAX; k++){
-				morton3D_64_Encode_LUT(i, j, k);
-			}
-		}
-	}
-	morton_LUT.stop();
-	cout << "    LUT-based method: " << morton_LUT.getTotalTimeMs() << " ms" << endl;
-
-	morton_magicbits.reset(); morton_magicbits.start();
-	for (size_t i = 0; i < MAX; i++){
-		for (size_t j = 0; j < MAX; j++){
-			for (size_t k = 0; k < MAX; k++){
-				morton3D_64_Encode_magicbits(i, j, k);
-			}
-		}
-	}
-	morton_magicbits.stop();
-	cout << "    Magic bits-based method: " << morton_magicbits.getTotalTimeMs() << " ms" << endl;
-
-#if MAX<=256
-	morton_for.reset(); morton_for.start();
-	for (size_t i = 0; i < MAX; i++){
-		for (size_t j = 0; j < MAX; j++){
-			for (size_t k = 0; k < MAX; k++){
-				morton3D_64_Encode_for(i, j, k);
-			}
-		}
-	}
-	morton_for.stop();
-	cout << "    For-loop method: " << morton_for.getTotalTimeMs() << " ms" << endl;
-#else
-	cout << "    For-loop method: SKIPPED, TAKES WAY TOO LONG." << endl;
-#endif
+	cout << "    LUT preshifted: " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted) << " ms" << endl;
+	cout << "    LUT:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT) << " ms" << endl;
+	cout << "    Magicbits:      " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_magicbits) << " ms" << endl;
+	cout << "    For:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_for) << " ms" << endl;
 }
 
 // Test performance of encoding methods for a random stream of coordinates
@@ -127,18 +113,25 @@ static void Encode_3D_RandomPerf(){
 
 	// Start testing performance
 	morton_LUT.reset(); morton_LUT.start();
-	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_LUT(random_x[i], random_y[i], random_z[i]); }
+	for (size_t i = 0; i < total; i++){ 
+		morton_LUT.stop();
+		uint_fast32_t randx = rand() % MAX;
+		uint_fast32_t randy = rand() % MAX;
+		uint_fast32_t randz = rand() % MAX;
+		morton_LUT.start();
+		morton3D_64_Encode_LUT(randx, randy, randz); 
+	}
 	morton_LUT.stop();
 	cout << "    LUT-based method: " << morton_LUT.getTotalTimeMs() << " ms" << endl;
 
 	morton_magicbits.reset(); morton_magicbits.start();
-	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_magicbits(random_x[i], random_y[i], random_z[i]); }
+	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_magicbits(rand() % MAX, rand() % MAX, rand() % MAX); }
 	morton_magicbits.stop();
 	cout << "    Magic bits-based method: " << morton_magicbits.getTotalTimeMs() << " ms" << endl;
 
 #if MAX<=256
 	morton_for.reset(); morton_for.start();
-	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_for(random_x[i], random_y[i], random_z[i]); }
+	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_for(rand() % MAX, rand() % MAX, rand() % MAX); }
 	morton_for.stop();
 	cout << "    For-loop method: " << morton_for.getTotalTimeMs() << " ms" << endl;
 #else

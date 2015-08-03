@@ -42,19 +42,36 @@ inline uint_fast64_t morton3D_32_Encode_LUT(const uint_fast16_t x, const uint_fa
 }
 
 // encoding with lookup table
-inline uint_fast64_t morton3D_64_Encode_LUT(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
-	uint_fast64_t answer = 
-			 Morton3D_64_encode_z_256[(z >> 16) & 0xFF] |
-			 Morton3D_64_encode_y_256[(y >> 16) & 0xFF] |
-			 Morton3D_64_encode_x_256[(x >> 16) & 0xFF];
+inline uint_fast64_t morton3D_64_Encode_LUT_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+	uint_fast64_t answer =
+		Morton3D_64_encode_z_256[(z >> 16) & 0xFF] |
+		Morton3D_64_encode_y_256[(y >> 16) & 0xFF] |
+		Morton3D_64_encode_x_256[(x >> 16) & 0xFF];
 	answer = answer << 48 |
-			 Morton3D_64_encode_z_256[(z >> 8) & 0xFF] |
-			 Morton3D_64_encode_y_256[(y >> 8) & 0xFF] |
-			 Morton3D_64_encode_x_256[(x >> 8) & 0xFF];
+		Morton3D_64_encode_z_256[(z >> 8) & 0xFF] |
+		Morton3D_64_encode_y_256[(y >> 8) & 0xFF] |
+		Morton3D_64_encode_x_256[(x >> 8) & 0xFF];
 	answer = answer << 24 |
-			 Morton3D_64_encode_z_256[(z)& 0xFF] |
-			 Morton3D_64_encode_y_256[(y)& 0xFF] |
-			 Morton3D_64_encode_x_256[(x)& 0xFF];
+		Morton3D_64_encode_z_256[z & 0xFF] |
+		Morton3D_64_encode_y_256[y & 0xFF] |
+		Morton3D_64_encode_x_256[x & 0xFF];
+	return answer;
+}
+
+// encoding with lookup table
+inline uint_fast64_t morton3D_64_Encode_LUT(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+	uint_fast64_t answer =
+		 (Morton3D_64_encode_x_256[(z >> 16) & 0xFF] << 2)
+		|(Morton3D_64_encode_x_256[(y >> 16) & 0xFF] << 1) 
+		|Morton3D_64_encode_x_256[(x >> 16) & 0xFF];
+	answer = answer << 48 | 
+		 (Morton3D_64_encode_x_256[(z >> 8) & 0xFF] << 2)
+		|(Morton3D_64_encode_x_256[(y >> 8) & 0xFF] << 1)
+		|Morton3D_64_encode_x_256[(x >> 8) & 0xFF];
+	answer = answer << 24 |
+		 (Morton3D_64_encode_x_256[z & 0xFF] << 2)
+		|(Morton3D_64_encode_x_256[y & 0xFF] << 1)
+		|Morton3D_64_encode_x_256[x & 0xFF];
 	return answer;
 }
 
@@ -162,7 +179,7 @@ inline uint_fast32_t morton3D_64_Decode_Z_LUT(const uint_fast64_t morton){
 
 // define default methods
 inline uint_fast64_t morton3D_64_Encode(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
-	return morton3D_64_Encode_LUT(x, y, z);
+	return morton3D_64_Encode_LUT_shifted(x, y, z);
 }
 
 inline uint_fast64_t morton3D_64_Decode(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
