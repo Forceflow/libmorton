@@ -5,16 +5,24 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmorton_test", "libmorton_test.vcxproj", "{2BDE3496-45FB-4466-9BF8-4985988A59EF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2A0BFD39-86EC-4531-86B7-74B3EFAEAA20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2BDE3496-45FB-4466-9BF8-4985988A59EF}.Debug|Win32.ActiveCfg = Debug|Win32
 		{2BDE3496-45FB-4466-9BF8-4985988A59EF}.Debug|Win32.Build.0 = Debug|Win32
+		{2BDE3496-45FB-4466-9BF8-4985988A59EF}.Debug|x64.ActiveCfg = Debug|x64
+		{2BDE3496-45FB-4466-9BF8-4985988A59EF}.Debug|x64.Build.0 = Debug|x64
 		{2BDE3496-45FB-4466-9BF8-4985988A59EF}.Release|Win32.ActiveCfg = Release|Win32
 		{2BDE3496-45FB-4466-9BF8-4985988A59EF}.Release|Win32.Build.0 = Release|Win32
+		{2BDE3496-45FB-4466-9BF8-4985988A59EF}.Release|x64.ActiveCfg = Release|x64
+		{2BDE3496-45FB-4466-9BF8-4985988A59EF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

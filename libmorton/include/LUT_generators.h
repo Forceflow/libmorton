@@ -1,4 +1,4 @@
-#include "../../libmorton/include/morton.h"
+#include "morton3D.h"
 
 
 void generate2D_EncodeLUT(size_t how_many_bits){
