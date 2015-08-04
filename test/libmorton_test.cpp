@@ -8,12 +8,39 @@
 #include "libmorton_test.h"
 // Standard headers
 #include <iostream>
+#include <chrono>
 
 // Configuration
 size_t MAX;
 size_t total; 
 
 using namespace std;
+using namespace std::chrono;
+
+static uint32_t x[4096], c = 362, a = 18705;
+
+void init_rand(uint32_t seed)
+{
+	int i;
+
+	/* Initialize random seed: */
+	srand(seed);
+	for (i = 0; i < 4096; i++)
+		x[i] = rand();
+}
+
+uint32_t rand_cmwc(void)
+{
+	static uint32_t i = 4095;
+	uint64_t t;
+
+	i = (i + 1) & 4095;
+	t = a * x[i];
+	c = (t + c) >> 32;
+	x[i] = 0xffffffff - (uint32_t)t;
+
+	return x[i];
+}
 
 static void check3D_DecodeCorrectness(){
 	printf("++ Checking correctness of decoding methods ... ");
@@ -65,24 +92,50 @@ static void check3D_EncodeCorrectness(){
 	if (failures != 0){printf("Correctness test failed \n");} else {printf("Passed. \n");}
 }
 
-#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+//#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 template <typename morton, typename coord>
-static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord)){
-	Timer t;
-	t.reset(); t.start();
+static uint_fast64_t testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord)){
+	uint_fast64_t duration = 0;
+	volatile morton m;
 	for (size_t i = 0; i < MAX; i++){
 		for (size_t j = 0; j < MAX; j++){
 			for (size_t k = 0; k < MAX; k++){
+				high_resolution_clock::time_point t1 = high_resolution_clock::now();
 				function(i, j, k);
+				__asm{
+					nop
+				}
+				high_resolution_clock::time_point t2 = high_resolution_clock::now();
+				duration += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 			}
 		}
 	}
-	t.stop();
-	return t.getTotalTimeMs();
+	return duration;
+}
+
+//#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+template <typename morton, typename coord>
+static uint_fast64_t testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord)){
+	init_rand(485);
+	uint_fast64_t duration = 0;
+	volatile morton m;
+	for (size_t i = 0; i < total; i++){
+		coord randx = rand_cmwc() % MAX;
+		coord randy = rand_cmwc() % MAX;
+		coord randz = rand_cmwc() % MAX;
+		high_resolution_clock::time_point t1 = high_resolution_clock::now();
+		function(randx, randy, randz);
+		__asm{
+			nop
+		}
+		high_resolution_clock::time_point t2 = high_resolution_clock::now();
+		duration += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+	}
+	return duration;
 }
 
 // Test performance of encoding methods for a linear stream of coordinates
-#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+// #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 static void Encode_3D_LinearPerf(){
 	cout << "++ Encoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 	cout << "    LUT preshifted: " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted) << " ms" << endl;
@@ -92,56 +145,13 @@ static void Encode_3D_LinearPerf(){
 }
 
 // Test performance of encoding methods for a random stream of coordinates
-#pragma optimize( "", off ) // don't optimize this, we're measuring performance here
+// #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 static void Encode_3D_RandomPerf(){
 	cout << "++ Encoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
-
-	// generate random coordinates in double array (because we're fancy like that)
-	cout << "    Generating random coordinates ... ";
-	uint_fast32_t* random_x = (uint_fast32_t *) malloc(total * sizeof(uint_fast32_t *));
-	uint_fast32_t* random_y = (uint_fast32_t *) malloc(total * sizeof(uint_fast32_t *));
-	uint_fast32_t* random_z = (uint_fast32_t *) malloc(total * sizeof(uint_fast32_t *));
-	for (size_t i = 0; i < total; i++){ 
-		random_x[i] = rand() % MAX; 
-		random_y[i] = rand() % MAX; 
-		random_z[i] = rand() % MAX; 
-	}
-	cout << " done." << endl;
-
-	// init timers
-	Timer morton_LUT, morton_magicbits, morton_for;
-
-	// Start testing performance
-	morton_LUT.reset(); morton_LUT.start();
-	for (size_t i = 0; i < total; i++){ 
-		morton_LUT.stop();
-		uint_fast32_t randx = rand() % MAX;
-		uint_fast32_t randy = rand() % MAX;
-		uint_fast32_t randz = rand() % MAX;
-		morton_LUT.start();
-		morton3D_64_Encode_LUT(randx, randy, randz); 
-	}
-	morton_LUT.stop();
-	cout << "    LUT-based method: " << morton_LUT.getTotalTimeMs() << " ms" << endl;
-
-	morton_magicbits.reset(); morton_magicbits.start();
-	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_magicbits(rand() % MAX, rand() % MAX, rand() % MAX); }
-	morton_magicbits.stop();
-	cout << "    Magic bits-based method: " << morton_magicbits.getTotalTimeMs() << " ms" << endl;
-
-#if MAX<=256
-	morton_for.reset(); morton_for.start();
-	for (size_t i = 0; i < total; i++){ morton3D_64_Encode_for(rand() % MAX, rand() % MAX, rand() % MAX); }
-	morton_for.stop();
-	cout << "    For-loop method: " << morton_for.getTotalTimeMs() << " ms" << endl;
-#else
-	cout << "    For-loop method: SKIPPED, TAKES WAY TOO LONG." << endl;
-#endif
-
-	// Free all allocated memory
-	free(random_x);
-	free(random_y); 
-	free(random_z);
+	cout << "    LUT preshifted: " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted) << " ms" << endl;
+	cout << "    LUT:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT) << " ms" << endl;
+	cout << "    Magicbits:      " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_magicbits) << " ms" << endl;
+	cout << "    For:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_for) << " ms" << endl;
 }
 
 // Test performance of decoding a linear set of morton codes
@@ -243,7 +253,7 @@ int main(int argc, char *argv[]) {
 #else
 	cout << "++ Not using hardware intrinsics."<< endl;
 #endif
-	for (int i = 32; i <= 256; i = i * 2){
+	for (int i = 256; i <= 256; i = i * 2){
 		MAX = i;
 		total = MAX*MAX*MAX;
 		// encoding

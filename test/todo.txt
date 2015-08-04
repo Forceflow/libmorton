@@ -19,3 +19,10 @@ VARIABLES
 
 - Intrinsics usage
 
+
+- pseudo random number generator LCG 03
+- grote tabel (L2 cache size) random genator
+
+
+- make sure functions don't get whittled away (no op / volatile?)
+
