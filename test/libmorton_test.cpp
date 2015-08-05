@@ -9,6 +9,7 @@
 // Standard headers
 #include <iostream>
 #include <chrono>
+#include <ctime>
 
 using namespace std;
 using namespace std::chrono;
@@ -91,6 +92,7 @@ static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), i
 template <typename morton, typename coord>
 static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), int times){
 	uint_fast64_t duration = 0;
+	srand(std::time(0));
 	volatile morton m;
 	for (int t = 0; t < times; t++){
 		volatile morton m;
@@ -134,11 +136,28 @@ static void Encode_3D_RandomPerf(){
 template <typename morton, typename coord>
 static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
 	uint_fast64_t duration = 0;
+	srand(std::time(0));
 	coord x, y, z;
 	for (int t = 0; t < times; t++){
 		for (size_t i = 0; i < total; i++){
 			high_resolution_clock::time_point t1 = high_resolution_clock::now();
 			function(i,x,y,z);
+			high_resolution_clock::time_point t2 = high_resolution_clock::now();
+			duration += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+		}
+	}
+	return duration / (float)times;
+}
+
+template <typename morton, typename coord>
+static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
+	uint_fast64_t duration = 0;
+	coord x, y, z;
+	for (int t = 0; t < times; t++){
+		for (size_t i = 0; i < total; i++){
+			morton m = (rand() + rand()) % total;
+			high_resolution_clock::time_point t1 = high_resolution_clock::now();
+			function(i, x, y, z);
 			high_resolution_clock::time_point t2 = high_resolution_clock::now();
 			duration += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 		}
@@ -156,59 +175,18 @@ static void Decode_3D_LinearPerf(){
 	cout << "    64-bit LUT:            " << testDecode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Decode_LUT, times) << " ms" << endl;
 	cout << "    64-bit Magicbits:      " << testDecode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Decode_magicbits, times) << " ms" << endl;
 	cout << "    64-bit For:            " << testDecode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Decode_for, times) << " ms" << endl;
-
 }
 
 // Test performance of decoding a random set of morton codes
 // #pragma optimize( "", off ) // don't optimize this, we're measuring performance here
 static void Decode_3D_RandomPerf(){
 	cout << "++ Decoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
-
-	// generate random coordinates in array
-	cout << "    Generating random morton codes ... ";
-	uint_fast64_t* arr = (uint_fast64_t *)malloc(total * sizeof(uint_fast64_t));
-	for (size_t i = 0; i < total; i++){arr[i] = rand() % total;}
-	cout << " done." << endl;
-
-	// init timers
-	Timer morton_decode_LUT,morton_decode_magicbits, morton_decode_for;
-
-	// Test LUT method
-	morton_decode_LUT.reset(); morton_decode_LUT.start();
-	for (size_t i = 0; i < total; i++){
-		uint_fast64_t current = arr[i];
-		uint_fast32_t x, y, z = 0;
-		morton3D_64_Decode_LUT(current, x, y, z);
-	}
-	morton_decode_LUT.stop();
-	cout << "    LUT method: " << morton_decode_LUT.getTotalTimeMs() << " ms" << endl;
-
-	// Test magicbits method
-	morton_decode_magicbits.reset(); morton_decode_magicbits.start();
-	for (size_t i = 0; i < total; i++){
-		uint_fast64_t current = arr[i];
-		uint_fast32_t x, y, z = 0;
-		morton3D_64_Decode_magicbits(i, x, y, z);
-	}
-	morton_decode_magicbits.stop();
-	cout << "    Magicbits method: " << morton_decode_magicbits.getTotalTimeMs() << " ms" << endl;
-
-#if MAX<=256
-	// Test for loop method
-	morton_decode_for.reset(); morton_decode_for.start();
-	for (size_t i = 0; i < total; i++){
-		uint_fast64_t current = arr[i];
-		unsigned int x, y, z = 0;
-		morton3D_64_Decode_for(current, x, y, z);
-	}
-	morton_decode_for.stop();
-	cout << "    For-loop method: " << morton_decode_for.getTotalTimeMs() << " ms" << endl;
-#else
-	cout << "    For-loop method: SKIPPED, TAKES WAY TOO LONG." << endl;
-#endif
-
-	// Free memory
-	free(arr);
+	//cout << "    32-bit LUT preshifted: " << testDecode_3D_Linear_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Decode_LUT_shifted, times) << " ms" << endl;
+	//cout << "    32-bit LUT:            " << testDecode_3D_Linear_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Decode_LUT, times) << " ms" << endl;
+	//cout << "    64-bit LUT preshifted: " << testDecode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Decode_LUT_shifted, times) << " ms" << endl;
+	cout << "    64-bit LUT:            " << testDecode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Decode_LUT, times) << " ms" << endl;
+	cout << "    64-bit Magicbits:      " << testDecode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Decode_magicbits, times) << " ms" << endl;
+	cout << "    64-bit For:            " << testDecode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Decode_for, times) << " ms" << endl;
 }
 
 int main(int argc, char *argv[]) {
