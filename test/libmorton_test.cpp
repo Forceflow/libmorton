@@ -10,38 +10,14 @@
 #include <iostream>
 #include <chrono>
 
+using namespace std;
+using namespace std::chrono;
+
 // Configuration
 size_t MAX;
 unsigned int times;
 size_t total; 
-
-using namespace std;
-using namespace std::chrono;
-
-static uint32_t x[4096], c = 362, a = 18705;
-
-void init_rand(uint32_t seed)
-{
-	int i;
-
-	/* Initialize random seed: */
-	srand(seed);
-	for (i = 0; i < 4096; i++)
-		x[i] = rand();
-}
-
-uint32_t rand_cmwc(void)
-{
-	static uint32_t i = 4095;
-	uint64_t t;
-
-	i = (i + 1) & 4095;
-	t = a * x[i];
-	c = (t + c) >> 32;
-	x[i] = 0xffffffff - (uint32_t)t;
-
-	return x[i];
-}
+bool x64 = false;
 
 static void check3D_DecodeCorrectness(){
 	printf("++ Checking correctness of decoding methods ... ");
@@ -117,7 +93,6 @@ static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), i
 	uint_fast64_t duration = 0;
 	volatile morton m;
 	for (int t = 0; t < times; t++){
-		init_rand(485);
 		volatile morton m;
 		for (size_t i = 0; i < total; i++){
 			coord randx = rand() % MAX;
@@ -240,6 +215,12 @@ int main(int argc, char *argv[]) {
 	times = 10;
 	cout << "LIBMORTON TEST SUITE" << endl;
 	cout << "--------------------" << endl;
+#ifdef _WIN64 | __x86_64__ | 
+	cout << "++ 64-bit version" << endl;
+	x64 = true;
+#else
+	cout << "++ 32-bit version" << endl;
+#endif
 #ifdef LIBMORTON_USE_INTRINSICS
 	cout << "++ Using hardware intrinsics." << endl;
 #else

@@ -5,6 +5,31 @@
 
 using namespace std;
 
+//static uint32_t x[4096], c = 362, a = 18705;
+//
+//void init_rand(uint32_t seed)
+//{
+//	int i;
+//
+//	/* Initialize random seed: */
+//	srand(seed);
+//	for (i = 0; i < 4096; i++)
+//		x[i] = rand();
+//}
+//
+//uint32_t rand_cmwc(void)
+//{
+//	static uint32_t i = 4095;
+//	uint64_t t;
+//
+//	i = (i + 1) & 4095;
+//	t = a * x[i];
+//	c = (t + c) >> 32;
+//	x[i] = 0xffffffff - (uint32_t)t;
+//
+//	return x[i];
+//}
+
 // Timer struct for easy timing
 struct Timer {
 	clock_t Start;
