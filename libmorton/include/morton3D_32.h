@@ -31,9 +31,9 @@ inline uint_fast32_t morton3D_32_Encode_LUT(const uint_fast16_t x, const uint_fa
 		|(Morton3D_64_encode_x_256[(y >> 8) & 0x000000FF] << 1)
 		| Morton3D_64_encode_x_256[(x >> 8) & 0x000000FF];
 	answer = answer << 24 |
-		 (Morton3D_64_encode_z_256[(z)& 0x000000FF] << 2) 
-		|(Morton3D_64_encode_y_256[(y)& 0x000000FF] << 1)
-		| Morton3D_64_encode_x_256[(x)& 0x000000FF];
+		 (Morton3D_64_encode_z_256[z & 0x000000FF] << 2) 
+		|(Morton3D_64_encode_y_256[y & 0x000000FF] << 1)
+		| Morton3D_64_encode_x_256[x & 0x000000FF];
 	return answer;
 }
 
