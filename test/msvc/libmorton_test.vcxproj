@@ -122,7 +122,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\libmorton\include\LUT_generators.h" />
-    <ClInclude Include="..\..\libmorton\include\morton2D.h" />
+    <ClInclude Include="..\..\libmorton\include\morton2D_32.h" />
+    <ClInclude Include="..\..\libmorton\include\morton2D_64.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_32.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_64.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_lookup_tables.h" />
