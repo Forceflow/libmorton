@@ -25,12 +25,17 @@ static void check3D_DecodeCorrectness(){
 	size_t failures = 0;
 	for (size_t i = 0; i < 4096; i++){
 		uint_fast32_t correct_x = control_coords[i][0], correct_y = control_coords[i][1], correct_z = control_coords[i][2];
+		uint_fast32_t x_result_lutshift, y_result_lutshift, z_result_lutshift;
 		uint_fast32_t x_result_lut, y_result_lut, z_result_lut;
 		uint_fast32_t x_result_magicbits, y_result_magicbits, z_result_magicbits;
 		uint_fast32_t x_result_for, y_result_for, z_result_for;
+		morton3D_64_Decode_LUT_shifted(i, x_result_lutshift, y_result_lutshift, z_result_lutshift);
 		morton3D_64_Decode_LUT(i, x_result_lut, y_result_lut, z_result_lut);
 		morton3D_64_Decode_magicbits(i, x_result_magicbits, y_result_magicbits, z_result_magicbits);
 		morton3D_64_Decode_for(i, x_result_for, y_result_for, z_result_for);
+		if (x_result_lutshift != correct_x || y_result_lutshift != correct_y || z_result_lutshift != correct_z)
+		{printf("    Problem with correctness of for Shifted LUT-table based decoding: %u, %u, %u does not match %u,%u,%u",
+		x_result_lutshift, y_result_lutshift, z_result_lutshift, correct_x, correct_y, correct_z); failures++;}
 		if (x_result_lut != correct_x || y_result_lut != correct_y || z_result_lut != correct_z)
 		{printf("    Problem with correctness of for LUT-table based decoding: %u, %u, %u does not match %u,%u,%u",
 		x_result_lut, y_result_lut, z_result_lut, correct_x, correct_y, correct_z); failures++;}
