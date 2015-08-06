@@ -92,14 +92,15 @@ static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), i
 template <typename morton, typename coord>
 static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), int times){
 	uint_fast64_t duration = 0;
-	srand(std::time(0));
+	init_randcmwc(std::time(0));
+	coord maximum = ~0;
 	volatile morton m;
 	for (int t = 0; t < times; t++){
 		volatile morton m;
 		for (size_t i = 0; i < total; i++){
-			coord randx = rand() % MAX;
-			coord randy = rand() % MAX;
-			coord randz = rand() % MAX;
+			coord randx = rand_cmwc() % maximum;
+			coord randy = rand_cmwc() % maximum;
+			coord randz = rand_cmwc() % maximum;
 			high_resolution_clock::time_point t1 = high_resolution_clock::now();
 			m = function(randx, randy, randz);
 			high_resolution_clock::time_point t2 = high_resolution_clock::now();
@@ -152,10 +153,12 @@ static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coo
 template <typename morton, typename coord>
 static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
 	uint_fast64_t duration = 0;
+	init_randcmwc(std::time(0));
 	coord x, y, z;
+	morton maximum = ~0; // maximum for the random morton codes
 	for (int t = 0; t < times; t++){
 		for (size_t i = 0; i < total; i++){
-			morton m = (rand() + rand()) % total;
+			morton m = (rand() + rand()) % maximum;
 			high_resolution_clock::time_point t1 = high_resolution_clock::now();
 			function(i, x, y, z);
 			high_resolution_clock::time_point t2 = high_resolution_clock::now();
