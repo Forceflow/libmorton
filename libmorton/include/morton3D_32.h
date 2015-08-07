@@ -144,4 +144,4 @@ inline void morton3D_32_Decode_LUT(const uint_fast32_t morton, uint_fast16_t& x,
 #endif
 }
 
-#endif
+#endif // MORTON3D_32_H_
