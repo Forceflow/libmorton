@@ -95,7 +95,6 @@ inline void morton3D_32_Decode_LUT_shifted(const uint_fast32_t morton, uint_fast
 #endif
 }
 
-// make that unshifted
 inline void morton3D_32_Decode_LUT(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z){
 	x = 0; y = 0; z = 0;
 #ifdef LIBMORTON_USE_INTRINSICS

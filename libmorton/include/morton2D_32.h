@@ -8,6 +8,12 @@
 #include <intrin.h>
 #endif
 
+//// 32-bit morton code for loop
+//inline uint_fast32_t morton2D_32_Encode_magicbits(const uint16_t x, const uint16_t y){
+//	
+//	return answer;
+//}
+
 // 32-bit morton code for loop
 inline uint_fast32_t morton2D_32_Encode_for(const uint16_t x, const uint16_t y){
 	uint_fast32_t answer = 0;

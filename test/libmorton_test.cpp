@@ -198,10 +198,14 @@ static void Decode_3D_RandomPerf(){
 }
 
 int main(int argc, char *argv[]) {
+
+
+	uint_fast64_t s = morton2D_64_splitby2(539362375);
+
 	times = 10;
 	cout << "LIBMORTON TEST SUITE" << endl;
 	cout << "--------------------" << endl;
-#ifdef _WIN64 | __x86_64__ | 
+#ifdef _WIN64 | __x86_64__  
 	cout << "++ 64-bit version" << endl;
 	x64 = true;
 #else

@@ -127,6 +127,7 @@
     <ClInclude Include="..\..\libmorton\include\morton3D_32.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_64.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_lookup_tables.h" />
+    <ClInclude Include="..\..\libmorton\include\morton_common.h" />
     <ClInclude Include="..\libmorton_test.h" />
     <ClInclude Include="..\util.h" />
   </ItemGroup>

@@ -13,6 +13,7 @@ using namespace std;
 
 //#define LIBMORTON_USE_INTRINSICS
 
+// Encoded with 3 pre-shifted lookup tables for x,y,z
 inline uint_fast64_t morton3D_64_Encode_LUT_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
 	uint_fast64_t answer =
 		Morton3D_64_encode_z_256[(z >> 16) & 0x000000FF] |
@@ -29,7 +30,7 @@ inline uint_fast64_t morton3D_64_Encode_LUT_shifted(const uint_fast32_t x, const
 	return answer;
 }
 
-// encoding with lookup table
+// Encoding with one lookup table
 inline uint_fast64_t morton3D_64_Encode_LUT(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
 	uint_fast64_t answer =
 		(Morton3D_64_encode_x_256[(z >> 16) & 0x000000FF] << 2)
@@ -54,8 +55,6 @@ inline void morton3D_64_Decode_LUT_shifted(const uint_fast64_t morton, uint_fast
 	// use bit manipulation intrinsic to find out first bit, for early termination
 	unsigned long firstbit_location;
 #if _MSC_VER
-	// are the casts necessary? and the blanking in the second one?
-	// is it cheaper to do this using the 64 bit one
 	if (_BitScanReverse(&firstbit_location, (morton >> 32))){ // check first part of morton code
 		firstbit_location += 32;
 	} else if ( ! _BitScanReverse(&firstbit_location, (morton & 0xFFFFFFFF))){ // also test last part of morton code
@@ -91,7 +90,6 @@ inline void morton3D_64_Decode_LUT_shifted(const uint_fast64_t morton, uint_fast
 	z = z | (Morton3D_64_decode_z_512[((morton >> 54) & 0x000001ff)] << 18);
 	return;
 #else
-	// standard portable version
 	x = 0 | Morton3D_64_decode_x_512[morton & 0x000001ff]
 		| (Morton3D_64_decode_x_512[((morton >> 9) & 0x000001ff)] << 3)
 		| (Morton3D_64_decode_x_512[((morton >> 18) & 0x000001ff)] << 6)
@@ -123,8 +121,6 @@ inline void morton3D_64_Decode_LUT(const uint_fast64_t morton, uint_fast32_t& x,
 	// use bit manipulation intrinsic to find out first bit, for early termination
 	unsigned long firstbit_location;
 #if _MSC_VER
-	// are the casts necessary? and the blanking in the second one?
-	// is it cheaper to do this using the 64 bit one
 	if (_BitScanReverse(&firstbit_location, (morton >> 32))){ // check first part of morton code
 		firstbit_location += 32;
 	}
@@ -198,22 +194,36 @@ inline uint_fast32_t morton3D_64_Decode_X_LUT(const uint_fast64_t morton){
 
 inline uint_fast32_t morton3D_64_Decode_Y_LUT(const uint_fast64_t morton){
 	return 0 | Morton3D_64_decode_y_512[morton & 0x1ff]
-		| (Morton3D_64_decode_y_512[((morton >> 9) & 0x1ff)] << 3)
-		| (Morton3D_64_decode_y_512[((morton >> 18) & 0x1ff)] << 6)
-		| (Morton3D_64_decode_y_512[((morton >> 27) & 0x1ff)] << 9)
-		| (Morton3D_64_decode_y_512[((morton >> 36) & 0x1ff)] << 12)
-		| (Morton3D_64_decode_y_512[((morton >> 46) & 0x1ff)] << 15)
-		| (Morton3D_64_decode_y_512[((morton >> 54) & 0x1ff)] << 18);
+		| (Morton3D_64_decode_y_512[((morton >> 9) & 0x000001ff)] << 3)
+		| (Morton3D_64_decode_y_512[((morton >> 18) & 0x000001ff)] << 6)
+		| (Morton3D_64_decode_y_512[((morton >> 27) & 0x000001ff)] << 9)
+		| (Morton3D_64_decode_y_512[((morton >> 36) & 0x000001ff)] << 12)
+		| (Morton3D_64_decode_y_512[((morton >> 46) & 0x000001ff)] << 15)
+		| (Morton3D_64_decode_y_512[((morton >> 54) & 0x000001ff)] << 18);
 }
 
 inline uint_fast32_t morton3D_64_Decode_Z_LUT(const uint_fast64_t morton){
 	return 0 | Morton3D_64_decode_z_512[morton & 0x1ff]
-		| (Morton3D_64_decode_z_512[((morton >> 9) & 0x1ff)] << 3)
-		| (Morton3D_64_decode_z_512[((morton >> 18) & 0x1ff)] << 6)
-		| (Morton3D_64_decode_z_512[((morton >> 27) & 0x1ff)] << 9)
-		| (Morton3D_64_decode_z_512[((morton >> 36) & 0x1ff)] << 12)
-		| (Morton3D_64_decode_z_512[((morton >> 46) & 0x1ff)] << 15)
-		| (Morton3D_64_decode_z_512[((morton >> 54) & 0x1ff)] << 18);
+		| (Morton3D_64_decode_z_512[((morton >> 9) & 0x000001ff)] << 3)
+		| (Morton3D_64_decode_z_512[((morton >> 18) & 0x000001ff)] << 6)
+		| (Morton3D_64_decode_z_512[((morton >> 27) & 0x000001ff)] << 9)
+		| (Morton3D_64_decode_z_512[((morton >> 36) & 0x000001ff)] << 12)
+		| (Morton3D_64_decode_z_512[((morton >> 46) & 0x000001ff)] << 15)
+		| (Morton3D_64_decode_z_512[((morton >> 54) & 0x000001ff)] << 18);
+}
+
+inline uint64_t splitBy3(const uint32_t a){
+	uint64_t x = a;
+	x = (x | x << 32) & 0x1f00000000ffff;
+	x = (x | x << 16) & 0x1f0000ff0000ff;
+	x = (x | x << 8) & 0x100f00f00f00f00f;
+	x = (x | x << 4) & 0x10c30c30c30c30c3;
+	x = (x | x << 2) & 0x1249249249249249;
+	return x;
+}
+
+inline uint64_t morton3D_64_Encode_magicbits(const uint32_t x, const uint32_t y, const uint32_t z){
+	return 0 | splitBy3(x) | splitBy3(y) << 1 | splitBy3(z) << 2;
 }
 
 inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const uint32_t z){
@@ -226,20 +236,6 @@ inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const
 	return answer;
 }
 
-inline uint64_t splitBy3(const uint32_t a){
-	uint64_t x = a & 0x1fffff;
-	x = (x | x << 32) & 0x1f00000000ffff;
-	x = (x | x << 16) & 0x1f0000ff0000ff;
-	x = (x | x << 8) & 0x100f00f00f00f00f;
-	x = (x | x << 4) & 0x10c30c30c30c30c3;
-	x = (x | x << 2) & 0x1249249249249249;
-	return x;
-}
-
-inline uint64_t morton3D_64_Encode_magicbits(const uint32_t x, const uint32_t y, const uint32_t z){
-	uint64_t answer = 0 | splitBy3(x) | splitBy3(y) << 1 | splitBy3(z) << 2;
-	return answer;
-}
 
 inline uint32_t getThirdBits(const uint64_t a){
 	uint64_t x = a & 0x9249249249249249;
