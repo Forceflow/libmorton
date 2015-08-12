@@ -50,18 +50,8 @@ inline uint32_t morton3D_32_Encode_for(const uint16_t x, const uint16_t y, const
 inline void morton3D_32_Decode_LUT_shifted(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z){
 	x = 0; y = 0; z = 0;
 #ifdef LIBMORTON_USE_INTRINSICS
-	// For Microsoft compilers use _BitScanForward & _BitScanReverse. For GCC use __builtin_ffs, __builtin_clz, __builtin_ctz.
-
-	// use bit manipulation intrinsic to find out first bit, for early termination
 	unsigned long firstbit_location;
-#if _MSC_VER
-	// are the casts necessary? and the blanking in the second one?
-	// Does the pragma stop the compiler from optimizing this?
-	// is it cheaper to do this using the 64 bit one
-	if (!_BitScanReverse(&firstbit_location, morton)){ // also test last part of morton code
-		return;
-	}
-#endif
+	if (!_BitScanReverse(&firstbit_location, morton)) return;
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
 	y = y | Morton3D_64_decode_y_512[morton & 0x000001ff];
 	z = z | Morton3D_64_decode_z_512[morton & 0x000001ff];
@@ -98,18 +88,8 @@ inline void morton3D_32_Decode_LUT_shifted(const uint_fast32_t morton, uint_fast
 inline void morton3D_32_Decode_LUT(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z){
 	x = 0; y = 0; z = 0;
 #ifdef LIBMORTON_USE_INTRINSICS
-	// For Microsoft compilers use _BitScanForward & _BitScanReverse. For GCC use __builtin_ffs, __builtin_clz, __builtin_ctz.
-
-	// use bit manipulation intrinsic to find out first bit, for early termination
 	unsigned long firstbit_location;
-#if _MSC_VER
-	// are the casts necessary? and the blanking in the second one?
-	// Does the pragma stop the compiler from optimizing this?
-	// is it cheaper to do this using the 64 bit one
-	if (!_BitScanReverse(&firstbit_location, morton)){ // also test last part of morton code
-		return;
-	}
-#endif
+	if (!_BitScanReverse(&firstbit_location, morton)) return;
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
 	y = y | Morton3D_64_decode_x_512[(morton >> 1) & 0x000001ff];
 	z = z | Morton3D_64_decode_x_512[(morton >> 2) & 0x000001ff];

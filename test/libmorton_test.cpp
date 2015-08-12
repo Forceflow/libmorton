@@ -3,6 +3,8 @@
 //
 // Jeroen Baert 2015
 
+#define LIBMORTON_USE_INTRINSICS
+
 // Utility headers
 #include "util.h"
 #include "libmorton_test.h"
@@ -77,10 +79,15 @@ template <typename morton, typename coord>
 static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), int times){
 	uint_fast64_t duration = 0;
 	volatile morton m;
+
+	// we test a linear set of coordinates in the middle of the spanned interval
+	coord start = coord(~0) / (float)2;
+	coord stop = start + MAX;
+
 	for (int t = 0; t < times; t++){
-		for (size_t i = 0; i < MAX; i++){
-			for (size_t j = 0; j < MAX; j++){
-				for (size_t k = 0; k < MAX; k++){
+		for (size_t i = start; i < stop; i++){
+			for (size_t j = start; j < stop; j++){
+				for (size_t k = start; k < stop; k++){
 					high_resolution_clock::time_point t1 = high_resolution_clock::now();
 					m = function(i, j, k);
 					high_resolution_clock::time_point t2 = high_resolution_clock::now();
@@ -140,10 +147,14 @@ static void Encode_3D_RandomPerf(){
 template <typename morton, typename coord>
 static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
 	uint_fast64_t duration = 0;
-	srand(std::time(0));
 	coord x, y, z;
+
+	// we test a linear set of morton codes in the middle of the spanned interval
+	morton start = coord(~0) / (float)2;
+	morton stop = start + total;
+
 	for (int t = 0; t < times; t++){
-		for (size_t i = 0; i < total; i++){
+		for (morton i = start; i < stop; i++){
 			high_resolution_clock::time_point t1 = high_resolution_clock::now();
 			function(i,x,y,z);
 			high_resolution_clock::time_point t2 = high_resolution_clock::now();
@@ -161,7 +172,7 @@ static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coo
 	morton maximum = ~0; // maximum for the random morton codes
 	for (int t = 0; t < times; t++){
 		for (size_t i = 0; i < total; i++){
-			morton m = (rand() + rand()) % maximum;
+			morton m = (rand_cmwc() + rand_cmwc()) % maximum;
 			high_resolution_clock::time_point t1 = high_resolution_clock::now();
 			function(i, x, y, z);
 			high_resolution_clock::time_point t2 = high_resolution_clock::now();
@@ -221,13 +232,13 @@ int main(int argc, char *argv[]) {
 	times = 10;
 	printHeader();
 	cout << "++ Running each test " << times << " and averaging results" << endl;
-	for (int i = 32; i <= 512; i = i * 2){
+	for (int i = 256; i <= 512; i = i * 2){
 		MAX = i;
 		total = MAX*MAX*MAX;
 		// encoding
-		check3D_EncodeCorrectness();
-		Encode_3D_LinearPerf();
-		Encode_3D_RandomPerf();
+		//check3D_EncodeCorrectness();
+		//Encode_3D_LinearPerf();
+		//Encode_3D_RandomPerf();
 		// decoding
 		check3D_DecodeCorrectness();
 		Decode_3D_LinearPerf();
