@@ -54,7 +54,7 @@ inline uint64_t splitBy3(const uint32_t a){
 
 // ENCODE 3D 64-bit morton code : Magic bits
 inline uint64_t morton3D_64_Encode_magicbits(const uint32_t x, const uint32_t y, const uint32_t z){
-	return 0 | splitBy3(x) | splitBy3(y) << 1 | splitBy3(z) << 2;
+	return splitBy3(x) | (splitBy3(y) << 1) | (splitBy3(z) << 2);
 }
 
 // ENCODE 3D 64-bit morton code : For loop
