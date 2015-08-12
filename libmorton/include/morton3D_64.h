@@ -187,36 +187,6 @@ inline void morton3D_64_Decode_LUT(const uint_fast64_t morton, uint_fast32_t& x,
 #endif
 }
 
-inline uint_fast32_t morton3D_64_Decode_X_LUT(const uint_fast64_t morton){
-	return 0 | Morton3D_64_decode_x_512[morton & 0x000001ff]
-		| (Morton3D_64_decode_x_512[((morton >> 9) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_x_512[((morton >> 18) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_x_512[((morton >> 27) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_x_512[((morton >> 36) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_x_512[((morton >> 46) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_x_512[((morton >> 54) & 0x000001ff)] << 18);
-}
-
-inline uint_fast32_t morton3D_64_Decode_Y_LUT(const uint_fast64_t morton){
-	return 0 | Morton3D_64_decode_y_512[morton & 0x1ff]
-		| (Morton3D_64_decode_y_512[((morton >> 9) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_y_512[((morton >> 18) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_y_512[((morton >> 27) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_y_512[((morton >> 36) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_y_512[((morton >> 46) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_y_512[((morton >> 54) & 0x000001ff)] << 18);
-}
-
-inline uint_fast32_t morton3D_64_Decode_Z_LUT(const uint_fast64_t morton){
-	return 0 | Morton3D_64_decode_z_512[morton & 0x1ff]
-		| (Morton3D_64_decode_z_512[((morton >> 9) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_z_512[((morton >> 18) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_z_512[((morton >> 27) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_z_512[((morton >> 36) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_z_512[((morton >> 46) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_z_512[((morton >> 54) & 0x000001ff)] << 18);
-}
-
 inline uint32_t getThirdBits(const uint64_t a){
 	uint64_t x = a & 0x9249249249249249;
 	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
