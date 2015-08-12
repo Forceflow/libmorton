@@ -3,6 +3,7 @@
 #define MORTON3D_64_H_
 
 #include <stdint.h>
+#include <algorithm>
 #include "morton3D_lookup_tables.h"
 #include "morton_common.h"
 
@@ -60,7 +61,17 @@ inline uint64_t morton3D_64_Encode_magicbits(const uint32_t x, const uint32_t y,
 // ENCODE 3D 64-bit morton code : For loop
 inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const uint32_t z){
 	uint64_t answer = 0;
-	for (uint64_t i = 0; i < 21; ++i) {
+	unsigned int checkbits = 21;
+#ifdef LIBMORTON_EARLY_TERMINATION
+	unsigned long x_max = 0;
+	unsigned long y_max = 0;
+	unsigned long z_max = 0;
+	findFirstSetBit32(x, &x_max);
+	findFirstSetBit32(y, &y_max);
+	findFirstSetBit32(z, &z_max);
+	checkbits = max(z_max,max(x_max, y_max)) + 1;
+#endif
+	for (uint64_t i = 0; i < checkbits; ++i) {
 		answer |= ((x & (0x1 << i)) << 2 * i)
 			| ((y & (0x1 << i)) << ((2 * i) + 1))
 			| ((z & (0x1 << i)) << ((2 * i) + 2));
@@ -71,7 +82,7 @@ inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const
 // DECODE 3D 64-bit morton code : Shifted LUT
 inline void morton3D_64_Decode_LUT_shifted(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
 	x = 0; y = 0; z = 0;
-#ifdef LIBMORTON_USE_INTRINSICS
+#ifdef LIBMORTON_EARLY_TERMINATION
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
@@ -130,7 +141,7 @@ inline void morton3D_64_Decode_LUT_shifted(const uint_fast64_t morton, uint_fast
 // DECODE 3D 64-bit morton code : LUT
 inline void morton3D_64_Decode_LUT(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
 	x = 0; y = 0; z = 0;
-#ifdef LIBMORTON_USE_INTRINSICS
+#ifdef LIBMORTON_EARLY_TERMINATION
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
@@ -209,7 +220,7 @@ inline void morton3D_64_Decode_for(const uint64_t morton, uint32_t& x, uint32_t&
 	y = 0;
 	z = 0;
 	unsigned int checkbits = 21;
-#ifdef LIBMORTON_USE_INTRINSICS
+#ifdef LIBMORTON_EARLY_TERMINATION
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
 	checkbits = (firstbit_location / (float) 3.0);

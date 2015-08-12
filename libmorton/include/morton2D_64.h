@@ -18,6 +18,7 @@ inline uint_fast64_t morton2D_64_Encode_for(const uint_fast32_t x, const uint_fa
 	return answer;
 }
 
+// ENCODE 2D 64-bit morton code : Magic bits (helper method)
 inline uint64_t morton2D_64_splitby2(const uint32_t a){
 	uint64_t x = a;
 	x = (x | x << 32) & 0x00000000FFFFFFFF;
@@ -31,7 +32,7 @@ inline uint64_t morton2D_64_splitby2(const uint32_t a){
 
 // ENCODE 2D 64-bit morton code : Magic bits
 inline uint64_t morton2D_64_Encode_magicbits(const uint32_t x, const uint32_t y){
-	return 0 | morton2D_64_splitby2(x) | morton2D_64_splitby2(y) << 1;
+	return morton2D_64_splitby2(x) | (morton2D_64_splitby2(y) << 1);
 }
 
 #endif // MORTON2D_64_H_

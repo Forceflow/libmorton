@@ -11,7 +11,7 @@
 
 using namespace std;
 
-// #define LIBMORTON_USE_INTRINSICS
+// #define LIBMORTON_EARLY_TERMINATION
 
 inline uint_fast32_t morton3D_32_Encode_LUT_shifted(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
 	uint_fast32_t answer =
@@ -49,7 +49,7 @@ inline uint32_t morton3D_32_Encode_for(const uint16_t x, const uint16_t y, const
 
 inline void morton3D_32_Decode_LUT_shifted(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z){
 	x = 0; y = 0; z = 0;
-#ifdef LIBMORTON_USE_INTRINSICS
+#ifdef LIBMORTON_EARLY_TERMINATION
 	unsigned long firstbit_location;
 	if (!_BitScanReverse(&firstbit_location, morton)) return;
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
@@ -87,7 +87,7 @@ inline void morton3D_32_Decode_LUT_shifted(const uint_fast32_t morton, uint_fast
 
 inline void morton3D_32_Decode_LUT(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z){
 	x = 0; y = 0; z = 0;
-#ifdef LIBMORTON_USE_INTRINSICS
+#ifdef LIBMORTON_EARLY_TERMINATION
 	unsigned long firstbit_location;
 	if (!_BitScanReverse(&firstbit_location, morton)) return;
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
