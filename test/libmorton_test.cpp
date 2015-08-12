@@ -57,13 +57,11 @@ static void check3D_EncodeCorrectness(){
 			for (size_t k = 0; k < 16; k++){
 				// fetch correct code
 				uint_fast64_t correct_code = control_morton[k + (j * 16) + (i * 16 * 16)];
-
 				// result all our encoding methods give
 				uint_fast64_t lut_shifted_result = morton3D_64_Encode_LUT_shifted(i, j, k);
 				uint_fast64_t lut_result = morton3D_64_Encode_LUT(i, j, k);
 				uint_fast64_t magicbits_result = morton3D_64_Encode_magicbits(i, j, k);
 				uint_fast64_t for_result = morton3D_64_Encode_for(i, j, k);
-
 				// error messages if any code does not match correct result.
 				if (lut_shifted_result != correct_code){ printf("    Problem with correctness of LUT based encoding: %zu does not match %zu \n", lut_shifted_result, correct_code); failures++; }
 				if (lut_result != correct_code){printf("    Problem with correctness of LUT based encoding: %zu does not match %zu \n", lut_result, correct_code); failures++; }
@@ -197,25 +195,31 @@ static void Decode_3D_RandomPerf(){
 	cout << "    64-bit For:            " << testDecode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Decode_for, times) << " ms" << endl;
 }
 
-int main(int argc, char *argv[]) {
-
-
-	uint_fast64_t s = morton2D_64_splitby2(539362375);
-
-	times = 10;
+void printHeader(){
 	cout << "LIBMORTON TEST SUITE" << endl;
 	cout << "--------------------" << endl;
-#ifdef _WIN64 | __x86_64__  
+#ifdef _WIN64 || __x86_64__  
 	cout << "++ 64-bit version" << endl;
 	x64 = true;
 #else
 	cout << "++ 32-bit version" << endl;
 #endif
+#if _MSC_VER
+	cout << "++ Compiled using MSVC" << endl;
+#elif __GNUC__
+	cout << "++ Compiled using GCC" << endl;
+#endif
 #ifdef LIBMORTON_USE_INTRINSICS
 	cout << "++ Using hardware intrinsics." << endl;
 #else
-	cout << "++ Not using hardware intrinsics."<< endl;
+	cout << "++ Not using hardware intrinsics." << endl;
 #endif
+}
+
+int main(int argc, char *argv[]) {
+	uint_fast64_t s = morton2D_64_splitby2(539362375);
+	times = 10;
+	printHeader();
 	cout << "++ Running each test " << times << " and averaging results" << endl;
 	for (int i = 32; i <= 512; i = i * 2){
 		MAX = i;

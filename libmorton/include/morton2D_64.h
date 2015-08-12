@@ -8,7 +8,7 @@
 #include <intrin.h>
 #endif
 
-// 64-bit morton code for loop
+// ENCODE 2D 64-bit morton code : For Loop
 inline uint_fast64_t morton2D_64_Encode_for(const uint_fast32_t x, const uint_fast32_t y){
 	uint_fast64_t answer = 0;
 	for (uint_fast64_t i = 0; i < 32; ++i) {
@@ -29,6 +29,7 @@ inline uint64_t morton2D_64_splitby2(const uint32_t a){
 	return x;
 }
 
+// ENCODE 2D 64-bit morton code : Magic bits
 inline uint64_t morton2D_64_Encode_magicbits(const uint32_t x, const uint32_t y){
 	return 0 | morton2D_64_splitby2(x) | morton2D_64_splitby2(y) << 1;
 }
