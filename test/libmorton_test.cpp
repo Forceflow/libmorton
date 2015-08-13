@@ -224,11 +224,10 @@ void printHeader(){
 }
 
 int main(int argc, char *argv[]) {
-	uint_fast64_t s = morton2D_64_splitby2(539362375);
 	times = 20;
 	printHeader();
-	cout << "++ Running each test " << times << " and averaging results" << endl;
-	for (int i = 64; i <= 512; i = i * 2){
+	cout << "++ Running each test " << times << " times and averaging results" << endl;
+	for (int i = 128; i <= 512; i = i * 2){
 		MAX = i;
 		total = MAX*MAX*MAX;
 		// encoding
