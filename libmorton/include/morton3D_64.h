@@ -43,8 +43,8 @@ inline uint_fast64_t morton3D_64_Encode_LUT(const uint_fast32_t x, const uint_fa
 	return answer;
 }
 
-inline uint64_t splitBy3(const uint32_t a){
-	uint64_t x = a;
+inline uint_fast64_t splitBy3(const uint_fast32_t a){
+	uint_fast64_t x = a;
 	x = (x | x << 32) & 0x1f00000000ffff;
 	x = (x | x << 16) & 0x1f0000ff0000ff;
 	x = (x | x << 8) & 0x100f00f00f00f00f;
@@ -54,13 +54,13 @@ inline uint64_t splitBy3(const uint32_t a){
 }
 
 // ENCODE 3D 64-bit morton code : Magic bits
-inline uint64_t morton3D_64_Encode_magicbits(const uint32_t x, const uint32_t y, const uint32_t z){
+inline uint_fast64_t morton3D_64_Encode_magicbits(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
 	return splitBy3(x) | (splitBy3(y) << 1) | (splitBy3(z) << 2);
 }
 
 // ENCODE 3D 64-bit morton code : For loop
-inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const uint32_t z){
-	uint64_t answer = 0;
+inline uint_fast64_t morton3D_64_Encode_for(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+	uint_fast64_t answer = 0;
 	unsigned int checkbits = 21;
 #ifdef LIBMORTON_EARLY_TERMINATION
 	unsigned long x_max = 0;
@@ -71,7 +71,7 @@ inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const
 	findFirstSetBit32(z, &z_max);
 	checkbits = max(z_max,max(x_max, y_max)) + 1;
 #endif
-	for (uint64_t i = 0; i <= checkbits; ++i) {
+	for (uint_fast64_t i = 0; i <= checkbits; ++i) {
 		answer |= ((x & (0x1 << i)) << 2 * i)
 			| ((y & (0x1 << i)) << ((2 * i) + 1))
 			| ((z & (0x1 << i)) << ((2 * i) + 2));
@@ -198,24 +198,24 @@ inline void morton3D_64_Decode_LUT(const uint_fast64_t morton, uint_fast32_t& x,
 #endif
 }
 
-inline uint32_t getThirdBits(const uint64_t a){
-	uint64_t x = a & 0x9249249249249249;
+inline uint_fast32_t getThirdBits(const uint_fast64_t a){
+	uint_fast64_t x = a & 0x9249249249249249;
 	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
 	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
 	x = (x ^ (x >> 8)) & 0xFF0000FF0000FF;
 	x = (x ^ (x >> 16)) & 0xFFFF;
-	return (uint32_t)x;
+	return (uint_fast32_t)x;
 }
 
 // DECODE 3D 64-bit morton code : Magic bits
-inline void morton3D_64_Decode_magicbits(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
+inline void morton3D_64_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
 	x = getThirdBits(morton);
 	y = getThirdBits(morton >> 1);
 	z = getThirdBits(morton >> 2);
 }
 
 // DECODE 3D 64-bit morton code : For loop
-inline void morton3D_64_Decode_for(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z){
+inline void morton3D_64_Decode_for(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
 	x = 0;
 	y = 0;
 	z = 0;
@@ -225,7 +225,7 @@ inline void morton3D_64_Decode_for(const uint64_t morton, uint32_t& x, uint32_t&
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
 	checkbits = (firstbit_location / (float) 3.0);
 #endif
-	for (uint64_t i = 0; i <= checkbits; i++) {
+	for (uint_fast64_t i = 0; i <= checkbits; i++) {
 		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
 		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
 		z |= (morton & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);

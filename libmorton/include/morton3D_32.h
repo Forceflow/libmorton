@@ -37,9 +37,9 @@ inline uint_fast32_t morton3D_32_Encode_LUT(const uint_fast16_t x, const uint_fa
 	return answer;
 }
 
-inline uint32_t morton3D_32_Encode_for(const uint16_t x, const uint16_t y, const uint16_t z){
-	uint32_t answer = 0;
-	for (uint32_t i = 0; i < 10; ++i) {
+inline uint_fast32_t morton3D_32_Encode_for(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
+	uint_fast32_t answer = 0;
+	for (uint_fast32_t i = 0; i < 10; ++i) {
 		answer |= ((x & (0x1 << i)) << 2 * i)
 			| ((y & (0x1 << i)) << ((2 * i) + 1))
 			| ((z & (0x1 << i)) << ((2 * i) + 2));
