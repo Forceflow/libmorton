@@ -71,7 +71,7 @@ inline uint64_t morton3D_64_Encode_for(const uint32_t x, const uint32_t y, const
 	findFirstSetBit32(z, &z_max);
 	checkbits = max(z_max,max(x_max, y_max)) + 1;
 #endif
-	for (uint64_t i = 0; i < checkbits; ++i) {
+	for (uint64_t i = 0; i <= checkbits; ++i) {
 		answer |= ((x & (0x1 << i)) << 2 * i)
 			| ((y & (0x1 << i)) << ((2 * i) + 1))
 			| ((z & (0x1 << i)) << ((2 * i) + 2));
