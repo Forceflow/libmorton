@@ -22,9 +22,9 @@ inline bool findFirstSetBit64(const uint_fast64_t x, unsigned long* firstbit_loc
 	return _BitScanReverse64(firstbit_location, x);
 #elif _MSC_VER && _WIN32
 	firstbit_location = 0;
-	if (_BitScanReverse(&firstbit_location, (x >> 32))){ // check first part
+	if (_BitScanReverse(firstbit_location, (x >> 32))){ // check first part
 		firstbit_location += 32;
-	} else if ( ! _BitScanReverse(&firstbit_location, (x & 0xFFFFFFFF))){ // also test last part
+	} else if ( ! _BitScanReverse(firstbit_location, (x & 0xFFFFFFFF))){ // also test last part
 		return 0;
 	}
 	return true;
