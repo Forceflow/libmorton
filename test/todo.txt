@@ -1,28 +1,17 @@
 - Check other intrinsics
-- Work early termination intrinsics into for loop with #define
-- Check uint_fast! Should make no difference, and help on other systems
-- Some flexibility in generating LUT Tables
+- (go to 128 bit?)
 
+TIMINGS
+- Toch proberen random number time weg te halen ... (check of het zelfde is met niet=-random getallen)
+- make sure functions don't get whittled away (runningsum etc..)
 
-VARIABLES
-
-- 2D vs 3D
-- 32-bit or 64-bit morton codes (go to 128 bit?)
-
-- Benchmarks
--- Linear vs Random
-
-- LUT tables
+LUTS
 -- How many precomputed bits
+-- LUT table generators flexibility
 -- Size table
--- difference shifted / pre-shifted?
-
-- Intrinsics usage
 
 
+RANDOM NUMBERS
 - pseudo random number generator LCG 03
 - grote tabel (L2 cache size) random genator
-
-
-- make sure functions don't get whittled away (no op / volatile?)
 

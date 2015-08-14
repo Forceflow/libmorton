@@ -1,9 +1,4 @@
-#include "morton3D.h"
-
-
-void generate2D_EncodeLUT(size_t how_many_bits){
-
-}
+#include "morton3D_64.h"
 
 void generate3D_EncodeLUT(size_t how_many_bits, uint_fast32_t* x_table, uint_fast32_t* y_table, uint_fast32_t* z_table, bool print_tables){
 	// how many items
