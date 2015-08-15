@@ -72,6 +72,12 @@ static void check3D_EncodeCorrectness(){
 			}
 		}
 	}
+  //test specific values for morton code greater than 32 bits
+  if (morton3D_64_Encode_LUT_shifted(0x1fffff, 0x1fffff, 0x1fffff) != 0x7fffffffffffffff){ printf(" Problem with correctness of LUT based encoding \n");  failures++; }
+  if (morton3D_64_Encode_LUT(0x1fffff, 0x1fffff, 0x1fffff) != 0x7fffffffffffffff){ printf(" Problem with correctness of LUT based encoding \n"); failures++; }
+  if (morton3D_64_Encode_magicbits(0x1fffff, 0x1fffff, 0x1fffff) != 0x7fffffffffffffff){ printf(" Problem with correctness of Magicbits based encoding \n");  failures++; }
+  if (morton3D_64_Encode_for(0x1fffff, 0x1fffff, 0x1fffff) != 0x7fffffffffffffff){ printf(" Problem with correctness of For loop based encoding \n");  failures++; }
+
 	if (failures != 0){printf("Correctness test failed \n");} else {printf("Passed. \n");}
 }
 

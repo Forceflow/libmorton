@@ -15,7 +15,7 @@ inline uint_fast64_t morton3D_64_Encode_LUT_shifted(const uint_fast32_t x, const
 		Morton3D_64_encode_z_256[(z >> 16) & 0x000000FF] |
 		Morton3D_64_encode_y_256[(y >> 16) & 0x000000FF] |
 		Morton3D_64_encode_x_256[(x >> 16) & 0x000000FF];
-	answer = answer << 48 |
+	answer = answer << 24 |
 		Morton3D_64_encode_z_256[(z >> 8) & 0x000000FF] |
 		Morton3D_64_encode_y_256[(y >> 8) & 0x000000FF] |
 		Morton3D_64_encode_x_256[(x >> 8) & 0x000000FF];
@@ -32,7 +32,7 @@ inline uint_fast64_t morton3D_64_Encode_LUT(const uint_fast32_t x, const uint_fa
 		(Morton3D_64_encode_x_256[(z >> 16) & 0x000000FF] << 2)
 		| (Morton3D_64_encode_x_256[(y >> 16) & 0x000000FF] << 1)
 		| Morton3D_64_encode_x_256[(x >> 16) & 0x000000FF];
-	answer = answer << 48 | 
+	answer = answer << 24 | 
 		(Morton3D_64_encode_x_256[(z >> 8) & 0x000000FF] << 2)
 		| (Morton3D_64_encode_x_256[(y >> 8) & 0x000000FF] << 1)
 		| Morton3D_64_encode_x_256[(x >> 8) & 0x000000FF];
@@ -72,9 +72,10 @@ inline uint_fast64_t morton3D_64_Encode_for(const uint_fast32_t x, const uint_fa
 	checkbits = max(z_max,max(x_max, y_max)) + 1;
 #endif
 	for (uint_fast64_t i = 0; i <= checkbits; ++i) {
-		answer |= ((x & (0x1 << i)) << 2 * i)
-			| ((y & (0x1 << i)) << ((2 * i) + 1))
-			| ((z & (0x1 << i)) << ((2 * i) + 2));
+    //Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
+    answer |= ((x & ((uint_fast64_t)0x1 << i)) << 2 * i)
+      | ((y & ((uint_fast64_t)0x1 << i)) << ((2 * i) + 1))
+      | ((z & ((uint_fast64_t)0x1 << i)) << ((2 * i) + 2));
 	}
 	return answer;
 }
