@@ -22,33 +22,37 @@ unsigned int times;
 size_t total; 
 bool x64 = false;
 
+template <typename morton, typename coord>
+static bool check3D_DecodeFunction(string method_tested, void(*decode_function)(morton m, coord &x, coord &y, coord &z)){
+	bool everything_okay = true;
+	coord x, y, z;
+	for (morton i = 0; i < 4096; i++){
+		decode_function(i, x, y, z);
+		if (x != control_coords[i][0] || y != control_coords[i][1] || z != control_coords[i][2]){
+			cout << endl << "    Incorrect decoding of " << i << " in method " << method_tested.c_str() << ": (" << x << ", " << y << ", " << z
+				<< ") != (" << control_coords[i][0] << ", " << control_coords[i][1] << ", " << control_coords[i][2] << ")" << endl;
+			everything_okay = false;
+		}
+	}
+	if (sizeof(morton) >= 4){ // Let's do some more tests
+		decode_function(0x7fffffffffffffff, x, y, z);
+		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff){
+			cout << endl << "    Incorrect decoding of " << 0x7fffffffffffffff << " in method " << method_tested.c_str() << ": (" << x << ", " << y << ", " << z
+				<< ") != (" << 0x1fffff << ", " << 0x1fffff << ", " << 0x1fffff << ")" << endl; 
+			everything_okay = false;
+		}
+	}
+	return everything_okay;
+}
+
 static void check3D_DecodeCorrectness(){
 	printf("++ Checking correctness of decoding methods ... ");
-	size_t failures = 0;
-	for (size_t i = 0; i < 4096; i++){
-		uint_fast32_t correct_x = control_coords[i][0], correct_y = control_coords[i][1], correct_z = control_coords[i][2];
-		uint_fast32_t x_result_lutshift, y_result_lutshift, z_result_lutshift;
-		uint_fast32_t x_result_lut, y_result_lut, z_result_lut;
-		uint_fast32_t x_result_magicbits, y_result_magicbits, z_result_magicbits;
-		uint_fast32_t x_result_for, y_result_for, z_result_for;
-		morton3D_64_Decode_LUT_shifted(i, x_result_lutshift, y_result_lutshift, z_result_lutshift);
-		morton3D_64_Decode_LUT(i, x_result_lut, y_result_lut, z_result_lut);
-		morton3D_64_Decode_magicbits(i, x_result_magicbits, y_result_magicbits, z_result_magicbits);
-		morton3D_64_Decode_for(i, x_result_for, y_result_for, z_result_for);
-		if (x_result_lutshift != correct_x || y_result_lutshift != correct_y || z_result_lutshift != correct_z)
-		{printf("    Problem with correctness of for Shifted LUT-table based decoding: %u, %u, %u does not match %u,%u,%u",
-		x_result_lutshift, y_result_lutshift, z_result_lutshift, correct_x, correct_y, correct_z); failures++;}
-		if (x_result_lut != correct_x || y_result_lut != correct_y || z_result_lut != correct_z)
-		{printf("    Problem with correctness of for LUT-table based decoding: %u, %u, %u does not match %u,%u,%u",
-		x_result_lut, y_result_lut, z_result_lut, correct_x, correct_y, correct_z); failures++;}
-		if (x_result_magicbits != correct_x || y_result_magicbits != correct_y || z_result_magicbits != correct_z)
-		{printf("    Problem with correctness of for magicbits-based decoding: %u, %u, %u does not match %u,%u,%u",
-		x_result_magicbits, y_result_magicbits, z_result_magicbits, correct_x, correct_y, correct_z); failures++;}
-		if ( x_result_for != correct_x || y_result_for != correct_y || z_result_for != correct_z)
-		{printf("    Problem with correctness of for loop-based decoding: %u, %u, %u does not match %u,%u,%u",
-		x_result_for, y_result_for, z_result_for, correct_x, correct_y, correct_z); failures++;}
-	}
-	if (failures != 0){ printf("Correctness test failed %llu times \n", failures); } else { printf("Passed. \n"); }
+	bool ok = true;
+	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT ", &morton3D_64_Decode_LUT_shifted);
+	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT ", &morton3D_64_Decode_LUT);
+	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Magic Bits", &morton3D_64_Decode_magicbits);
+	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bits 3D For-loop", &morton3D_64_Decode_for);
+	if (ok){printf(" Passed. \n");}else{ printf("One or more methods failed. \n");}
 }
 
 static void check3D_EncodeCorrectness(){
@@ -232,16 +236,15 @@ void printHeader(){
 int main(int argc, char *argv[]) {
 	times = 20;
 	printHeader();
-	cout << "++ Running each test " << times << " times and averaging results" << endl;
+	cout << "++ Checking all methods for correctness" << endl;
+	check3D_EncodeCorrectness();
+	check3D_DecodeCorrectness();
+	cout << "++ Running each performance test " << times << " times and averaging results" << endl;
 	for (int i = 128; i <= 512; i = i * 2){
 		MAX = i;
 		total = MAX*MAX*MAX;
-		// encoding
-		check3D_EncodeCorrectness();
 		Encode_3D_LinearPerf();
 		Encode_3D_RandomPerf();
-		// decoding
-		check3D_DecodeCorrectness();
 		Decode_3D_LinearPerf();
 		Decode_3D_RandomPerf();
 	}
