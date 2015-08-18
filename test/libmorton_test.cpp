@@ -45,6 +45,19 @@ static bool check3D_DecodeFunction(string method_tested, void(*decode_function)(
 	return everything_okay;
 }
 
+//template <typename morton, typename coord>
+//static bool check3D_EncodeFunction(string method_tested, morton(*encode_function)(coord &x, coord &y, coord &z)){
+//	bool everything_okay = true;
+//	morton m;
+//	for (coord i = 0; i < 16; i++){
+//		for (coord j = 0; j < 16; j++){
+//			for (coord k = 0; k < 16; k++){
+//			}
+//		}
+//	}
+//	return everything_okay;
+//}
+
 static void check3D_DecodeCorrectness(){
 	printf("++ Checking correctness of decoding methods ... ");
 	bool ok = true;
