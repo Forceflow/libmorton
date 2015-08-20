@@ -23,14 +23,14 @@ size_t total;
 bool x64 = false;
 
 template <typename morton, typename coord>
-static bool check3D_DecodeFunction(string method_tested, void(*decode_function)(morton m, coord &x, coord &y, coord &z)){
+static bool check3D_DecodeFunction(string method_tested, void (*decode_function)(const morton m, coord &x, coord &y, coord &z)){
 	bool everything_okay = true;
 	coord x, y, z;
 	for (morton i = 0; i < 4096; i++){
 		decode_function(i, x, y, z);
-		if (x != control_coords[i][0] || y != control_coords[i][1] || z != control_coords[i][2]){
+		if (x != control_3D_Decode[i][0] || y != control_3D_Decode[i][1] || z != control_3D_Decode[i][2]){
 			cout << endl << "    Incorrect decoding of " << i << " in method " << method_tested.c_str() << ": (" << x << ", " << y << ", " << z
-				<< ") != (" << control_coords[i][0] << ", " << control_coords[i][1] << ", " << control_coords[i][2] << ")" << endl;
+				<< ") != (" << control_3D_Decode[i][0] << ", " << control_3D_Decode[i][1] << ", " << control_3D_Decode[i][2] << ")" << endl;
 			everything_okay = false;
 		}
 	}
@@ -45,57 +45,44 @@ static bool check3D_DecodeFunction(string method_tested, void(*decode_function)(
 	return everything_okay;
 }
 
-//template <typename morton, typename coord>
-//static bool check3D_EncodeFunction(string method_tested, morton(*encode_function)(coord &x, coord &y, coord &z)){
-//	bool everything_okay = true;
-//	morton m;
-//	for (coord i = 0; i < 16; i++){
-//		for (coord j = 0; j < 16; j++){
-//			for (coord k = 0; k < 16; k++){
-//			}
-//		}
-//	}
-//	return everything_okay;
-//}
+template <typename morton, typename coord>
+static bool check3D_EncodeFunction(string method_tested, morton (*encode_function)(const coord x, const coord y, const coord z)){
+	bool everything_okay = true;
+	morton computed_code, correct_code = 0;
+	for (coord i = 0; i < 16; i++){
+		for (coord j = 0; j < 16; j++){
+			for (coord k = 0; k < 16; k++){
+				correct_code = control_3D_Encode[k + (j * 16) + (i * 16 * 16)];
+				computed_code = encode_function(i, j, k);
+				if (computed_code != correct_code){
+					everything_okay = false;
+					cout << endl << "    Incorrect encoding of (" << i << ", " << j << ", " << k << ") in method " << method_tested.c_str() << ": " << computed_code <<
+						" != " << correct_code << endl;
+				}
+			}
+		}
+	}
+	return everything_okay;
+}
 
 static void check3D_DecodeCorrectness(){
-	printf("++ Checking correctness of decoding methods ... ");
+	printf("++ Checking correctness of 3D decoding methods ... ");
 	bool ok = true;
 	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT ", &morton3D_64_Decode_LUT_shifted);
 	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT ", &morton3D_64_Decode_LUT);
 	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Magic Bits", &morton3D_64_Decode_magicbits);
-	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bits 3D For-loop", &morton3D_64_Decode_for);
+	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For-loop", &morton3D_64_Decode_for);
 	if (ok){printf(" Passed. \n");}else{ printf("One or more methods failed. \n");}
 }
 
 static void check3D_EncodeCorrectness(){
-	printf("++ Checking correctness of encoding methods ... ");
-	int failures = 0;
-	for (size_t i = 0; i < 16; i++){
-		for (size_t j = 0; j < 16; j++){
-			for (size_t k = 0; k < 16; k++){
-				// fetch correct code
-				uint_fast64_t correct_code = control_morton[k + (j * 16) + (i * 16 * 16)];
-				// result all our encoding methods give
-				uint_fast64_t lut_shifted_result = morton3D_64_Encode_LUT_shifted(i, j, k);
-				uint_fast64_t lut_result = morton3D_64_Encode_LUT(i, j, k);
-				uint_fast64_t magicbits_result = morton3D_64_Encode_magicbits(i, j, k);
-				uint_fast64_t for_result = morton3D_64_Encode_for(i, j, k);
-				// error messages if any code does not match correct result.
-				if (lut_shifted_result != correct_code){ printf("    Problem with correctness of LUT based encoding: %llu does not match %llu \n", lut_shifted_result, correct_code); failures++; }
-				if (lut_result != correct_code){printf("    Problem with correctness of LUT based encoding: %llu does not match %llu \n", lut_result, correct_code); failures++; }
-				if (magicbits_result != correct_code){printf("    Problem with correctness of Magicbits based encoding: %llu does not match %llu \n", magicbits_result, correct_code); failures++;}
-				if (for_result != correct_code){printf("    Problem with correctness of For loop based encoding: %llu does not match %llu \n", for_result, correct_code); failures++;}
-			}
-		}
-	}
-  //test specific values for morton code greater than 32 bits
-  if (morton3D_64_Encode_LUT_shifted(0x1fffff, 0x1fffff, 0x1fffff) != 0x7fffffffffffffff){ printf(" Problem with correctness of LUT based encoding \n");  failures++; }
-  if (morton3D_64_Encode_LUT(0x1fffff, 0x1fffff, 0x1fffff) != 0x7fffffffffffffff){ printf(" Problem with correctness of LUT based encoding \n"); failures++; }
-  if (morton3D_64_Encode_magicbits(0x1fffff, 0x1fffff, 0x1fffff) != 0x7fffffffffffffff){ printf(" Problem with correctness of Magicbits based encoding \n");  failures++; }
-  if (morton3D_64_Encode_for(0x1fffff, 0x1fffff, 0x1fffff) != 0x7fffffffffffffff){ printf(" Problem with correctness of For loop based encoding \n");  failures++; }
-
-	if (failures != 0){printf("Correctness test failed \n");} else {printf("Passed. \n");}
+	printf("++ Checking correctness of 3D encoding methods ... ");
+	bool ok = true;
+	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT ", &morton3D_64_Encode_LUT_shifted);
+	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT ", &morton3D_64_Encode_LUT);
+	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Magic Bits", &morton3D_64_Encode_magicbits);
+	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For-loop", &morton3D_64_Encode_for);
+	if (ok){ printf(" Passed. \n"); } else{ printf("One or more methods failed. \n"); }
 }
 
 template <typename morton, typename coord>

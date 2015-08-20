@@ -8,7 +8,7 @@
 #include "../libmorton/include/morton3D_64.h"
 
 // correct morton codes for 16 x 16 x 16, with z running fastest, then y, then x (4096 in total)
-static const int control_morton[4096] =
+static const int control_3D_Encode[4096] =
 {
 	0, 4, 32, 36, 256, 260, 288, 292, 2048, 2052, 2080, 2084, 2304, 2308, 2336, 2340, 2,
 	6, 34, 38, 258, 262, 290, 294, 2050, 2054, 2082, 2086, 2306, 2310, 2338, 2342, 16,
@@ -269,7 +269,7 @@ static const int control_morton[4096] =
 };
 
 // Correct morton codes for decoding test. Decodes for morton code running from 0 to 4096.
-static const uint_fast32_t control_coords[4096][3] = {
+static const uint_fast32_t control_3D_Decode[4096][3] = {
 {0,0,0},
 {1,0,0},{0,1,0},{1,1,0},{0,0,1},{1,0,1},{0,1,1},{1,1,1},{2,0,0},
 {3,0,0},{2,1,0},{3,1,0},{2,0,1},{3,0,1},{2,1,1},{3,1,1},{0,2,0},
