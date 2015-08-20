@@ -72,7 +72,7 @@ static void check3D_DecodeCorrectness(){
 	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT ", &morton3D_64_Decode_LUT);
 	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Magic Bits", &morton3D_64_Decode_magicbits);
 	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For-loop", &morton3D_64_Decode_for);
-	if (ok){printf(" Passed. \n");}else{ printf("One or more methods failed. \n");}
+	if(ok){printf(" Passed. \n");}else{ printf("    One or more methods failed. \n");}
 }
 
 static void check3D_EncodeCorrectness(){
@@ -82,7 +82,7 @@ static void check3D_EncodeCorrectness(){
 	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT ", &morton3D_64_Encode_LUT);
 	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Magic Bits", &morton3D_64_Encode_magicbits);
 	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For-loop", &morton3D_64_Encode_for);
-	if (ok){ printf(" Passed. \n"); } else{ printf("One or more methods failed. \n"); }
+	if(ok){printf(" Passed. \n");}else{ printf("    One or more methods failed. \n");}
 }
 
 template <typename morton, typename coord>
