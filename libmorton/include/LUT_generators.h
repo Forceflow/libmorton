@@ -27,7 +27,6 @@ void generate2D_EncodeLUT(size_t how_many_bits, uint_fast32_t* x_table, uint_fas
 		cout << "Y Table " << endl;
 		printTable<uint_fast32_t>(y_table, total, 8);
 	}
-
 }
 
 void generate3D_EncodeLUT(size_t how_many_bits, uint_fast32_t* x_table, uint_fast32_t* y_table, uint_fast32_t* z_table, bool print_tables){
@@ -51,8 +50,6 @@ void generate3D_EncodeLUT(size_t how_many_bits, uint_fast32_t* x_table, uint_fas
 		cout << "Z Table " << endl;
 		printTable<uint_fast32_t>(z_table, total, 8);
 	}
-
-
 }
 
 // Generate a decode tables for 3D morton code
