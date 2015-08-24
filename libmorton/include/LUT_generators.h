@@ -34,7 +34,6 @@ void generate2D_DecodeLUT(size_t how_many_bits, uint_fast8_t* x_table, uint_fast
 	x_table = (uint_fast8_t*)malloc(total * sizeof(uint_fast8_t));
 	y_table = (uint_fast8_t*)malloc(total * sizeof(uint_fast8_t));
 
-	//generate tables
 	for (size_t i = 0; i < total; i++){
 		x_table[i] = morton2D_64_splitby2(i);
 		y_table[i] = morton2D_64_splitby2(i >> 1);
@@ -81,9 +80,9 @@ void generate3D_DecodeLUT(size_t how_many_bits, uint_fast8_t* x_table, uint_fast
 
 	//generate tables
 	for (size_t i = 0; i < total; i++){
-		x_table[i] = morton3D_64_splitby3(i);
-		y_table[i] = morton3D_64_splitby3(i >> 1);
-		z_table[i] = morton3D_64_splitby3(i >> 2);
+		x_table[i] = morton3D_64_getThirdBits(i);
+		y_table[i] = morton3D_64_getThirdBits(i >> 1);
+		z_table[i] = morton3D_64_getThirdBits(i >> 2);
 	}
 
 	if (print_tables){

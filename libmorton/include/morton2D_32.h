@@ -22,10 +22,10 @@ inline uint_fast32_t morton2D_32_Encode_for(const uint16_t x, const uint16_t y){
 inline uint_fast32_t morton2D_32_splitby2(const uint_fast16_t a){
 	uint_fast32_t x = a;
 	x = (x | x << 16) & 0x0000FFFF;
-	x = (x | x << 8) & 0x00FF00FF;
-	x = (x | x << 4) & 0x0F0F0F0F;
-	x = (x | x << 2) & 0x33333333;
-	x = (x | x << 1) & 0x55555555;
+	x = (x | x << 8)  & 0x00FF00FF;
+	x = (x | x << 4)  & 0x0F0F0F0F;
+	x = (x | x << 2)  & 0x33333333;
+	x = (x | x << 1)  & 0x55555555;
 	return x;
 }
 
