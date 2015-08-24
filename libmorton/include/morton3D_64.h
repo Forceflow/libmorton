@@ -199,7 +199,7 @@ inline void morton3D_64_Decode_LUT(const uint_fast64_t morton, uint_fast32_t& x,
 #endif
 }
 
-inline uint_fast32_t morton3D_64_splitby3(const uint_fast64_t a){
+inline uint_fast32_t morton3D_64_getThirdBits(const uint_fast64_t a){
 	uint_fast64_t x = a & 0x9249249249249249;
 	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
 	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
@@ -210,9 +210,9 @@ inline uint_fast32_t morton3D_64_splitby3(const uint_fast64_t a){
 
 // DECODE 3D 64-bit morton code : Magic bits
 inline void morton3D_64_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
-	x = morton3D_64_splitby3(morton);
-	y = morton3D_64_splitby3(morton >> 1);
-	z = morton3D_64_splitby3(morton >> 2);
+	x = morton3D_64_getThirdBits(morton);
+	y = morton3D_64_getThirdBits(morton >> 1);
+	z = morton3D_64_getThirdBits(morton >> 2);
 }
 
 // DECODE 3D 64-bit morton code : For loop
