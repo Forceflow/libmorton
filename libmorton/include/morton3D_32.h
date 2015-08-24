@@ -16,7 +16,7 @@ using namespace std;
 // ENCODE 3D 32-bit morton code : Fpr loop
 inline uint_fast32_t morton3D_32_Encode_for(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
 	uint_fast32_t answer = 0;
-	for (uint_fast32_t i = 0; i <= 10; ++i) {
+	for (uint_fast32_t i = 0; i < 10; ++i) {
 		answer |= ((x & (0x1 << i)) << 2 * i)
 			| ((y & (0x1 << i)) << ((2 * i) + 1))
 			| ((z & (0x1 << i)) << ((2 * i) + 2));
@@ -24,6 +24,7 @@ inline uint_fast32_t morton3D_32_Encode_for(const uint_fast16_t x, const uint_fa
 	return answer;
 }
 
+// ENCODE 3D 32-bit morton code : Magic bits (helper method)
 inline uint_fast32_t morton3D_32_splitby3(const uint_fast16_t a){
 	uint_fast32_t x = a;
 	x = (x | x << 16) & 0xff0000ff;

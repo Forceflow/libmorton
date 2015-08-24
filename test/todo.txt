@@ -4,12 +4,12 @@
 TIMINGS
 - Toch proberen random number time weg te halen ... (check of het zelfde is met niet=-random getallen)
 - make sure functions don't get whittled away (runningsum etc..)
+- can spare one loop in for loops
 
 LUTS
 -- How many precomputed bits
 -- LUT table generators flexibility
 -- Size table
-
 
 RANDOM NUMBERS
 - pseudo random number generator LCG 03
