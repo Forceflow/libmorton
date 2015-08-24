@@ -45,11 +45,11 @@ inline uint_fast64_t morton3D_64_Encode_LUT(const uint_fast32_t x, const uint_fa
 
 inline uint_fast64_t splitBy3(const uint_fast32_t a){
 	uint_fast64_t x = a;
-	x = (x | x << 32) & 0x1f00000000ffff;
-	x = (x | x << 16) & 0x1f0000ff0000ff;
-	x = (x | x << 8) & 0x100f00f00f00f00f;
-	x = (x | x << 4) & 0x10c30c30c30c30c3;
-	x = (x | x << 2) & 0x1249249249249249;
+	x = (x | x << 32) & 0xffff00000000ffff;
+	x = (x | x << 16) & 0x00ff0000ff0000ff;
+	x = (x | x << 8)  & 0x100f00f00f00f00f;
+	x = (x | x << 4)  & 0x10c30c30c30c30c3;
+	x = (x | x << 2)  & 0x1249249249249249;
 	return x;
 }
 
@@ -201,10 +201,10 @@ inline void morton3D_64_Decode_LUT(const uint_fast64_t morton, uint_fast32_t& x,
 
 inline uint_fast32_t morton3D_64_getThirdBits(const uint_fast64_t a){
 	uint_fast64_t x = a & 0x9249249249249249;
-	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
-	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
-	x = (x ^ (x >> 8)) & 0xFF0000FF0000FF;
-	x = (x ^ (x >> 16)) & 0xFFFF;
+	x = (x ^ (x >> 2))  & 0x030c30c3030c30c3;
+	x = (x ^ (x >> 4))  & 0xF00F00F00F00F00F;
+	x = (x ^ (x >> 8))  & 0x00FF0000FF0000FF;
+	x = (x ^ (x >> 16)) & 0x000000000000FFFF;
 	return (uint_fast32_t)x;
 }
 
