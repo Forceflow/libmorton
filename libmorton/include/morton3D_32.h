@@ -3,7 +3,7 @@
 #define MORTON3D_32_H_
 
 #include <stdint.h>
-#include "morton3D_lookup_tables.h"
+#include "morton3D_LUTs.h"
 
 #if _MSC_VER
 #include <intrin.h>

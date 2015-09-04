@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 #include <algorithm>
-#include "morton3D_lookup_tables.h"
+#include "morton3D_LUTs.h"
 #include "morton_common.h"
 
 using namespace std;

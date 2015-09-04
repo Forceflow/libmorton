@@ -145,12 +145,12 @@
     <ClCompile Include="..\libmorton_test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\libmorton\include\LUT_generators.h" />
+    <ClInclude Include="..\..\libmorton\include\morton_LUT_generators.h" />
     <ClInclude Include="..\..\libmorton\include\morton2D_32.h" />
     <ClInclude Include="..\..\libmorton\include\morton2D_64.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_32.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_64.h" />
-    <ClInclude Include="..\..\libmorton\include\morton3D_lookup_tables.h" />
+    <ClInclude Include="..\..\libmorton\include\morton3D_LUTs.h" />
     <ClInclude Include="..\..\libmorton\include\morton_common.h" />
     <ClInclude Include="..\libmorton_test.h" />
     <ClInclude Include="..\util.h" />

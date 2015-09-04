@@ -6,12 +6,6 @@
   <ItemGroup>
     <ClInclude Include="..\libmorton_test.h" />
     <ClInclude Include="..\util.h" />
-    <ClInclude Include="..\..\libmorton\include\LUT_generators.h">
-      <Filter>libmorton_headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\libmorton\include\morton3D_lookup_tables.h">
-      <Filter>libmorton_headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\libmorton\include\morton3D_64.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
@@ -25,6 +19,12 @@
       <Filter>libmorton_headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\libmorton\include\morton_common.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton_LUT_generators.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton3D_LUTs.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
   </ItemGroup>
