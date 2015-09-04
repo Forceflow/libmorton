@@ -8,6 +8,7 @@
 // Utility headers
 #include "util.h"
 #include "libmorton_test.h"
+#include "../libmorton/include/LUT_generators.h"
 // Standard headers
 #include <iostream>
 #include <chrono>
