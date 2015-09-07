@@ -8,7 +8,7 @@
 // Utility headers
 #include "util.h"
 #include "libmorton_test.h"
-#include "../libmorton/include/LUT_generators.h"
+#include "../libmorton/include/morton_LUT_generators.h"
 // Standard headers
 #include <iostream>
 #include <chrono>
@@ -235,6 +235,10 @@ void printHeader(){
 }
 
 int main(int argc, char *argv[]) {
+	uint_fast32_t* x_table;
+	uint_fast32_t* y_table;
+	generate2D_EncodeLUT(8, x_table, y_table, true);
+
 	times = 20;
 	printHeader();
 	cout << "++ Checking all methods for correctness" << endl;

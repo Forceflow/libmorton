@@ -1,5 +1,7 @@
-#ifndef LIBMORTON_LOOKUP_TABLES_H_
-#define LIBMORTON_LOOKUP_TABLES_H_
+#ifndef MORTON3D_LUTS_H_
+#define MORTON3D_LUTS_H_
+
+#include <stdint.h>
 
 // Version with lookup table
 static const uint_fast32_t Morton3D_64_encode_x_256[256] =
@@ -216,4 +218,4 @@ static const uint_fast8_t Morton3D_64_decode_z_512[512] = {
 	6, 6, 6, 6, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7
 };
 
-#endif
+#endif // MORTON3D_LUTS_H_
