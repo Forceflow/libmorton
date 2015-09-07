@@ -3,6 +3,7 @@
 #define MORTON2D_64_H_
 
 #include <stdint.h>
+#include "morton2D_LUTs.h"
 
 #if _MSC_VER
 #include <intrin.h>
@@ -34,5 +35,13 @@ inline uint_fast64_t morton2D_64_splitby2(const uint_fast32_t a){
 inline uint_fast64_t morton2D_64_Encode_magicbits(const uint_fast32_t x, const uint_fast32_t y){
 	return morton2D_64_splitby2(x) | (morton2D_64_splitby2(y) << 1);
 }
+//
+//// ENCODE 2D 64-bit morton code: LUT preshifted
+//inline uint_fast64_t morton2D_64_Encode_LUT_shifted(const uint_fast32_t x, const uint_fast32_t y){
+//	uint_fast64_t answer =
+//		Morton2D_64_encode_y_256[(y >> 24) & 0x000000FF] |
+//		Morton2D_64_encode_x_256[(x >> 24) & 0x000000FF];
+//	answer = (answer + 
+//}
 
 #endif // MORTON2D_64_H_

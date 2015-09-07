@@ -11,10 +11,10 @@ void printTable(const element* table, size_t howmany, unsigned int splitat){
 	cout << endl;
 }
 
-void generate2D_EncodeLUT(size_t how_many_bits, uint_fast32_t*& x_table, uint_fast32_t*& y_table, bool print_tables){
+void generate2D_EncodeLUT(size_t how_many_bits, uint_fast16_t*& x_table, uint_fast16_t*& y_table, bool print_tables){
 	size_t total = 1 << how_many_bits;
-	x_table = (uint_fast32_t*)malloc(total * sizeof(uint_fast32_t));
-	y_table = (uint_fast32_t*)malloc(total * sizeof(uint_fast32_t));
+	x_table = (uint_fast16_t*)malloc(total * sizeof(uint_fast16_t));
+	y_table = (uint_fast16_t*)malloc(total * sizeof(uint_fast16_t));
 
 	for (size_t i = 0; i < total; i++){
 		x_table[i] = morton2D_64_Encode_magicbits(i, 0);

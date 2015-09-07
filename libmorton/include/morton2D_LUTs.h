@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-static const uint_fast32_t Morton2D_64_encode_x_256[256] =
+static const uint_fast16_t Morton2D_64_encode_x_256[256] =
 {
 	0, 1, 4, 5, 16, 17, 20, 21,
 	64, 65, 68, 69, 80, 81, 84, 85,
@@ -39,7 +39,7 @@ static const uint_fast32_t Morton2D_64_encode_x_256[256] =
 	21824, 21825, 21828, 21829, 21840, 21841, 21844, 21845
 };
 
-static const uint_fast32_t Morton2D_64_encode_y_256[256] =
+static const uint_fast16_t Morton2D_64_encode_y_256[256] =
 {
 	0, 2, 8, 10, 32, 34, 40, 42,
 	128, 130, 136, 138, 160, 162, 168, 170,
