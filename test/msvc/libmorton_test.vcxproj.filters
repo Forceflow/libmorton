@@ -30,7 +30,7 @@
     <ClInclude Include="..\..\libmorton\include\morton2D_LUTs.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libmorton\include\timer.h" />
+    <ClInclude Include="..\timer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\todo.txt" />

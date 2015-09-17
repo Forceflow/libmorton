@@ -153,8 +153,8 @@
     <ClInclude Include="..\..\libmorton\include\morton3D_64.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_LUTs.h" />
     <ClInclude Include="..\..\libmorton\include\morton_common.h" />
-    <ClInclude Include="..\..\libmorton\include\timer.h" />
     <ClInclude Include="..\libmorton_test.h" />
+    <ClInclude Include="..\timer.h" />
     <ClInclude Include="..\util.h" />
   </ItemGroup>
   <ItemGroup>
