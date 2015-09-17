@@ -13,6 +13,7 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include "../libmorton/include/timer.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -88,21 +89,22 @@ static void check3D_EncodeCorrectness(){
 
 template <typename morton, typename coord>
 static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), int times){
+	Timer timer;
+	timer.init();
 	float duration = 0;
 	morton runningsum = 0;
 	for (int t = 0; t < times; t++){
 		for (size_t i = 0; i < MAX; i++){
 			for (size_t j = 0; j < MAX; j++){
 				for (size_t k = 0; k < MAX; k++){
-					high_resolution_clock::time_point t1 = high_resolution_clock::now();
+					timer.start();
 					runningsum += function(i, j, k);
-					high_resolution_clock::time_point t2 = high_resolution_clock::now();
-					duration += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+					timer.stop();
 				}
 			}
 		}
 	}
-	return duration / (float) times;
+	return timer.elapsed_time_milliseconds / times;
 }
 
 template <typename morton, typename coord>
@@ -245,8 +247,8 @@ int main(int argc, char *argv[]) {
 		MAX = i;
 		total = MAX*MAX*MAX;
 		Encode_3D_LinearPerf();
-		Encode_3D_RandomPerf();
-		Decode_3D_LinearPerf();
-		Decode_3D_RandomPerf();
+		//Encode_3D_RandomPerf();
+		//Decode_3D_LinearPerf();
+		//Decode_3D_RandomPerf();
 	}
 }
