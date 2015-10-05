@@ -1,7 +1,12 @@
 #ifndef LIBMORTON_TEST_H_
 #define LIBMORTON_TEST_H_
 
+// Load utils
+#include "util.h"
+#include "timer.h"
+
 // Load library we're going to test
+#include "../libmorton/include/morton_LUT_generators.h"
 #include "../libmorton/include/morton2D_32.h"
 #include "../libmorton/include/morton2D_64.h"
 #include "../libmorton/include/morton3D_32.h"

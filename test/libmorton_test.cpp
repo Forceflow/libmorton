@@ -6,14 +6,13 @@
 //#define LIBMORTON_EARLY_TERMINATION
 
 // Utility headers
-#include "util.h"
 #include "libmorton_test.h"
-#include "../libmorton/include/morton_LUT_generators.h"
+
 // Standard headers
 #include <iostream>
 #include <chrono>
 #include <ctime>
-#include "../libmorton/include/timer.h"
+#include <string>
 
 using namespace std;
 using namespace std::chrono;
@@ -89,8 +88,7 @@ static void check3D_EncodeCorrectness(){
 
 template <typename morton, typename coord>
 static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), int times){
-	Timer timer;
-	timer.init();
+	Timer timer = Timer();
 	float duration = 0;
 	morton runningsum = 0;
 	for (int t = 0; t < times; t++){
@@ -104,12 +102,12 @@ static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), i
 			}
 		}
 	}
-	return timer.elapsed_time_milliseconds / times;
+	return timer.elapsed_time_milliseconds / (float) times;
 }
 
 template <typename morton, typename coord>
 static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), int times){
-	float duration = 0;
+	Timer timer = Timer();
 	coord maximum = ~0;
 	morton runningsum = 0;
 	for (int t = 0; t < times; t++){
@@ -117,13 +115,12 @@ static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), i
 			coord randx = rand_cmwc() % maximum;
 			coord randy = rand_cmwc() % maximum;
 			coord randz = rand_cmwc() % maximum;
-			high_resolution_clock::time_point t1 = high_resolution_clock::now();
+			timer.start();
 			runningsum += function(randx, randy, randz);
-			high_resolution_clock::time_point t2 = high_resolution_clock::now();
-			duration += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+			timer.stop();
 		}
 	}
-	return duration / (float) times;
+	return timer.elapsed_time_milliseconds / (float) times;
 }
 
 // Test performance of encoding methods for a linear stream of coordinates
@@ -156,35 +153,34 @@ static void Encode_3D_RandomPerf(){
 
 template <typename morton, typename coord>
 static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
-	uint_fast64_t duration = 0;
+	Timer timer = Timer();
 	coord x, y, z;
 	for (int t = 0; t < times; t++){
 		for (morton i = 0; i < total; i++){
-			high_resolution_clock::time_point t1 = high_resolution_clock::now();
+			timer.start();
 			function(i,x,y,z);
-			high_resolution_clock::time_point t2 = high_resolution_clock::now();
-			duration += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+			timer.stop();
+			
 		}
 	}
-	return duration / (float)times;
+	return timer.elapsed_time_milliseconds / (float)times;
 }
 
 template <typename morton, typename coord>
 static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
-	uint_fast64_t duration = 0;
+	Timer timer = Timer();
 	init_randcmwc(std::time(0));
 	coord x, y, z;
 	morton maximum = ~0; // maximum for the random morton codes
 	for (int t = 0; t < times; t++){
 		for (size_t i = 0; i < total; i++){
 			morton m = (rand_cmwc() + rand_cmwc()) % maximum;
-			high_resolution_clock::time_point t1 = high_resolution_clock::now();
-			function(i, x, y, z);
-			high_resolution_clock::time_point t2 = high_resolution_clock::now();
-			duration += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+			timer.start();
+			function(i,x,y,z);
+			timer.stop();
 		}
 	}
-	return duration / (float)times;
+	return timer.elapsed_time_milliseconds / (float)times;
 }
 
 // Test performance of decoding a linear set of morton codes
@@ -237,7 +233,7 @@ void printHeader(){
 }
 
 int main(int argc, char *argv[]) {
-	times = 20;
+	times = 10;
 	printHeader();
 	cout << "++ Checking all methods for correctness" << endl;
 	check3D_EncodeCorrectness();
@@ -247,8 +243,8 @@ int main(int argc, char *argv[]) {
 		MAX = i;
 		total = MAX*MAX*MAX;
 		Encode_3D_LinearPerf();
-		//Encode_3D_RandomPerf();
-		//Decode_3D_LinearPerf();
-		//Decode_3D_RandomPerf();
+		Encode_3D_RandomPerf();
+		Decode_3D_LinearPerf();
+		Decode_3D_RandomPerf();
 	}
 }
