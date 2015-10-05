@@ -13,6 +13,7 @@
 #include <chrono>
 #include <ctime>
 #include <string>
+#include <vector>
 
 using namespace std;
 using namespace std::chrono;
@@ -22,6 +23,9 @@ size_t MAX;
 unsigned int times;
 size_t total; 
 bool x64 = false;
+
+// Runningsums
+
 
 template <typename morton, typename coord>
 static bool check3D_DecodeFunction(string method_tested, void (*decode_function)(const morton m, coord &x, coord &y, coord &z)){
