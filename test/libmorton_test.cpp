@@ -9,6 +9,7 @@
 #include "libmorton_test.h"
 
 // Standard headers
+#include <cstdlib>
 #include <iostream>
 #include <chrono>
 #include <ctime>
@@ -21,11 +22,22 @@ using namespace std::chrono;
 // Configuration
 size_t MAX;
 unsigned int times;
-size_t total; 
-bool x64 = false;
+size_t total;
+size_t RAND_POOL_SIZE = 8192;
+
+//#define LIBMORTON_EARLY_TERMINATION
 
 // Runningsums
+vector<uint_fast64_t> running_sums;
 
+void printRunningSums(){
+	uint_fast64_t t = 0;
+	cout << "Running sums check: ";
+	for(int i = 0; i < running_sums.size(); i++) {
+		t+= running_sums[i];
+	}
+	cout << t << endl;
+}
 
 template <typename morton, typename coord>
 static bool check3D_DecodeFunction(string method_tested, void (*decode_function)(const morton m, coord &x, coord &y, coord &z)){
@@ -93,7 +105,6 @@ static void check3D_EncodeCorrectness(){
 template <typename morton, typename coord>
 static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), int times){
 	Timer timer = Timer();
-	float duration = 0;
 	morton runningsum = 0;
 	for (int t = 0; t < times; t++){
 		for (size_t i = 0; i < MAX; i++){
@@ -106,6 +117,7 @@ static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), i
 			}
 		}
 	}
+	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float) times;
 }
 
@@ -114,16 +126,25 @@ static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), i
 	Timer timer = Timer();
 	coord maximum = ~0;
 	morton runningsum = 0;
+	coord x, y, z;
+
 	for (int t = 0; t < times; t++){
+		// Create a pool of random numbers
+		vector<coord> randnumbers;
+		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
+			randnumbers.push_back(rand() % maximum);
+		}
+		// Do the performance test
 		for (size_t i = 0; i < total; i++){
-			coord randx = rand_cmwc() % maximum;
-			coord randy = rand_cmwc() % maximum;
-			coord randz = rand_cmwc() % maximum;
+			x = randnumbers[i % RAND_POOL_SIZE];
+			y = randnumbers[(i + 1) % RAND_POOL_SIZE];
+			z = randnumbers[(i + 2) % RAND_POOL_SIZE];
 			timer.start();
-			runningsum += function(randx, randy, randz);
+			runningsum += function(x,y,z);
 			timer.stop();
 		}
 	}
+	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float) times;
 }
 
@@ -159,31 +180,44 @@ template <typename morton, typename coord>
 static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
 	Timer timer = Timer();
 	coord x, y, z;
+	morton runningsum = 0;
 	for (int t = 0; t < times; t++){
 		for (morton i = 0; i < total; i++){
 			timer.start();
 			function(i,x,y,z);
 			timer.stop();
-			
+			runningsum += x + y + z;
 		}
 	}
+	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }
 
 template <typename morton, typename coord>
 static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
 	Timer timer = Timer();
-	init_randcmwc(std::time(0));
 	coord x, y, z;
 	morton maximum = ~0; // maximum for the random morton codes
+	morton runningsum = 0;
+	morton m;
+
+	// Create a pool of randum numbers
+	vector<morton> randnumbers;
+	for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
+		randnumbers.push_back((rand() + rand()) % maximum);
+	}
+	
+	// Start performance test
 	for (int t = 0; t < times; t++){
 		for (size_t i = 0; i < total; i++){
-			morton m = (rand_cmwc() + rand_cmwc()) % maximum;
 			timer.start();
-			function(i,x,y,z);
+			m = randnumbers[i % RAND_POOL_SIZE];
+			function(m,x,y,z);
 			timer.stop();
+			runningsum += x + y + z;
 		}
 	}
+	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }
 
@@ -220,14 +254,13 @@ void printHeader(){
 	cout << "--------------------" << endl;
 #if _WIN64 || __x86_64__  
 	cout << "++ 64-bit version" << endl;
-	x64 = true;
 #else
 	cout << "++ 32-bit version" << endl;
 #endif
 #if _MSC_VER
 	cout << "++ Compiled using MSVC" << endl;
 #elif __GNUC__
-	cout << "++ Compiled using GCC" << endl;
+	cout << "++ Compiled using GCC" << endl;<
 #endif
 #ifdef LIBMORTON_EARLY_TERMINATION
 	cout << "++ Using intrinsics optimization." << endl;
@@ -248,7 +281,8 @@ int main(int argc, char *argv[]) {
 		total = MAX*MAX*MAX;
 		Encode_3D_LinearPerf();
 		Encode_3D_RandomPerf();
-		Decode_3D_LinearPerf();
-		Decode_3D_RandomPerf();
+		//Decode_3D_LinearPerf();
+		//Decode_3D_RandomPerf();
+		printRunningSums();
 	}
 }
