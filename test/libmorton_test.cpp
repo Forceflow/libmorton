@@ -3,8 +3,6 @@
 //
 // Jeroen Baert 2015
 
-//#define LIBMORTON_EARLY_TERMINATION
-
 // Utility headers
 #include "libmorton_test.h"
 
@@ -23,13 +21,15 @@ using namespace std::chrono;
 size_t MAX;
 unsigned int times;
 size_t total;
-size_t RAND_POOL_SIZE = 8192;
+size_t RAND_POOL_SIZE = 9000;
 
 //#define LIBMORTON_EARLY_TERMINATION
 
 // Runningsums
 vector<uint_fast64_t> running_sums;
 
+// Make a total of all running_sum checks and print it
+// This is an elaborate way to ensure no function call gets optimized away
 void printRunningSums(){
 	uint_fast64_t t = 0;
 	cout << "Running sums check: ";
@@ -103,10 +103,10 @@ static void check3D_EncodeCorrectness(){
 }
 
 template <typename morton, typename coord>
-static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), int times){
+static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), size_t times){
 	Timer timer = Timer();
 	morton runningsum = 0;
-	for (int t = 0; t < times; t++){
+	for (size_t t = 0; t < times; t++){
 		for (size_t i = 0; i < MAX; i++){
 			for (size_t j = 0; j < MAX; j++){
 				for (size_t k = 0; k < MAX; k++){
@@ -122,13 +122,13 @@ static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), i
 }
 
 template <typename morton, typename coord>
-static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), int times){
+static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), size_t times){
 	Timer timer = Timer();
 	coord maximum = ~0;
 	morton runningsum = 0;
 	coord x, y, z;
 
-	for (int t = 0; t < times; t++){
+	for (size_t t = 0; t < times; t++){
 		// Create a pool of random numbers
 		vector<coord> randnumbers;
 		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
@@ -148,40 +148,12 @@ static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), i
 	return timer.elapsed_time_milliseconds / (float) times;
 }
 
-// Test performance of encoding methods for a linear stream of coordinates
-static void Encode_3D_LinearPerf(){
-	cout << "++ Encoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
-#if _WIN64 || __x86_64__
-	cout << "    64-bit LUT preshifted: " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted, times) << " ms" << endl;
-	cout << "    64-bit LUT:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT, times) << " ms" << endl;
-	cout << "    64-bit Magicbits:      " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_magicbits, times) << " ms" << endl;
-	cout << "    64-bit For:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_for, times) << " ms" << endl;
-#else
-	cout << "    32-bit LUT preshifted: " << testEncode_3D_Linear_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT_shifted, times) << " ms" << endl;
-	cout << "    32-bit LUT:            " << testEncode_3D_Linear_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT, times) << " ms" << endl;
-#endif
-}
-
-// Test performance of encoding methods for a random stream of coordinates
-static void Encode_3D_RandomPerf(){
-	cout << "++ Encoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
-#if _WIN64 || __x86_64__
-	cout << "    64-bit LUT preshifted: " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted, times) << " ms" << endl;
-	cout << "    64-bit LUT:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT, times) << " ms" << endl;
-	cout << "    64-bit Magicbits:      " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_magicbits, times) << " ms" << endl;
-	cout << "    64-bit For:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_for, times) << " ms" << endl;
-#else
-	cout << "    32-bit LUT preshifted: " << testEncode_3D_Random_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT_shifted, times) << " ms" << endl;
-	cout << "    32-bit LUT:            " << testEncode_3D_Random_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT, times) << " ms" << endl;
-#endif
-}
-
 template <typename morton, typename coord>
-static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
+static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times){
 	Timer timer = Timer();
 	coord x, y, z;
 	morton runningsum = 0;
-	for (int t = 0; t < times; t++){
+	for (size_t t = 0; t < times; t++){
 		for (morton i = 0; i < total; i++){
 			timer.start();
 			function(i,x,y,z);
@@ -194,7 +166,7 @@ static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coo
 }
 
 template <typename morton, typename coord>
-static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), int times){
+static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times){
 	Timer timer = Timer();
 	coord x, y, z;
 	morton maximum = ~0; // maximum for the random morton codes
@@ -210,8 +182,8 @@ static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coo
 	// Start performance test
 	for (int t = 0; t < times; t++){
 		for (size_t i = 0; i < total; i++){
-			timer.start();
 			m = randnumbers[i % RAND_POOL_SIZE];
+			timer.start();
 			function(m,x,y,z);
 			timer.stop();
 			runningsum += x + y + z;
@@ -219,6 +191,34 @@ static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coo
 	}
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
+}
+
+// Test performance of encoding methods for a linear stream of coordinates
+static void Encode_3D_LinearPerf() {
+	cout << "++ Encoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
+#if _WIN64 || __x86_64__
+	cout << "    64-bit LUT preshifted: " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted, times) << " ms" << endl;
+	cout << "    64-bit LUT:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT, times) << " ms" << endl;
+	cout << "    64-bit Magicbits:      " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_magicbits, times) << " ms" << endl;
+	cout << "    64-bit For:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_for, times) << " ms" << endl;
+#else
+	cout << "    32-bit LUT preshifted: " << testEncode_3D_Linear_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT_shifted, times) << " ms" << endl;
+	cout << "    32-bit LUT:            " << testEncode_3D_Linear_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT, times) << " ms" << endl;
+#endif
+}
+
+// Test performance of encoding methods for a random stream of coordinates
+static void Encode_3D_RandomPerf() {
+	cout << "++ Encoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
+#if _WIN64 || __x86_64__
+	cout << "    64-bit LUT preshifted: " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted, times) << " ms" << endl;
+	cout << "    64-bit LUT:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT, times) << " ms" << endl;
+	cout << "    64-bit Magicbits:      " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_magicbits, times) << " ms" << endl;
+	cout << "    64-bit For:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_for, times) << " ms" << endl;
+#else
+	cout << "    32-bit LUT preshifted: " << testEncode_3D_Random_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT_shifted, times) << " ms" << endl;
+	cout << "    32-bit LUT:            " << testEncode_3D_Random_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT, times) << " ms" << endl;
+#endif
 }
 
 // Test performance of decoding a linear set of morton codes
@@ -281,8 +281,8 @@ int main(int argc, char *argv[]) {
 		total = MAX*MAX*MAX;
 		Encode_3D_LinearPerf();
 		Encode_3D_RandomPerf();
-		//Decode_3D_LinearPerf();
-		//Decode_3D_RandomPerf();
+		Decode_3D_LinearPerf();
+		Decode_3D_RandomPerf();
 		printRunningSums();
 	}
 }
