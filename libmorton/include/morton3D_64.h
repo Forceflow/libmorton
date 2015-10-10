@@ -10,7 +10,7 @@
 using namespace std;
 
 // ENCODE 3D 64-bit morton code : Pre-shifted LUT
-inline uint_fast64_t morton3D_64_Encode_LUT_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
 	uint_fast64_t answer =
 		Morton3D_64_encode_z_256[(z >> 16) & 0x000000FF] |
 		Morton3D_64_encode_y_256[(y >> 16) & 0x000000FF] |
@@ -27,7 +27,7 @@ inline uint_fast64_t morton3D_64_Encode_LUT_shifted(const uint_fast32_t x, const
 }
 
 // ENCODE 3D 64-bit morton code : LUT
-inline uint_fast64_t morton3D_64_Encode_LUT(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+inline uint_fast64_t morton3D_64_Encode_LUT256(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
 	uint_fast64_t answer =
 		(Morton3D_64_encode_x_256[(z >> 16) & 0x000000FF] << 2)
 		| (Morton3D_64_encode_x_256[(y >> 16) & 0x000000FF] << 1)
@@ -199,16 +199,16 @@ inline void morton3D_64_Decode_LUT(const uint_fast64_t morton, uint_fast32_t& x,
 #endif
 }
 
-inline uint_fast32_t morton3D_64_getThirdBits(const uint_fast64_t a){
+// DECODE 3D 64-bit morton code : Magic bits
+inline uint_fast32_t morton3D_64_getThirdBits(const uint_fast64_t a) {
 	uint_fast64_t x = a & 0x9249249249249249;
-	x = (x ^ (x >> 2))  & 0x030c30c3030c30c3;
-	x = (x ^ (x >> 4))  & 0xF00F00F00F00F00F;
-	x = (x ^ (x >> 8))  & 0x00FF0000FF0000FF;
+	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
+	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
+	x = (x ^ (x >> 8)) & 0x00FF0000FF0000FF;
 	x = (x ^ (x >> 16)) & 0x000000000000FFFF;
 	return (uint_fast32_t)x;
 }
 
-// DECODE 3D 64-bit morton code : Magic bits
 inline void morton3D_64_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
 	x = morton3D_64_getThirdBits(morton);
 	y = morton3D_64_getThirdBits(morton >> 1);

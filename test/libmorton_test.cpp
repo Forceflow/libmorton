@@ -95,8 +95,8 @@ static void check3D_DecodeCorrectness(){
 static void check3D_EncodeCorrectness(){
 	printf("++ Checking correctness of 3D encoding methods ... ");
 	bool ok = true;
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT ", &morton3D_64_Encode_LUT_shifted);
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT ", &morton3D_64_Encode_LUT);
+	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT ", &morton3D_64_Encode_LUT256_shifted);
+	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT ", &morton3D_64_Encode_LUT256);
 	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Magic Bits", &morton3D_64_Encode_magicbits);
 	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For-loop", &morton3D_64_Encode_for);
 	if(ok){printf(" Passed. \n");}else{ printf("    One or more methods failed. \n");}
@@ -197,8 +197,8 @@ static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coo
 static void Encode_3D_LinearPerf() {
 	cout << "++ Encoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 #if _WIN64 || __x86_64__
-	cout << "    64-bit LUT preshifted: " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted, times) << " ms" << endl;
-	cout << "    64-bit LUT:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT, times) << " ms" << endl;
+	cout << "    64-bit LUT preshifted: " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT256_shifted, times) << " ms" << endl;
+	cout << "    64-bit LUT:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT256, times) << " ms" << endl;
 	cout << "    64-bit Magicbits:      " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_magicbits, times) << " ms" << endl;
 	cout << "    64-bit For:            " << testEncode_3D_Linear_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_for, times) << " ms" << endl;
 #else
@@ -211,8 +211,8 @@ static void Encode_3D_LinearPerf() {
 static void Encode_3D_RandomPerf() {
 	cout << "++ Encoding " << MAX << "^3 morton codes in RANDOM order (" << total << " in total)" << endl;
 #if _WIN64 || __x86_64__
-	cout << "    64-bit LUT preshifted: " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT_shifted, times) << " ms" << endl;
-	cout << "    64-bit LUT:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT, times) << " ms" << endl;
+	cout << "    64-bit LUT preshifted: " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT256_shifted, times) << " ms" << endl;
+	cout << "    64-bit LUT:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT256, times) << " ms" << endl;
 	cout << "    64-bit Magicbits:      " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_magicbits, times) << " ms" << endl;
 	cout << "    64-bit For:            " << testEncode_3D_Random_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_for, times) << " ms" << endl;
 #else
@@ -268,6 +268,10 @@ void printHeader(){
 	cout << "++ Not using intrinsics optimization." << endl;
 #endif
 }
+
+//void prepareLUTs{
+//
+//}
 
 int main(int argc, char *argv[]) {
 	times = 10;
