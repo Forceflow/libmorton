@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TIMER_H_
+#define TIMER_H_
 
 #if _MSC_VER
 #include <Windows.h>
@@ -43,7 +44,6 @@ struct Timer { // High perofrmance timer using standard c++11 chrono
 	high_resolution_clock::time_point t2;
 
 	inline Timer() {
-
 	}
 
 	inline void start() {
@@ -55,4 +55,6 @@ struct Timer { // High perofrmance timer using standard c++11 chrono
 		elapsed_time_milliseconds += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 	}
 };
+#endif
+
 #endif
