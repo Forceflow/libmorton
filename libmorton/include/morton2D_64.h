@@ -35,13 +35,37 @@ inline uint_fast64_t morton2D_64_splitby2(const uint_fast32_t a){
 inline uint_fast64_t morton2D_64_Encode_magicbits(const uint_fast32_t x, const uint_fast32_t y){
 	return morton2D_64_splitby2(x) | (morton2D_64_splitby2(y) << 1);
 }
-//
-//// ENCODE 2D 64-bit morton code: LUT preshifted
-//inline uint_fast64_t morton2D_64_Encode_LUT_shifted(const uint_fast32_t x, const uint_fast32_t y){
-//	uint_fast64_t answer =
-//		Morton2D_64_encode_y_256[(y >> 24) & 0x000000FF] |
-//		Morton2D_64_encode_x_256[(x >> 24) & 0x000000FF];
-//	answer = (answer + 
-//}
+
+// ENCODE 2D 64-bit morton code: LUT preshifted
+inline uint_fast64_t morton2D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y){
+	uint_fast64_t answer =
+		Morton2D_64_encode_y_256[(y >> 24) & 0x000000FF] | // select 8 upper bits
+		Morton2D_64_encode_x_256[(x >> 24) & 0x000000FF];
+	answer = answer << 16 | // shift by 16 = 2 * 8bits
+		Morton2D_64_encode_y_256[(y >> 16) & 0x000000FF] | // select next 8 bits
+		Morton2D_64_encode_x_256[(x >> 16) & 0x000000FF];
+	answer = answer << 16 | // shift by 16 = 2 * 8bits
+		Morton2D_64_encode_y_256[(y >> 8) & 0x000000FF] | // select next 8 bits
+		Morton2D_64_encode_x_256[(x >> 8) & 0x000000FF];
+	answer = answer << 16 | // shift by 16 = 2 * 8bits
+		Morton2D_64_encode_y_256[(y) & 0x000000FF] | // select next 8 bits
+		Morton2D_64_encode_x_256[(x) & 0x000000FF];
+}
+
+// ENCODE 2D 64-bit morton code: LUT preshifted
+inline uint_fast64_t morton2D_64_Encode_LUT256(const uint_fast32_t x, const uint_fast32_t y) {
+	uint_fast64_t answer =
+		(Morton2D_64_encode_x_256[(y >> 24) & 0x000000FF]) << 1 | // select 8 upper bits
+		Morton2D_64_encode_x_256[(x >> 24) & 0x000000FF];
+	answer = answer << 16 | // shift by 16 = 2 * 8bits
+		(Morton2D_64_encode_x_256[(y >> 16) & 0x000000FF]) << 1 | // select next 8 bits
+		Morton2D_64_encode_x_256[(x >> 16) & 0x000000FF];
+	answer = answer << 16 | // shift by 16 = 2 * 8bits
+		(Morton2D_64_encode_x_256[(y >> 8) & 0x000000FF]) << 1 | // select next 8 bits
+		Morton2D_64_encode_x_256[(x >> 8) & 0x000000FF];
+	answer = answer << 16 | // shift by 16 = 2 * 8bits
+		(Morton2D_64_encode_x_256[(y)& 0x000000FF]) << 1 | // select next 8 bits
+		Morton2D_64_encode_x_256[(x)& 0x000000FF];
+}
 
 #endif // MORTON2D_64_H_
