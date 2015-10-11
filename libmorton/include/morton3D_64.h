@@ -69,7 +69,7 @@ inline uint_fast64_t morton3D_64_Encode_for(const uint_fast32_t x, const uint_fa
 	findFirstSetBit32(x, &x_max);
 	findFirstSetBit32(y, &y_max);
 	findFirstSetBit32(z, &z_max);
-	checkbits = max(z_max,max(x_max, y_max)) + 1;
+	checkbits = min(checkbits,max(z_max,max(x_max, y_max))+1);
 #endif
 	for (uint_fast64_t i = 0; i <= checkbits; ++i) {
     //Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
@@ -115,7 +115,7 @@ inline void morton3D_64_Decode_LUT256_shifted(const uint_fast64_t morton, uint_f
 	z = z | (Morton3D_64_decode_z_512[((morton >> 54) & 0x000001ff)] << 18);
 	return;
 #else
-	x = 0 | Morton3D_64_decode_x_512[morton & 0x000001ff]
+	x = 0 | Morton3D_64_decode_x_512[morton & 0x00000000000001ff]
 		| (Morton3D_64_decode_x_512[((morton >> 9) & 0x000001ff)] << 3)
 		| (Morton3D_64_decode_x_512[((morton >> 18) & 0x000001ff)] << 6)
 		| (Morton3D_64_decode_x_512[((morton >> 27) & 0x000001ff)] << 9)
@@ -206,7 +206,7 @@ inline uint_fast32_t morton3D_64_getThirdBits(const uint_fast64_t a) {
 	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
 	x = (x ^ (x >> 8)) & 0x00FF0000FF0000FF;
 	x = (x ^ (x >> 16)) & 0x000000000000FFFF;
-	return (uint_fast32_t)x;
+	return (uint_fast32_t) x;
 }
 
 inline void morton3D_64_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
@@ -224,7 +224,7 @@ inline void morton3D_64_Decode_for(const uint_fast64_t morton, uint_fast32_t& x,
 #ifdef LIBMORTON_EARLY_TERMINATION
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
-	checkbits = (firstbit_location / (float) 3.0);
+	checkbits = min(checkbits, (firstbit_location / (float) 3.0));
 #endif
 	for (uint_fast64_t i = 0; i <= checkbits; i++) {
 		x |= (morton & (1ull << 3 * i)) >> ((2 * i));

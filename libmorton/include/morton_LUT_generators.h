@@ -17,8 +17,8 @@ void generate2D_EncodeLUT(size_t how_many_bits, uint_fast16_t*& x_table, uint_fa
 	y_table = (uint_fast16_t*)malloc(total * sizeof(uint_fast16_t));
 
 	for (size_t i = 0; i < total; i++){
-		x_table[i] = morton2D_64_Encode_magicbits(i, 0);
-		y_table[i] = morton2D_64_Encode_magicbits(0, i);
+		x_table[i] = (uint_fast16_t) morton2D_64_Encode_magicbits((uint_fast32_t) i, 0);
+		y_table[i] = (uint_fast16_t) morton2D_64_Encode_magicbits(0, (uint_fast32_t) i);
 	}
 
 	if (print_tables){

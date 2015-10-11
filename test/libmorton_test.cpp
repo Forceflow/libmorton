@@ -103,13 +103,13 @@ static void check3D_EncodeCorrectness(){
 }
 
 template <typename morton, typename coord>
-static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), size_t times){
+static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), size_t times){
 	Timer timer = Timer();
 	morton runningsum = 0;
 	for (size_t t = 0; t < times; t++){
-		for (size_t i = 0; i < MAX; i++){
-			for (size_t j = 0; j < MAX; j++){
-				for (size_t k = 0; k < MAX; k++){
+		for (coord i = 0; i < MAX; i++){
+			for (coord j = 0; j < MAX; j++){
+				for (coord k = 0; k < MAX; k++){
 					timer.start();
 					runningsum += function(i, j, k);
 					timer.stop();
@@ -122,7 +122,7 @@ static float testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), s
 }
 
 template <typename morton, typename coord>
-static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), size_t times){
+static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), size_t times){
 	Timer timer = Timer();
 	coord maximum = ~0;
 	morton runningsum = 0;
@@ -149,7 +149,7 @@ static float testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), s
 }
 
 template <typename morton, typename coord>
-static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times){
+static double testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times){
 	Timer timer = Timer();
 	coord x, y, z;
 	morton runningsum = 0;
@@ -166,7 +166,7 @@ static float testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coo
 }
 
 template <typename morton, typename coord>
-static float testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times){
+static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times){
 	Timer timer = Timer();
 	coord x, y, z;
 	morton maximum = ~0; // maximum for the random morton codes
