@@ -35,7 +35,7 @@ inline uint_fast32_t morton3D_32_splitby3(const uint_fast16_t a){
 }
 
 // ENCODE 3D 32-bit morton code : Magic bits
-inline uint_fast64_t morton3D_32_Encode_magicbits(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
+inline uint_fast32_t morton3D_32_Encode_magicbits(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
 	return morton3D_32_splitby3(x) | (morton3D_32_splitby3(y) << 1) | (morton3D_32_splitby3(z) << 2);
 }
 
