@@ -10,7 +10,7 @@
 using namespace std;
 
 // ENCODE 3D 64-bit morton code : Pre-shifted LUT
-inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z) {
 	uint_fast64_t answer =
 		Morton3D_64_encode_z_256[(z >> 16) & 0x000000FF] |
 		Morton3D_64_encode_y_256[(y >> 16) & 0x000000FF] |
@@ -26,13 +26,50 @@ inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, co
 	return answer;
 }
 
+// ENCODE 3D 64-bit morton code : Pre-shifted LUT (Early termination version)
+inline uint_fast64_t morton3D_64_Encode_LUT256_shifted_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+	unsigned long x_max = 0, y_max = 0, z_max = 0;
+	uint_fast64_t answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
+	if (findFirstSetBit32(z, &z_max)) {
+		answer_z |= (Morton3D_64_encode_z_256[z & 0x000000FF]);
+		if (z_max >= 8) {
+			answer_z |= ((Morton3D_64_encode_z_256[(z >> 8) & 0x000000FF]) << 24);
+			if (z_max >= 16) {
+				answer_z |= ((Morton3D_64_encode_z_256[(z >> 16) & 0x000000FF]) << 48);
+			}
+		}
+		total = answer_z;
+	}
+	if (findFirstSetBit32(y, &y_max)) {
+		answer_y |= (Morton3D_64_encode_y_256[y & 0x000000FF]);
+		if (y_max >= 8) {
+			answer_y |= ((Morton3D_64_encode_y_256[(y >> 8) & 0x000000FF]) << 24);
+			if (y_max >= 16) {
+				answer_y |= ((Morton3D_64_encode_y_256[(y >> 16) & 0x000000FF]) << 48);
+			}
+		}
+		total |= answer_y;
+	}
+	if (findFirstSetBit32(x, &x_max)) {
+		answer_x |= (Morton3D_64_encode_x_256[x & 0x000000FF]);
+		if (x_max >= 8) {
+			answer_x |= ((Morton3D_64_encode_x_256[(x >> 8) & 0x000000FF]) << 24);
+			if (x_max >= 16) {
+				answer_x |= ((Morton3D_64_encode_x_256[(x >> 16) & 0x000000FF]) << 48);
+			}
+		}
+		total |= answer_x;
+	}
+	return total;
+}
+
 // ENCODE 3D 64-bit morton code : LUT
-inline uint_fast64_t morton3D_64_Encode_LUT256(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+inline uint_fast64_t morton3D_64_Encode_LUT256(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z) {
 	uint_fast64_t answer =
 		(Morton3D_64_encode_x_256[(z >> 16) & 0x000000FF] << 2)
 		| (Morton3D_64_encode_x_256[(y >> 16) & 0x000000FF] << 1)
 		| Morton3D_64_encode_x_256[(x >> 16) & 0x000000FF];
-	answer = answer << 24 | 
+	answer = answer << 24 |
 		(Morton3D_64_encode_x_256[(z >> 8) & 0x000000FF] << 2)
 		| (Morton3D_64_encode_x_256[(y >> 8) & 0x000000FF] << 1)
 		| Morton3D_64_encode_x_256[(x >> 8) & 0x000000FF];
@@ -43,6 +80,44 @@ inline uint_fast64_t morton3D_64_Encode_LUT256(const uint_fast32_t x, const uint
 	return answer;
 }
 
+// ENCODE 3D 64-bit morton code : LUT (early termination version)
+inline uint_fast64_t morton3D_64_Encode_LUT256_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z) {
+	unsigned long x_max = 0, y_max = 0, z_max = 0;
+	uint_fast64_t answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
+	if (findFirstSetBit32(z, &z_max)) {
+		answer_z |= (Morton3D_64_encode_x_256[z & 0x000000FF]);
+		if (z_max >= 8) {
+			answer_z |= ((Morton3D_64_encode_x_256[(z >> 8) & 0x000000FF]) << 24);
+			if (z_max >= 16) {
+				answer_z |= ((Morton3D_64_encode_x_256[(z >> 16) & 0x000000FF]) << 48);
+			}
+		}
+		total = answer_z << 2;
+	}
+	if (findFirstSetBit32(y, &y_max)) {
+		answer_y |= (Morton3D_64_encode_x_256[y & 0x000000FF]);
+		if (y_max >= 8) {
+			answer_y |= ((Morton3D_64_encode_x_256[(y >> 8) & 0x000000FF]) << 24);
+			if (y_max >= 16) {
+				answer_y |= ((Morton3D_64_encode_x_256[(y >> 16) & 0x000000FF]) << 48);
+			}
+		}
+		total |= answer_y << 1;
+	}
+	if (findFirstSetBit32(x, &x_max)) {
+		answer_x |= (Morton3D_64_encode_x_256[x & 0x000000FF]);
+		if (x_max >= 8) {
+			answer_x |= ((Morton3D_64_encode_x_256[(x >> 8) & 0x000000FF]) << 24);
+			if (x_max >= 16) {
+				answer_x |= ((Morton3D_64_encode_x_256[(x >> 16) & 0x000000FF]) << 48);
+			}
+		}
+		total |= answer_x;
+	}
+	return total;
+}
+
+// ENCODE 3D 64-bit morton code : Magic bits (helper method)
 inline uint_fast64_t splitBy3(const uint_fast32_t a){
 	uint_fast64_t x = a;
 	x = (x | x << 32) & 0xffff00000000ffff;
@@ -63,9 +138,7 @@ inline uint_fast64_t morton3D_64_Encode_for(const uint_fast32_t x, const uint_fa
 	uint_fast64_t answer = 0;
 	unsigned int checkbits = 21;
 #ifdef LIBMORTON_EARLY_TERMINATION
-	unsigned long x_max = 0;
-	unsigned long y_max = 0;
-	unsigned long z_max = 0;
+	unsigned long x_max = 0, y_max = 0, z_max = 0;
 	findFirstSetBit32(x, &x_max);
 	findFirstSetBit32(y, &y_max);
 	findFirstSetBit32(z, &z_max);
@@ -83,7 +156,29 @@ inline uint_fast64_t morton3D_64_Encode_for(const uint_fast32_t x, const uint_fa
 // DECODE 3D 64-bit morton code : Shifted LUT
 inline void morton3D_64_Decode_LUT256_shifted(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
 	x = 0; y = 0; z = 0;
-#ifdef LIBMORTON_EARLY_TERMINATION
+#if !defined(LIBMORTON_EARLY_TERMINATION)
+	x = Morton3D_64_decode_x_512[morton & 0x00000000000001ff]
+		| (Morton3D_64_decode_x_512[((morton >> 9) & 0x000001ff)] << 3)
+		| (Morton3D_64_decode_x_512[((morton >> 18) & 0x000001ff)] << 6)
+		| (Morton3D_64_decode_x_512[((morton >> 27) & 0x000001ff)] << 9)
+		| (Morton3D_64_decode_x_512[((morton >> 36) & 0x000001ff)] << 12)
+		| (Morton3D_64_decode_x_512[((morton >> 46) & 0x000001ff)] << 15)
+		| (Morton3D_64_decode_x_512[((morton >> 54) & 0x000001ff)] << 18);
+	y = Morton3D_64_decode_y_512[morton & 0x1ff]
+		| (Morton3D_64_decode_y_512[((morton >> 9) & 0x000001ff)] << 3)
+		| (Morton3D_64_decode_y_512[((morton >> 18) & 0x000001ff)] << 6)
+		| (Morton3D_64_decode_y_512[((morton >> 27) & 0x000001ff)] << 9)
+		| (Morton3D_64_decode_y_512[((morton >> 36) & 0x000001ff)] << 12)
+		| (Morton3D_64_decode_y_512[((morton >> 46) & 0x000001ff)] << 15)
+		| (Morton3D_64_decode_y_512[((morton >> 54) & 0x000001ff)] << 18);
+	z = Morton3D_64_decode_z_512[morton & 0x1ff]
+		| (Morton3D_64_decode_z_512[((morton >> 9) & 0x000001ff)] << 3)
+		| (Morton3D_64_decode_z_512[((morton >> 18) & 0x000001ff)] << 6)
+		| (Morton3D_64_decode_z_512[((morton >> 27) & 0x000001ff)] << 9)
+		| (Morton3D_64_decode_z_512[((morton >> 36) & 0x000001ff)] << 12)
+		| (Morton3D_64_decode_z_512[((morton >> 46) & 0x000001ff)] << 15)
+		| (Morton3D_64_decode_z_512[((morton >> 54) & 0x000001ff)] << 18);
+#else
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
@@ -114,35 +209,36 @@ inline void morton3D_64_Decode_LUT256_shifted(const uint_fast64_t morton, uint_f
 	y = y | (Morton3D_64_decode_y_512[((morton >> 54) & 0x000001ff)] << 18);
 	z = z | (Morton3D_64_decode_z_512[((morton >> 54) & 0x000001ff)] << 18);
 	return;
-#else
-	x = 0 | Morton3D_64_decode_x_512[morton & 0x00000000000001ff]
-		| (Morton3D_64_decode_x_512[((morton >> 9) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_x_512[((morton >> 18) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_x_512[((morton >> 27) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_x_512[((morton >> 36) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_x_512[((morton >> 46) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_x_512[((morton >> 54) & 0x000001ff)] << 18);
-	y = 0 | Morton3D_64_decode_y_512[morton & 0x1ff]
-		| (Morton3D_64_decode_y_512[((morton >> 9) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_y_512[((morton >> 18) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_y_512[((morton >> 27) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_y_512[((morton >> 36) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_y_512[((morton >> 46) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_y_512[((morton >> 54) & 0x000001ff)] << 18);
-	z = 0 | Morton3D_64_decode_z_512[morton & 0x1ff]
-		| (Morton3D_64_decode_z_512[((morton >> 9) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_z_512[((morton >> 18) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_z_512[((morton >> 27) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_z_512[((morton >> 36) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_z_512[((morton >> 46) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_z_512[((morton >> 54) & 0x000001ff)] << 18);
 #endif
 }
 
 // DECODE 3D 64-bit morton code : LUT
 inline void morton3D_64_Decode_LUT256(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
 	x = 0; y = 0; z = 0;
-#ifdef LIBMORTON_EARLY_TERMINATION
+#if !defined(LIBMORTON_EARLY_TERMINATION)
+	// standard portable version
+	x = Morton3D_64_decode_x_512[morton & 0x000001ff]
+		| (Morton3D_64_decode_x_512[((morton >> 9) & 0x000001ff)] << 3)
+		| (Morton3D_64_decode_x_512[((morton >> 18) & 0x000001ff)] << 6)
+		| (Morton3D_64_decode_x_512[((morton >> 27) & 0x000001ff)] << 9)
+		| (Morton3D_64_decode_x_512[((morton >> 36) & 0x000001ff)] << 12)
+		| (Morton3D_64_decode_x_512[((morton >> 46) & 0x000001ff)] << 15)
+		| (Morton3D_64_decode_x_512[((morton >> 54) & 0x000001ff)] << 18);
+	y = Morton3D_64_decode_x_512[(morton >> 1) & 0x000001ff]
+		| (Morton3D_64_decode_x_512[((morton >> 10) & 0x000001ff)] << 3)
+		| (Morton3D_64_decode_x_512[((morton >> 19) & 0x000001ff)] << 6)
+		| (Morton3D_64_decode_x_512[((morton >> 28) & 0x000001ff)] << 9)
+		| (Morton3D_64_decode_x_512[((morton >> 37) & 0x000001ff)] << 12)
+		| (Morton3D_64_decode_x_512[((morton >> 47) & 0x000001ff)] << 15)
+		| (Morton3D_64_decode_x_512[((morton >> 55) & 0x000001ff)] << 18);
+	z = Morton3D_64_decode_x_512[(morton >> 2) & 0x000001ff]
+		| (Morton3D_64_decode_x_512[((morton >> 11) & 0x000001ff)] << 3)
+		| (Morton3D_64_decode_x_512[((morton >> 20) & 0x000001ff)] << 6)
+		| (Morton3D_64_decode_x_512[((morton >> 29) & 0x000001ff)] << 9)
+		| (Morton3D_64_decode_x_512[((morton >> 38) & 0x000001ff)] << 12)
+		| (Morton3D_64_decode_x_512[((morton >> 48) & 0x000001ff)] << 15)
+		| (Morton3D_64_decode_x_512[((morton >> 56) & 0x000001ff)] << 18);
+#else
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
@@ -173,29 +269,6 @@ inline void morton3D_64_Decode_LUT256(const uint_fast64_t morton, uint_fast32_t&
 	y = y | (Morton3D_64_decode_x_512[((morton >> 55) & 0x000001ff)] << 18);
 	z = z | (Morton3D_64_decode_x_512[((morton >> 56) & 0x000001ff)] << 18);
 	return;
-#else
-	// standard portable version
-	x = 0 | Morton3D_64_decode_x_512[morton & 0x000001ff]
-		| (Morton3D_64_decode_x_512[((morton >> 9) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_x_512[((morton >> 18) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_x_512[((morton >> 27) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_x_512[((morton >> 36) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_x_512[((morton >> 46) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_x_512[((morton >> 54) & 0x000001ff)] << 18);
-	y = 0 | Morton3D_64_decode_x_512[(morton >> 1) & 0x000001ff]
-		| (Morton3D_64_decode_x_512[((morton >> 10) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_x_512[((morton >> 19) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_x_512[((morton >> 28) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_x_512[((morton >> 37) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_x_512[((morton >> 47) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_x_512[((morton >> 55) & 0x000001ff)] << 18);
-	z = 0 | Morton3D_64_decode_x_512[(morton >> 2) & 0x000001ff]
-		| (Morton3D_64_decode_x_512[((morton >> 11) & 0x000001ff)] << 3)
-		| (Morton3D_64_decode_x_512[((morton >> 20) & 0x000001ff)] << 6)
-		| (Morton3D_64_decode_x_512[((morton >> 29) & 0x000001ff)] << 9)
-		| (Morton3D_64_decode_x_512[((morton >> 38) & 0x000001ff)] << 12)
-		| (Morton3D_64_decode_x_512[((morton >> 48) & 0x000001ff)] << 15)
-		| (Morton3D_64_decode_x_512[((morton >> 56) & 0x000001ff)] << 18);
 #endif
 }
 
