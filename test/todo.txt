@@ -1,17 +1,3 @@
-- Check other intrinsics
-- (go to 128 bit?)
-
-TIMINGS
-- Toch proberen random number time weg te halen ... (check of het zelfde is met niet=-random getallen)
-- make sure functions don't get whittled away (runningsum etc..)
-- can spare one loop in for loops
-
-LUTS
--- How many precomputed bits
--- LUT table generators flexibility
--- Size table
-
-RANDOM NUMBERS
-- pseudo random number generator LCG 03
-- grote tabel (L2 cache size) random genator
-
+- early termination methods
+- add more LUT sizes (LUT8, for example)
+- Better printout, extract to CSV
