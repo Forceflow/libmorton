@@ -9,6 +9,17 @@
 
 using namespace std;
 
+// AVAILABLE METHODS
+inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+inline uint_fast64_t morton3D_64_Encode_LUT256_shifted_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+inline uint_fast64_t morton3D_64_Encode_LUT256(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+inline uint_fast64_t morton3D_64_Encode_LUT256_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+inline uint_fast64_t morton3D_64_Encode_magicbits(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+inline uint_fast64_t morton3D_64_Encode_for(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+inline uint_fast64_t morton3D_64_Encode_for_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+
+
+
 // ENCODE 3D 64-bit morton code : Pre-shifted LUT
 inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z) {
 	uint_fast64_t answer =
@@ -136,19 +147,29 @@ inline uint_fast64_t morton3D_64_Encode_magicbits(const uint_fast32_t x, const u
 // ENCODE 3D 64-bit morton code : For loop
 inline uint_fast64_t morton3D_64_Encode_for(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
 	uint_fast64_t answer = 0;
-	unsigned int checkbits = 21;
-#ifdef LIBMORTON_EARLY_TERMINATION
-	unsigned long x_max = 0, y_max = 0, z_max = 0;
-	findFirstSetBit32(x, &x_max);
-	findFirstSetBit32(y, &y_max);
-	findFirstSetBit32(z, &z_max);
-	checkbits = min(checkbits,max(z_max,max(x_max, y_max))+1);
-#endif
-	for (uint_fast64_t i = 0; i <= checkbits; ++i) {
+	for (uint_fast64_t i = 0; i <= 21; ++i) {
     //Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
     answer |= ((x & ((uint_fast64_t)0x1 << i)) << 2 * i)
       | ((y & ((uint_fast64_t)0x1 << i)) << ((2 * i) + 1))
       | ((z & ((uint_fast64_t)0x1 << i)) << ((2 * i) + 2));
+	}
+	return answer;
+}
+
+// ENCODE 3D 64-bit morton code : For loop (Early termination version)
+inline uint_fast64_t morton3D_64_Encode_for_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z) {
+	uint_fast64_t answer = 0;
+	unsigned int checkbits = 21;
+	unsigned long x_max = 0, y_max = 0, z_max = 0;
+	findFirstSetBit32(x, &x_max);
+	findFirstSetBit32(y, &y_max);
+	findFirstSetBit32(z, &z_max);
+	checkbits = min(checkbits, max(z_max, max(x_max, y_max)) + 1);
+	for (uint_fast64_t i = 0; i <= checkbits; ++i) {
+		//Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
+		answer |= ((x & ((uint_fast64_t)0x1 << i)) << 2 * i)
+			| ((y & ((uint_fast64_t)0x1 << i)) << ((2 * i) + 1))
+			| ((z & ((uint_fast64_t)0x1 << i)) << ((2 * i) + 2));
 	}
 	return answer;
 }
