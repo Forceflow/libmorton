@@ -208,6 +208,7 @@ inline void morton3D_64_Decode_LUT256_shifted(const uint_fast64_t morton, uint_f
 
 // DECODE 3D 64-bit morton code : Shifted LUT (Early termination version)
 inline void morton3D_64_Decode_LUT256_shifted_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
+	x = 0; y = 0; z = 0;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) { return; }
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
@@ -268,6 +269,7 @@ inline void morton3D_64_Decode_LUT256(const uint_fast64_t morton, uint_fast32_t&
 
 // DECODE 3D 64-bit morton code : LUT (Early termination version)
 inline void morton3D_64_Decode_LUT256_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
+	x = 0; y = 0; z = 0;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) { return; }
 	x = x | Morton3D_64_decode_x_512[morton & 0x000001ff];
