@@ -20,33 +20,16 @@ inline uint_fast32_t morton3D_32_Encode_magicbits(const uint_fast16_t x, const u
 inline uint_fast32_t morton3D_32_Encode_for(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z);
 inline uint_fast32_t morton3D_32_Encode_for_ET(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z);
 
-//inline void morton3D_32_Decode_LUT256_shifted(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-//inline void morton3D_32_Decode_LUT256_shifted_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-//inline void morton3D_32_Decode_LUT256(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-//inline void morton3D_32_Decode_LUT256_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-//inline void morton3D_32_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-//inline void morton3D_32_Decode_for(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-//inline void morton3D_32_Decode_for_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-
-// #define LIBMORTON_EARLY_TERMINATION
-
-// ENCODE 3D 32-bit morton code : Magic bits (helper method)
-inline uint_fast32_t morton3D_32_splitby3(const uint_fast16_t a){
-	uint_fast32_t x = a;
-	x = (x | x << 16) & 0xff0000ff;
-	x = (x | x << 8)  & 0x0f00f00f;
-	x = (x | x << 4)  & 0xc30c30c3;
-	x = (x | x << 2)  & 0x49249249;
-	return x;
-}
-
-// ENCODE 3D 32-bit morton code : Magic bits
-inline uint_fast32_t morton3D_32_Encode_magicbits(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
-	return morton3D_32_splitby3(x) | (morton3D_32_splitby3(y) << 1) | (morton3D_32_splitby3(z) << 2);
-}
+inline void morton3D_32_Decode_LUT256_shifted(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
+inline void morton3D_32_Decode_LUT256_shifted_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
+inline void morton3D_32_Decode_LUT256(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
+inline void morton3D_32_Decode_LUT256_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
+inline void morton3D_32_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
+inline void morton3D_32_Decode_for(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
+inline void morton3D_32_Decode_for_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 
 // ENCODE 3D 32-bit morton code : Shifted LUT
-inline uint_fast32_t morton3D_32_Encode_LUT256_shifted(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
+inline uint_fast32_t morton3D_32_Encode_LUT256_shifted(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
 	uint_fast32_t answer =
 		Morton3D_encode_z_256[(z >> 8) & 0x00FF] |
 		Morton3D_encode_y_256[(y >> 8) & 0x00FF] |
@@ -87,20 +70,20 @@ inline uint_fast32_t morton3D_32_Encode_LUT256_shifted_ET(const uint_fast16_t x,
 }
 
 // ENCODE 3D 32-bit morton code : LUT
-inline uint_fast32_t morton3D_32_Encode_LUT256(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
+inline uint_fast32_t morton3D_32_Encode_LUT256(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
 	uint_fast32_t answer =
-		 (Morton3D_encode_x_256[(z >> 8) & 0x00FF] << 2) 
-		|(Morton3D_encode_x_256[(y >> 8) & 0x00FF] << 1)
+		(Morton3D_encode_x_256[(z >> 8) & 0x00FF] << 2)
+		| (Morton3D_encode_x_256[(y >> 8) & 0x00FF] << 1)
 		| Morton3D_encode_x_256[(x >> 8) & 0x00FF];
 	answer = answer << 24 |
-		 (Morton3D_encode_x_256[z & 0x00FF] << 2) 
-		|(Morton3D_encode_x_256[y & 0x00FF] << 1)
+		(Morton3D_encode_x_256[z & 0x00FF] << 2)
+		| (Morton3D_encode_x_256[y & 0x00FF] << 1)
 		| Morton3D_encode_x_256[x & 0x00FF];
 	return answer;
 }
 
 // ENCODE 3D 32-bit morton code : LUT (Early termination version)
-inline uint_fast32_t morton3D_32_Encode_LUT256(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
+inline uint_fast32_t morton3D_32_Encode_LUT256_ET(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
 	uint_fast32_t answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
 	if (findFirstSetBit32(z, &z_max)) {
@@ -108,7 +91,7 @@ inline uint_fast32_t morton3D_32_Encode_LUT256(const uint_fast16_t x, const uint
 		if (z_max >= 8) {
 			answer_z |= ((Morton3D_encode_x_256[(z >> 8) & 0x000000FF]) << 24);
 		}
-		total = answer_z;
+		total = answer_z << 2;
 	}
 	if (findFirstSetBit32(y, &y_max)) {
 		answer_y |= (Morton3D_encode_x_256[y & 0x000000FF]);
@@ -122,9 +105,24 @@ inline uint_fast32_t morton3D_32_Encode_LUT256(const uint_fast16_t x, const uint
 		if (x_max >= 8) {
 			answer_x |= ((Morton3D_encode_x_256[(x >> 8) & 0x000000FF]) << 24);
 		}
-		total |= answer_x << 2;
+		total |= answer_x;
 	}
 	return total;
+}
+
+// ENCODE 3D 32-bit morton code : Magic bits (helper method)
+inline uint_fast32_t morton3D_32_splitby3(const uint_fast16_t a){
+	uint_fast32_t x = a;
+	x = (x | x << 16) & 0xff0000ff;
+	x = (x | x << 8)  & 0x0f00f00f;
+	x = (x | x << 4)  & 0xc30c30c3;
+	x = (x | x << 2)  & 0x49249249;
+	return x;
+}
+
+// ENCODE 3D 32-bit morton code : Magic bits
+inline uint_fast32_t morton3D_32_Encode_magicbits(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z){
+	return morton3D_32_splitby3(x) | (morton3D_32_splitby3(y) << 1) | (morton3D_32_splitby3(z) << 2);
 }
 
 // ENCODE 3D 32-bit morton code : For loop
