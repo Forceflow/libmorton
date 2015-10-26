@@ -1,3 +1,7 @@
+// Portable high-precision timer
+// Using QueryPerformanceCounter for Win32/Win64
+// And C++11 chrono for other platforms
+
 #ifndef TIMER_H_
 #define TIMER_H_
 
@@ -13,7 +17,7 @@ using namespace std;
 
 #if _MSC_VER
 struct Timer { // High performance Win64 timer using QPC events
-	double PCFreq = 0.0;
+	double pc_frequency = 0.0;
 	double elapsed_time_milliseconds = 0.0;
 	LARGE_INTEGER start_time;
 	LARGE_INTEGER end_time;
@@ -21,7 +25,7 @@ struct Timer { // High performance Win64 timer using QPC events
 	inline Timer() {
 		LARGE_INTEGER li;
 		QueryPerformanceFrequency(&li);
-		PCFreq = double(li.QuadPart) / 1000.0;
+		pc_frequency = double(li.QuadPart) / 1000.0;
 	}
 
 	inline void reset() {
@@ -34,11 +38,11 @@ struct Timer { // High performance Win64 timer using QPC events
 
 	inline void stop() {
 		QueryPerformanceCounter(&end_time);
-		elapsed_time_milliseconds += double((end_time.QuadPart - start_time.QuadPart) / PCFreq);
+		elapsed_time_milliseconds += double((end_time.QuadPart - start_time.QuadPart) / pc_frequency);
 	}
 };
-#elif __GNUC__
-struct Timer { // High perofrmance timer using standard c++11 chrono
+#elif
+struct Timer { // High performance timer using standard c++11 chrono
 	double elapsed_time_milliseconds = 0;
 	high_resolution_clock::time_point t1;
 	high_resolution_clock::time_point t2;
