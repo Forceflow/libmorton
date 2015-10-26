@@ -3,8 +3,6 @@
 //
 // Jeroen Baert 2015
 
-#define LIBMORTON_EARLY_TERMINATION
-
 // Utility headers
 #include "libmorton_test.h"
 
@@ -290,11 +288,6 @@ void printHeader(){
 	cout << "++ Compiled using MSVC" << endl;
 #elif __GNUC__
 	cout << "++ Compiled using GCC" << endl;<
-#endif
-#ifdef LIBMORTON_EARLY_TERMINATION
-	cout << "++ Using intrinsics optimization." << endl;
-#else
-	cout << "++ Not using intrinsics optimization." << endl;
 #endif
 }
 
