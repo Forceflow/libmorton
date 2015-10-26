@@ -169,7 +169,7 @@ inline uint_fast64_t morton3D_64_Encode_for_ET(const uint_fast32_t x, const uint
 	findFirstSetBit32(x, &x_max);
 	findFirstSetBit32(y, &y_max);
 	findFirstSetBit32(z, &z_max);
-	unsigned int checkbits = min(21, max(z_max, max(x_max, y_max)) + 1);
+	unsigned int checkbits = min((unsigned long) 21, max(z_max, max(x_max, y_max)) + (unsigned long) 1);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		//Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		answer |= ((x & ((uint_fast64_t)0x1 << i)) << 2 * i)
@@ -334,7 +334,7 @@ inline void morton3D_64_Decode_for_ET(const uint_fast64_t morton, uint_fast32_t&
 	unsigned int checkbits;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
-	checkbits = min(21, (firstbit_location / (float) 3.0));
+	checkbits = min((float) 21, (firstbit_location / (float) 3.0));
 	for (uint_fast64_t i = 0; i <= checkbits; i++) {
 		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
 		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);

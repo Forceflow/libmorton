@@ -12,7 +12,7 @@ inline bool findFirstSetBit32(const uint_fast32_t x, unsigned long* firstbit_loc
 	return true;
 #elif __GNUC__
 	unsigned int pos = __builtin_ffs(x);
-	firstbit_location = pos +1 ;
+	*firstbit_location = pos + 1 ;
 	return pos;
 #endif
 	return true;
@@ -23,7 +23,7 @@ inline bool findFirstSetBit64(const uint_fast64_t x, unsigned long* firstbit_loc
 	if (_BitScanReverse64(firstbit_location, x) == 0){return false;}
 	return true;
 #elif _MSC_VER && _WIN32
-	firstbit_location = 0;
+	*firstbit_location = 0;
 	if (_BitScanReverse(firstbit_location, (x >> 32))){ // check first part
 		firstbit_location += 32;
 	} else if ( ! _BitScanReverse(firstbit_location, (x & 0xFFFFFFFF))){ // also test last part
@@ -32,7 +32,7 @@ inline bool findFirstSetBit64(const uint_fast64_t x, unsigned long* firstbit_loc
 	return true;
 #elif __GNUC__
 	unsigned int pos = __builtin_ffs(x);
-	first_bit_location = pos + 1;
+	*firstbit_location = pos + 1;
 	return pos;
 #endif
 	return true;
