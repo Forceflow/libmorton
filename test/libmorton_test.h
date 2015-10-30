@@ -12,6 +12,12 @@
 #include "../libmorton/include/morton3D_32.h"
 #include "../libmorton/include/morton3D_64.h"
 
+template <typename morton, typename coord>
+struct 3D_encode_function{
+	std::string description;
+	void(*function)(const morton, coord&, coord&, coord&);
+};
+
 // correct morton codes for 16 x 16 x 16, with z running fastest, then y, then x (4096 in total)
 static const uint_fast16_t control_3D_Encode[4096] =
 {
