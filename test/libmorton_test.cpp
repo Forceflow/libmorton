@@ -28,6 +28,9 @@ size_t RAND_POOL_SIZE = 9000;
 // Runningsums
 vector<uint_fast64_t> running_sums;
 
+vector<encode_3D_64> f_64_encode; // 64-bit encode functions
+vector<encode_3D_32> f_32_encode; // 32_bit encode functions
+
 // Make a total of all running_sum checks and print it
 // This is an elaborate way to ensure no function call gets optimized away
 void printRunningSums(){
@@ -233,6 +236,7 @@ static void check3D_DecodeCorrectness() {
 	else { printf("    One or more methods failed. \n"); }
 }
 
+// Test performance of encoding methods for a linear stream of coordinates
 static void Encode_3D_Perf() {
 	cout << "++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
 	cout << "    64-bit LUT256 preshifted:    " << testEncode_3D_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_64_Encode_LUT256_shifted, times) << endl;
@@ -252,6 +256,7 @@ static void Encode_3D_Perf() {
 	cout << "    32-bit For ET:               " << testEncode_3D_Perf<uint_fast32_t, uint_fast32_t>(&morton3D_32_Encode_for_ET, times) << endl;
 }
 
+// Test performance of decoding a linear set of morton codes
 static void Decode_3D_Perf(){
 	cout << "++ Decoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
 //#if _WIN64 || __x86_64__
@@ -292,6 +297,10 @@ void printHeader(){
 int main(int argc, char *argv[]) {
 	times = 10;
 	printHeader();
+
+	// register functions
+	f_64_encode.push_back(encode_3D_64("64-bit encode for", &morton3D_64_Encode_for));
+
 	cout << "++ Checking all methods for correctness" << endl;
 	check3D_EncodeCorrectness();
 	check3D_DecodeCorrectness();

@@ -4,6 +4,7 @@
 // Load utils
 #include "util.h"
 #include "timer.h"
+#include <string>
 
 // Load library we're going to test
 #include "../libmorton/include/morton_LUT_generators.h"
@@ -12,11 +13,19 @@
 #include "../libmorton/include/morton3D_32.h"
 #include "../libmorton/include/morton3D_64.h"
 
+// struct for holding a function and its description
 template <typename morton, typename coord>
-struct 3D_encode_function{
-	std::string description;
-	void(*function)(const morton, coord&, coord&, coord&);
+struct encode_f_3D {
+	char* description;
+	morton (*f)(coord, coord, coord);
+
+	encode_f_3D(char* description, morton(*f)(coord, coord, coord)) :
+	description(description), f(f){
+	}
 };
+
+typedef encode_f_3D<uint_fast64_t, uint_fast32_t> encode_3D_64;
+typedef encode_f_3D<uint_fast32_t, uint_fast16_t> encode_3D_32;
 
 // correct morton codes for 16 x 16 x 16, with z running fastest, then y, then x (4096 in total)
 static const uint_fast16_t control_3D_Encode[4096] =
