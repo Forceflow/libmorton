@@ -1,3 +1,9 @@
+- Cycles time test
+- Linear test: start randomly in domain
+- Random test: test permutations
+
+
+
 - early termination methods
 - add more LUT sizes (LUT8, for example)
 - Better printout, extract to CSV
