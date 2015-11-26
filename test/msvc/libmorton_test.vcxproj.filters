@@ -31,6 +31,9 @@
       <Filter>libmorton_headers</Filter>
     </ClInclude>
     <ClInclude Include="..\timer.h" />
+    <ClInclude Include="..\..\libmorton\include\morton.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\todo.txt" />
