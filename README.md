@@ -5,17 +5,19 @@
  * Cuda version is being developed separately, since it serves a slightly different purpose (batch encoding/decoding large batches of coordinates) and will not be a header-only library.
 
 ## Usage
-You can use the library by including *libmorton/morton.h*. This will always include the most efficient way to date. The header *morton_alternatives.h* contains older / alternative implementations, for reference only.
+You can use the library by including *libmorton/morton.h*. This will always include functions that point to the most efficient way to date.
 
 <pre>
-// ENCODE a 32-bit (x,y,z) coordinate to a 64-bit morton code
-inline uint64_t morton3D_Encode(const uint32_t x, const uint32_t y, const uint32_t z);
-// DECODE a 64-bit morton code into 32-bit (x,y,z) coordinates (use this if you need all three coordinates)
-inline uint64_t morton3D_Decode(const uint64_t morton, uint32_t& x, uint32_t& y, uint32_t& z);
-// DECODE a 64-bit morton code into a 32-bit coordinate (use this if you only need x, y or z)
-inline uint32_t morton3D_Decode_X(const uint64_t morton);
-inline uint32_t morton3D_Decode_Y(const uint64_t morton);
-inline uint32_t morton3D_Decode_Z(const uint64_t morton);
+// ENCODING 2D / 3D morton codes, of length 32 and 64 bits
+inline uint_fast32_t morton2D_32_encode(const uint_fast16_t x, const uint_fast16_t y);
+inline uint_fast64_t morton2D_64_encode(const uint_fast32_t x, const uint_fast32_t y);
+inline uint_fast32_t morton3D_32_encode(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z);
+inline uint_fast64_t morton3D_64_encode(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+// DECODING 2D / 3D morton codes, of length 32 and 64 bits
+inline void morton2D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y);
+inline void morton2D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y);
+inline void morton3D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z);
+inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 </pre>
 
 Compiler/architecture-specific optimizations can be enabled by adding
