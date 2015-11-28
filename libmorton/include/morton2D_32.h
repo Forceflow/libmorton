@@ -3,6 +3,7 @@
 #define MORTON2D_32_H_
 
 #include <stdint.h>
+#include "morton2D_LUTs.h"
 
 #if _MSC_VER
 #include <intrin.h>

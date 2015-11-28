@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include "morton3D_LUTs.h"
+#include "morton_common.h"
 
 #if _MSC_VER
 #include <intrin.h>
@@ -143,7 +144,7 @@ inline uint_fast32_t morton3D_32_Encode_for_ET(const uint_fast16_t x, const uint
 	findFirstSetBit32(x, &x_max);
 	findFirstSetBit32(y, &y_max);
 	findFirstSetBit32(z, &z_max);
-	unsigned int checkbits = min(10, max(z_max, max(x_max, y_max)) + 1);
+	unsigned int checkbits = min((unsigned long) 10, max(z_max, max(x_max, y_max)) + 1);
 	for (unsigned int i = 0; i < checkbits; i++) {
 		answer |= ((x & (0x1 << i)) << 2 * i)
 			| ((y & (0x1 << i)) << ((2 * i) + 1))
@@ -265,7 +266,7 @@ inline void morton3D_32_Decode_for_ET(const uint_fast32_t morton, uint_fast16_t&
 	z = 0;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit32(morton, &firstbit_location)) return;
-	unsigned int checkbits = min(10,(firstbit_location / (float) 3.0));
+	unsigned int checkbits = min(10.0f, (firstbit_location / (float) 3.0));
 	for (uint_fast32_t i = 0; i <= checkbits; i++) {
 		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
 		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
