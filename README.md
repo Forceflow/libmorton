@@ -20,12 +20,6 @@ inline void morton3D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uin
 inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 </pre>
 
-Compiler/architecture-specific optimizations can be enabled by adding
-<pre>
-#define LIBMORTON_USE_INTRINSICS 
-</pre>
-before including the library
-
 ## Testing
 The *test* folder contains tools I use to test correctness and performance of the libmorton implementation.
 
