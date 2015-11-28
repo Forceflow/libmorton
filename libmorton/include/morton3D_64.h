@@ -48,31 +48,31 @@ inline uint_fast64_t morton3D_64_Encode_LUT256_shifted_ET(const uint_fast32_t x,
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
 	uint_fast64_t answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
 	if (findFirstSetBit32(z, &z_max)) {
-		answer_z |= (Morton3D_encode_z_256[z & 0x000000FF]);
+		answer_z |= Morton3D_encode_z_256[z & 0x000000FF];
 		if (z_max >= 8) {
-			answer_z |= ((Morton3D_encode_z_256[(z >> 8) & 0x000000FF]) << 24);
+			answer_z |= (Morton3D_encode_z_256[(z >> 8) & 0x000000FF]) << 24;
 			if (z_max >= 16) {
-				answer_z |= ((Morton3D_encode_z_256[(z >> 16) & 0x000000FF]) << 48);
+				answer_z |= (uint_fast64_t) (Morton3D_encode_z_256[(z >> 16) & 0x000000FF]) << 48;
 			}
 		}
 		total = answer_z;
 	}
 	if (findFirstSetBit32(y, &y_max)) {
-		answer_y |= (Morton3D_encode_y_256[y & 0x000000FF]);
+		answer_y |= Morton3D_encode_y_256[y & 0x000000FF];
 		if (y_max >= 8) {
-			answer_y |= ((Morton3D_encode_y_256[(y >> 8) & 0x000000FF]) << 24);
+			answer_y |= (Morton3D_encode_y_256[(y >> 8) & 0x000000FF]) << 24;
 			if (y_max >= 16) {
-				answer_y |= ((Morton3D_encode_y_256[(y >> 16) & 0x000000FF]) << 48);
+				answer_y |= (uint_fast64_t) (Morton3D_encode_y_256[(y >> 16) & 0x000000FF]) << 48;
 			}
 		}
 		total |= answer_y;
 	}
 	if (findFirstSetBit32(x, &x_max)) {
-		answer_x |= (Morton3D_encode_x_256[x & 0x000000FF]);
+		answer_x |= Morton3D_encode_x_256[x & 0x000000FF];
 		if (x_max >= 8) {
-			answer_x |= ((Morton3D_encode_x_256[(x >> 8) & 0x000000FF]) << 24);
+			answer_x |= (Morton3D_encode_x_256[(x >> 8) & 0x000000FF]) << 24;
 			if (x_max >= 16) {
-				answer_x |= ((Morton3D_encode_x_256[(x >> 16) & 0x000000FF]) << 48);
+				answer_x |= (uint_fast64_t) (Morton3D_encode_x_256[(x >> 16) & 0x000000FF]) << 48;
 			}
 		}
 		total |= answer_x;
@@ -102,31 +102,31 @@ inline uint_fast64_t morton3D_64_Encode_LUT256_ET(const uint_fast32_t x, const u
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
 	uint_fast64_t answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
 	if (findFirstSetBit32(z, &z_max)) {
-		answer_z |= (Morton3D_encode_x_256[z & 0x000000FF]);
+		answer_z |= Morton3D_encode_x_256[z & 0x000000FF];
 		if (z_max >= 8) {
-			answer_z |= ((Morton3D_encode_x_256[(z >> 8) & 0x000000FF]) << 24);
+			answer_z |= (Morton3D_encode_x_256[(z >> 8) & 0x000000FF]) << 24;
 			if (z_max >= 16) {
-				answer_z |= ((Morton3D_encode_x_256[(z >> 16) & 0x000000FF]) << 48);
+				answer_z |= (uint_fast64_t) (Morton3D_encode_x_256[(z >> 16) & 0x000000FF]) << 48;
 			}
 		}
 		total = answer_z << 2;
 	}
 	if (findFirstSetBit32(y, &y_max)) {
-		answer_y |= (Morton3D_encode_x_256[y & 0x000000FF]);
+		answer_y |= Morton3D_encode_x_256[y & 0x000000FF];
 		if (y_max >= 8) {
-			answer_y |= ((Morton3D_encode_x_256[(y >> 8) & 0x000000FF]) << 24);
+			answer_y |= (Morton3D_encode_x_256[(y >> 8) & 0x000000FF]) << 24;
 			if (y_max >= 16) {
-				answer_y |= ((Morton3D_encode_x_256[(y >> 16) & 0x000000FF]) << 48);
+				answer_y |= (uint_fast64_t) (Morton3D_encode_x_256[(y >> 16) & 0x000000FF]) << 48;
 			}
 		}
 		total |= answer_y << 1;
 	}
 	if (findFirstSetBit32(x, &x_max)) {
-		answer_x |= (Morton3D_encode_x_256[x & 0x000000FF]);
+		answer_x |= Morton3D_encode_x_256[x & 0x000000FF];
 		if (x_max >= 8) {
-			answer_x |= ((Morton3D_encode_x_256[(x >> 8) & 0x000000FF]) << 24);
+			answer_x |= (Morton3D_encode_x_256[(x >> 8) & 0x000000FF]) << 24;
 			if (x_max >= 16) {
-				answer_x |= ((Morton3D_encode_x_256[(x >> 16) & 0x000000FF]) << 48);
+				answer_x |= (uint_fast64_t) (Morton3D_encode_x_256[(x >> 16) & 0x000000FF]) << 48;
 			}
 		}
 		total |= answer_x;
@@ -334,7 +334,7 @@ inline void morton3D_64_Decode_for_ET(const uint_fast64_t morton, uint_fast32_t&
 	unsigned int checkbits;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit64(morton, &firstbit_location)) return;
-	checkbits = min((float) 21, (firstbit_location / (float) 3.0));
+	checkbits = (unsigned int) min(21.0f , (firstbit_location / 3.0f));
 	for (uint_fast64_t i = 0; i <= checkbits; i++) {
 		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
 		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);

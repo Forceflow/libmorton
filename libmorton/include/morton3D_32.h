@@ -266,7 +266,7 @@ inline void morton3D_32_Decode_for_ET(const uint_fast32_t morton, uint_fast16_t&
 	z = 0;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit32(morton, &firstbit_location)) return;
-	unsigned int checkbits = min(10.0f, (firstbit_location / (float) 3.0));
+	unsigned int checkbits = (unsigned int) min(10.0f, (firstbit_location / (float) 3.0));
 	for (uint_fast32_t i = 0; i <= checkbits; i++) {
 		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
 		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
