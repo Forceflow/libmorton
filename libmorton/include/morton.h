@@ -2,6 +2,7 @@
 #define MORTON_H_
 
 // This file will always contain pointers to the fastest Morton encoding/decoding implementation
+// IF you just want to use the fastest method to encode/decode morton codes, include this
 
 #include "morton2D_32.h"
 #include "morton2D_64.h"
