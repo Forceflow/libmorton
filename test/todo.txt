@@ -2,6 +2,8 @@
 - Linear test: start randomly in domain
 - Random test: test permutations
 
+- BMI instructions
+- Make calls more templated, this is a mess (see BMI issue)
 
 
 - early termination methods
