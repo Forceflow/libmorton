@@ -2,7 +2,6 @@
 
  * Libmorton is a **C++ header-only library** with methods to efficiently encode/decode 64-bit morton codes from/to 32-bit (x,y,z) coordinates. *Morton order* is also known as *Z-order* or *[the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)*.
  * Libmorton is a **portable** library - in its most basic form it only depends on standard C++ headers. Compiler/architecture optimizations can however be enabled.
- * Cuda version is being developed separately, since it serves a slightly different purpose (batch encoding/decoding large batches of coordinates) and will not be a header-only library.
  * This library is under active development. SHIT WILL BREAK.
 
 ## Usage
