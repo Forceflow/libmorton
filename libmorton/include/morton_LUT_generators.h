@@ -80,9 +80,9 @@ void generate3D_DecodeLUT(size_t how_many_bits, uint_fast8_t*& x_table, uint_fas
 
 	//generate tables
 	for (size_t i = 0; i < total; i++){
-		x_table[i] = morton3D_64_getThirdBits(i);
-		y_table[i] = morton3D_64_getThirdBits(i >> 1);
-		z_table[i] = morton3D_64_getThirdBits(i >> 2);
+		x_table[i] = morton3D_getThirdBits<uint_fast64_t, uint_fast32_t>(i);
+		y_table[i] = morton3D_getThirdBits<uint_fast64_t, uint_fast32_t>(i >> 1);
+		z_table[i] = morton3D_getThirdBits<uint_fast64_t, uint_fast32_t>(i >> 2);
 	}
 
 	if (print_tables){

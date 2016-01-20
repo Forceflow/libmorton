@@ -22,9 +22,10 @@ inline void morton3D_64_Decode_LUT256_shifted(const uint_fast64_t morton, uint_f
 inline void morton3D_64_Decode_LUT256_shifted_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 inline void morton3D_64_Decode_LUT256(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 inline void morton3D_64_Decode_LUT256_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-inline void morton3D_64_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-inline void morton3D_64_Decode_for(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-inline void morton3D_64_Decode_for_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
+
+template<typename morton, typename coord> inline void morton3D_Decode_magicbits(const morton m, coord& x, coord& y, coord& z);
+template<typename morton, typename coord> inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z);
+template<typename morton, typename coord> inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z);
 
 // ENCODE 3D 64-bit morton code : Pre-shifted LUT
 inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z) {
@@ -301,44 +302,60 @@ inline void morton3D_64_Decode_LUT256_ET(const uint_fast64_t morton, uint_fast32
 	return;
 }
 
+static uint_fast32_t masks32[5] = { 0x49249249, 0x030c30c3, 0x0F00F00F, 0xFF0000FF, 0x0000FFFF };
+static uint_fast64_t masks64[5] = { 0x9249249249249249, 0x030c30c3030c30c3, 0xF00F00F00F00F00F, 0x00FF0000FF0000FF, 0x000000000000FFFF };
+
 // DECODE 3D 64-bit morton code : Magic bits (helper method)
-inline uint_fast32_t morton3D_64_getThirdBits(const uint_fast64_t a) {
-	uint_fast64_t x = a & 0x9249249249249249;
-	x = (x ^ (x >> 2)) & 0x030c30c3030c30c3;
-	x = (x ^ (x >> 4)) & 0xF00F00F00F00F00F;
-	x = (x ^ (x >> 8)) & 0x00FF0000FF0000FF;
-	x = (x ^ (x >> 16)) & 0x000000000000FFFF;
-	return (uint_fast32_t) x;
+template<typename morton, typename coord>
+inline coord morton3D_getThirdBits(const morton m) {
+	morton* masks = (sizeof(morton) == 4) ? reinterpret_cast<morton*>(masks32) : reinterpret_cast<morton*>(masks64);
+	morton x = m & masks[0];
+	x = (x ^ (x >> 2)) & masks[1];
+	x = (x ^ (x >> 4)) & masks[2];
+	x = (x ^ (x >> 8)) & masks[3];
+	x = (x ^ (x >> 16)) & masks[4];
+	return (coord)x;
 }
 
 // DECODE 3D 64-bit morton code : Magic bits
-inline void morton3D_64_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
-	x = morton3D_64_getThirdBits(morton);
-	y = morton3D_64_getThirdBits(morton >> 1);
-	z = morton3D_64_getThirdBits(morton >> 2);
+template<typename morton, typename coord>
+inline void morton3D_Decode_magicbits(const morton m, coord& x, coord& y, coord& z){
+	x = morton3D_getThirdBits<morton, coord>(m);
+	y = morton3D_getThirdBits<morton, coord>(m >> 1);
+	z = morton3D_getThirdBits<morton, coord>(m >> 2);
 }
 
 // DECODE 3D 64-bit morton code : For loop
-inline void morton3D_64_Decode_for(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z){
+template<typename morton, typename coord>
+inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
-	for (uint_fast64_t i = 0; i <= 21; i++) {
-		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
-		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
-		z |= (morton & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
+	unsigned int checkbits = (sizeof(morton) == 4) ? 10 : 21;
+
+	for (morton i = 0; i <= checkbits; i++) {
+		x |= (m & (1ull << 3 * i)) >> ((2 * i));
+		y |= (m & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
+		z |= (m & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
 	}
 }
 
 // DECODE 3D 64-bit morton code : For loop (Early termination version)
-inline void morton3D_64_Decode_for_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z) {
+template<typename morton, typename coord>
+inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z) {
 	x = 0; y = 0; z = 0;
 	unsigned int checkbits;
+	float defaultbits = (sizeof(morton) == 4) ? 10.0f : 21.0f;
 	unsigned long firstbit_location = 0;
-	if (!findFirstSetBit64(morton, &firstbit_location)) return;
-	checkbits = (unsigned int) min(21.0f , (firstbit_location / 3.0f));
-	for (uint_fast64_t i = 0; i <= checkbits; i++) {
-		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
-		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
-		z |= (morton & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
+
+	// Early termination
+	if(sizeof(morton) == 4 && !findFirstSetBit32(m, &firstbit_location)) return;
+	else if(!findFirstSetBit64(m, &firstbit_location)) return;
+
+	// How many bits to check?
+	checkbits = (unsigned int) min(defaultbits, firstbit_location / 3.0f);
+	for (morton i = 0; i <= checkbits; i++) {
+		x |= (m & (1ull << 3 * i)) >> ((2 * i));
+		y |= (m & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
+		z |= (m & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
 	}
 }
 

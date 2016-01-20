@@ -25,9 +25,6 @@ inline void morton3D_32_Decode_LUT256_shifted(const uint_fast64_t morton, uint_f
 inline void morton3D_32_Decode_LUT256_shifted_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 inline void morton3D_32_Decode_LUT256(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 inline void morton3D_32_Decode_LUT256_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-inline void morton3D_32_Decode_magicbits(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-inline void morton3D_32_Decode_for(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
-inline void morton3D_32_Decode_for_ET(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 
 // ENCODE 3D 32-bit morton code : Shifted LUT
 inline uint_fast32_t morton3D_32_Encode_LUT256_shifted(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
@@ -245,33 +242,6 @@ inline void morton3D_32_Decode_magicbits(const uint_fast32_t morton, uint_fast16
 	x = morton3D_32_getThirdBits(morton);
 	y = morton3D_32_getThirdBits(morton >> 1);
 	z = morton3D_32_getThirdBits(morton >> 2);
-}
-
-// DECODE 3D 32-bit morton code : For loop
-inline void morton3D_32_Decode_for(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z){
-	x = 0;
-	y = 0;
-	z = 0;
-	for (uint_fast32_t i = 0; i <= 10; i++) {
-		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
-		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
-		z |= (morton & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
-	}
-}
-
-// DECODE 3D 32-bit morton code : For loop
-inline void morton3D_32_Decode_for_ET(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z) {
-	x = 0;
-	y = 0;
-	z = 0;
-	unsigned long firstbit_location = 0;
-	if (!findFirstSetBit32(morton, &firstbit_location)) return;
-	unsigned int checkbits = (unsigned int) min(10.0f, (firstbit_location / (float) 3.0));
-	for (uint_fast32_t i = 0; i <= checkbits; i++) {
-		x |= (morton & (1ull << 3 * i)) >> ((2 * i));
-		y |= (morton & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
-		z |= (morton & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
-	}
 }
 
 #endif // MORTON3D_32_H_
