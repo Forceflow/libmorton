@@ -43,21 +43,21 @@ inline uint_fast32_t morton3D_32_Encode_LUT256_shifted(const uint_fast16_t x, co
 inline uint_fast32_t morton3D_32_Encode_LUT256_shifted_ET(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
 	uint_fast32_t answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
-	if (findFirstSetBit32(z, &z_max)) {
+	if (findFirstSetBit<uint_fast32_t>(z, &z_max)) {
 		answer_z |= (Morton3D_encode_z_256[z & 0x000000FF]);
 		if (z_max >= 8) {
 			answer_z |= ((Morton3D_encode_z_256[(z >> 8) & 0x000000FF]) << 24);
 		}
 		total = answer_z;
 	}
-	if (findFirstSetBit32(y, &y_max)) {
+	if (findFirstSetBit<uint_fast32_t>(y, &y_max)) {
 		answer_y |= (Morton3D_encode_y_256[y & 0x000000FF]);
 		if (y_max >= 8) {
 			answer_y |= ((Morton3D_encode_y_256[(y >> 8) & 0x000000FF]) << 24);
 		}
 		total |= answer_y;
 	}
-	if (findFirstSetBit32(x, &x_max)) {
+	if (findFirstSetBit<uint_fast32_t>(x, &x_max)) {
 		answer_x |= (Morton3D_encode_x_256[x & 0x000000FF]);
 		if (x_max >= 8) {
 			answer_x |= ((Morton3D_encode_x_256[(x >> 8) & 0x000000FF]) << 24);
@@ -84,21 +84,21 @@ inline uint_fast32_t morton3D_32_Encode_LUT256(const uint_fast16_t x, const uint
 inline uint_fast32_t morton3D_32_Encode_LUT256_ET(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
 	uint_fast32_t answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
-	if (findFirstSetBit32(z, &z_max)) {
+	if (findFirstSetBit<uint_fast32_t>(z, &z_max)) {
 		answer_z |= (Morton3D_encode_x_256[z & 0x000000FF]);
 		if (z_max >= 8) {
 			answer_z |= ((Morton3D_encode_x_256[(z >> 8) & 0x000000FF]) << 24);
 		}
 		total = answer_z << 2;
 	}
-	if (findFirstSetBit32(y, &y_max)) {
+	if (findFirstSetBit<uint_fast32_t>(y, &y_max)) {
 		answer_y |= (Morton3D_encode_x_256[y & 0x000000FF]);
 		if (y_max >= 8) {
 			answer_y |= ((Morton3D_encode_x_256[(y >> 8) & 0x000000FF]) << 24);
 		}
 		total |= answer_y << 1;
 	}
-	if (findFirstSetBit32(x, &x_max)) {
+	if (findFirstSetBit<uint_fast32_t>(x, &x_max)) {
 		answer_x |= (Morton3D_encode_x_256[x & 0x000000FF]);
 		if (x_max >= 8) {
 			answer_x |= ((Morton3D_encode_x_256[(x >> 8) & 0x000000FF]) << 24);
@@ -138,9 +138,9 @@ inline uint_fast32_t morton3D_32_Encode_for(const uint_fast16_t x, const uint_fa
 inline uint_fast32_t morton3D_32_Encode_for_ET(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
 	uint_fast32_t answer = 0;
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
-	findFirstSetBit32(x, &x_max);
-	findFirstSetBit32(y, &y_max);
-	findFirstSetBit32(z, &z_max);
+	findFirstSetBit<uint_fast32_t>(x, &x_max);
+	findFirstSetBit<uint_fast32_t>(y, &y_max);
+	findFirstSetBit<uint_fast32_t>(z, &z_max);
 	unsigned int checkbits = min((unsigned long) 10, max(z_max, max(x_max, y_max)) + 1);
 	for (unsigned int i = 0; i < checkbits; i++) {
 		answer |= ((x & (0x1 << i)) << 2 * i)
@@ -226,22 +226,6 @@ inline void morton3D_32_Decode_LUT256_ET(const uint_fast32_t morton, uint_fast16
 	y = y | (Morton3D_decode_x_512[((morton >> 28) & 0x000001ff)] << 9);
 	z = z | (Morton3D_decode_x_512[((morton >> 29) & 0x000001ff)] << 9);
 	return;
-}
-
-// DECODE 3D 32-bit morton code : Magic bits
-inline uint_fast16_t morton3D_32_getThirdBits(const uint_fast32_t a) {
-	uint_fast32_t x = a & 0x49249249;
-	x = (x ^ (x >> 2)) & 0x030c30c3;
-	x = (x ^ (x >> 4)) & 0x0F00F00F;
-	x = (x ^ (x >> 8)) & 0xFF0000FF;
-	x = (x ^ (x >> 16)) & 0x0000FFFF;
-	return (uint_fast16_t)x;
-}
-
-inline void morton3D_32_Decode_magicbits(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y, uint_fast16_t& z) {
-	x = morton3D_32_getThirdBits(morton);
-	y = morton3D_32_getThirdBits(morton >> 1);
-	z = morton3D_32_getThirdBits(morton >> 2);
 }
 
 #endif // MORTON3D_32_H_
