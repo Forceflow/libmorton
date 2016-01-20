@@ -35,7 +35,6 @@ inline uint_fast64_t morton3D_64_encode(const uint_fast32_t x, const uint_fast32
 	return morton3D_64_Encode_LUT256_shifted(x, y, z);
 }
 
-
 inline void morton2D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y) {
 	morton2D_Decode_for<uint_fast32_t, uint_fast16_t>(morton, x, y);
 }
