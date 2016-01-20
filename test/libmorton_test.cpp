@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <bitset>
 
 using namespace std;
 using namespace std::chrono;
@@ -46,19 +47,25 @@ template <typename morton, typename coord>
 static bool check3D_DecodeFunction(string method_tested, void (*decode_function)(const morton m, coord &x, coord &y, coord &z)){
 	bool everything_okay = true;
 	coord x, y, z;
+	// check first items
 	for (morton i = 0; i < 4096; i++){
 		decode_function(i, x, y, z);
 		if (x != control_3D_Decode[i][0] || y != control_3D_Decode[i][1] || z != control_3D_Decode[i][2]){
-			cout << endl << "    Incorrect decoding of " << i << " in method " << method_tested.c_str() << ": (" << x << ", " << y << ", " << z
-				<< ") != (" << control_3D_Decode[i][0] << ", " << control_3D_Decode[i][1] << ", " << control_3D_Decode[i][2] << ")" << endl;
+			printIncorrectDecoding3D<morton,coord>(method_tested, i, x, y, z, control_3D_Decode[i][0], control_3D_Decode[i][1], control_3D_Decode[i][2]);
 			everything_okay = false;
 		}
 	}
+	//// do edge test for 32 bit
+	//decode_function(0x7ffffffff, x, y, z);
+	//if (sizeof(morton) = 4) { // 32 bit function
+	//	if()
+	//}
+
+
 	if (sizeof(morton) >= 4){ // Let's do some more tests
 		decode_function(0x7fffffffffffffff, x, y, z);
 		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff){
-			cout << endl << "    Incorrect decoding of " << 0x7fffffffffffffff << " in method " << method_tested.c_str() << ": (" << x << ", " << y << ", " << z
-				<< ") != (" << 0x1fffff << ", " << 0x1fffff << ", " << 0x1fffff << ")" << endl; 
+			printIncorrectDecoding3D<morton, coord>(method_tested, 0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
 			everything_okay = false;
 		}
 	}
@@ -298,8 +305,20 @@ int main(int argc, char *argv[]) {
 	times = 10;
 	printHeader();
 
+	//for (size_t i = 0; i < 100; i++) {
+	//	uint_fast32_t x;
+	//	uint_fast32_t y;
+	//	morton2D_Decode_for<size_t,uint_fast32_t>(i, x, y);
+
+	//	std::bitset<64> ibits(i);
+	//	std::bitset<32> xbits(x);
+	//	std::bitset<32> ybits(y);
+	//	cout << ibits << " " << xbits << " " << ybits << endl;
+
+	//}
+	
 	// register functions
-	f_64_encode.push_back(encode_3D_64("64-bit encode for", &morton3D_64_Encode_for));
+	//f_64_encode.push_back(encode_3D_64("64-bit encode for", &morton3D_64_Encode_for));
 
 	cout << "++ Checking all methods for correctness" << endl;
 	check3D_EncodeCorrectness();

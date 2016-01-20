@@ -67,4 +67,23 @@ inline uint_fast64_t morton2D_64_Encode_LUT256(const uint_fast32_t x, const uint
 		Morton2D_64_encode_x_256[(x)& 0x000000FF];
 }
 
+// DECODE 2D 64-bit morton code : For loop
+template<typename morton, typename coord>
+inline void morton2D_Decode_for(const morton morton, coord& x, coord& y) {
+	x = 0; y = 0;
+	for (uint_fast64_t i = 0; i < (sizeof(morton)*8); i++) {
+		x |= (morton & (1ull << 2 * i)) >> i;
+		y |= (morton & (1ull << ((2 * i) + 1))) >> (i + 1);
+	}
+}
+
+//// DECODE 2D 64-bit morton code : For loop
+//inline void morton2D_64_Decode_for(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y) {
+//	x = 0; y = 0;
+//	for (uint_fast64_t i = 0; i < 32; i++) {
+//		x |= (morton & (1ull << 2 * i)) >> i;
+//		y |= (morton & (1ull << ((2 * i) + 1))) >> (i + 1);
+//	}
+//}
+
 #endif // MORTON2D_64_H_

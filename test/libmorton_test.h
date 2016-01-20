@@ -6,12 +6,15 @@
 #include "timer.h"
 #include <string>
 
-// Load library we're going to test
+// Load libraries we're going to test
 #include "../libmorton/include/morton_LUT_generators.h"
 #include "../libmorton/include/morton2D_32.h"
 #include "../libmorton/include/morton2D_64.h"
 #include "../libmorton/include/morton3D_32.h"
 #include "../libmorton/include/morton3D_64.h"
+
+
+
 
 // struct for holding a function and its description
 template <typename morton, typename coord>
@@ -26,6 +29,33 @@ struct encode_f_3D {
 
 typedef encode_f_3D<uint_fast64_t, uint_fast32_t> encode_3D_64;
 typedef encode_f_3D<uint_fast32_t, uint_fast16_t> encode_3D_32;
+
+template <typename morton, typename coord>
+void printIncorrectDecoding3D(string method_tested, morton m, coord x, coord y, coord z, coord correct_x, coord correct_y, coord correct_z) {
+	int howmanybits = sizeof(morton) * 8;
+	if (howmanybits == 32) {
+		std::bitset<32> mbits(m);
+		std::bitset<16> xbits(x);
+		std::bitset<16> ybits(y);
+		std::bitset<16> zbits(z);
+		std::bitset<16> correct_xbits(correct_x);
+		std::bitset<16> correct_ybits(correct_y);
+		std::bitset<16> correct_zbits(correct_z);
+		cout << endl << "    Incorrect decoding of " << mbits << " in method " << method_tested.c_str() << ": (" << xbits << ", " << ybits << ", " << zbits
+			<< ") != (" << correct_xbits << ", " << correct_ybits << ", " << correct_zbits << ")" << endl;
+	}
+	else {
+		std::bitset<64> mbits(m);
+		std::bitset<32> xbits(x);
+		std::bitset<32> ybits(y);
+		std::bitset<32> zbits(z);
+		std::bitset<32> correct_xbits(correct_x);
+		std::bitset<32> correct_ybits(correct_y);
+		std::bitset<32> correct_zbits(correct_z);
+		cout << endl << "    Incorrect decoding of " << mbits << " in method " << method_tested.c_str() << ": (" << xbits << ", " << ybits << ", " << zbits
+			<< ") != (" << correct_xbits << ", " << correct_ybits << ", " << correct_zbits << ")" << endl;
+	}
+}
 
 // correct morton codes for 16 x 16 x 16, with z running fastest, then y, then x (4096 in total)
 static const uint_fast16_t control_3D_Encode[4096] =
