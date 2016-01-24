@@ -337,7 +337,7 @@ inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
 	unsigned int checkbits = (sizeof(morton) <= 4) ? 10 : 21;
 
-	for (morton i = 0; i <= checkbits; i++) {
+	for (morton i = 0; i <= checkbits; ++i) {
 		x |= (m & (1ull << 3 * i)) >> ((2 * i));
 		y |= (m & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
 		z |= (m & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
@@ -357,7 +357,7 @@ inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z)
 
 	// How many bits to check?
 	checkbits = (unsigned int) min(defaultbits, firstbit_location / 3.0f);
-	for (morton i = 0; i <= checkbits; i++) {
+	for (morton i = 0; i <= checkbits; ++i) {
 		x |= (m & (1ull << 3 * i)) >> ((2 * i));
 		y |= (m & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
 		z |= (m & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
