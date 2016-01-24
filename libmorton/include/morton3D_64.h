@@ -14,8 +14,8 @@ inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, co
 inline uint_fast64_t morton3D_64_Encode_LUT256_shifted_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
 inline uint_fast64_t morton3D_64_Encode_LUT256(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
 inline uint_fast64_t morton3D_64_Encode_LUT256_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
-inline uint_fast64_t morton3D_64_Encode_magicbits(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
 
+template<typename morton, typename coord> inline morton morton3D_Encode_magicbits(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton morton3D_Encode_for(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z);
 
@@ -137,19 +137,24 @@ inline uint_fast64_t morton3D_64_Encode_LUT256_ET(const uint_fast32_t x, const u
 }
 
 // ENCODE 3D 64-bit morton code : Magic bits (helper method)
-inline uint_fast64_t splitBy3(const uint_fast32_t a){
-	uint_fast64_t x = a;
-	x = (x | x << 32) & 0xffff00000000ffff;
-	x = (x | x << 16) & 0x00ff0000ff0000ff;
-	x = (x | x << 8)  & 0x100f00f00f00f00f;
-	x = (x | x << 4)  & 0x10c30c30c30c30c3;
-	x = (x | x << 2)  & 0x1249249249249249;
+static uint_fast32_t encode_masks32[5] = { 0, 0xff0000ff, 0x0f00f00f, 0xc30c30c3, 0x49249249};
+static uint_fast64_t encode_masks64[5] = { 0xffff00000000ffff, 0x00ff0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249 };
+template<typename morton, typename coord>
+inline morton splitBy3(const coord a) {
+	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(encode_masks32) : reinterpret_cast<morton*>(encode_masks64);
+	morton x = a;
+	if (sizeof(morton) > 4) { x = (x | x << 32) & masks[0];}
+	x = (x | x << 16) & masks[1];
+	x = (x | x << 8)  & masks[2];
+	x = (x | x << 4)  & masks[3];
+	x = (x | x << 2)  & masks[4];
 	return x;
 }
 
 // ENCODE 3D 64-bit morton code : Magic bits
-inline uint_fast64_t morton3D_64_Encode_magicbits(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
-	return splitBy3(x) | (splitBy3(y) << 1) | (splitBy3(z) << 2);
+template<typename morton, typename coord>
+inline morton morton3D_Encode_magicbits(const coord x, const coord y, const coord z){
+	return splitBy3<morton, coord>(x) | (splitBy3<morton, coord>(y) << 1) | (splitBy3<morton, coord>(z) << 2);
 }
 
 // ENCODE 3D 64-bit morton code : For loop
