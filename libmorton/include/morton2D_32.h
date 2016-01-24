@@ -42,6 +42,7 @@ inline uint_fast32_t morton2D_32_Encode_LUT256_shifted(const uint_fast16_t x, co
 	answer = answer << 16 | // shift by 16 = 2 * 8bits
 		Morton2D_64_encode_y_256[(y) & 0x00FF] | // select next 8 bits
 		Morton2D_64_encode_x_256[(x) & 0x00FF];
+	return answer;
 }
 
 // ENCODE 2D 64-bit morton code: LUT preshifted
@@ -52,6 +53,7 @@ inline uint_fast64_t morton2D_32_Encode_LUT256(const uint_fast16_t x, const uint
 	answer = answer << 16 | // shift by 16 = 2 * 8bits
 		(Morton2D_64_encode_x_256[(y)& 0x00FF]) << 1 | // select next 8 bits
 		Morton2D_64_encode_x_256[(x)& 0x00FF];
+	return answer;
 }
 
 #endif // MORTON2D_32_H_
