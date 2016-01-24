@@ -212,7 +212,7 @@ static void check3D_EncodeCorrectness() {
 	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For ET", &morton3D_Encode_for_ET<uint_fast64_t>);
 
 	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Shifted LUT256 ", &morton3D_Encode_LUT256_shifted<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Shifted LUT256 ET ", &morton3D_32_Encode_LUT256_shifted_ET);
+	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Shifted LUT256 ET ", &morton3D_Encode_LUT256_shifted_ET<uint_fast32_t, uint_fast16_t>);
 	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D LUT256 ", &morton3D_32_Encode_LUT256);
 	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D LUT256 ET ", &morton3D_32_Encode_LUT256_ET);
 	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Magicbits", &morton3D_Encode_magicbits<uint_fast32_t, uint_fast16_t>);
@@ -255,7 +255,7 @@ static void Encode_3D_Perf() {
 	cout << "    64-bit For ET:               " << testEncode_3D_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_Encode_for_ET<uint_fast64_t>, times) << endl;
 	cout << "" << endl;
 	cout << "    32-bit LUT256 preshifted:    " << testEncode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Encode_LUT256_shifted<uint_fast32_t, uint_fast16_t>, times) << endl;
-	cout << "    32-bit LUT256 preshifted ET: " << testEncode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT256_shifted_ET, times) << endl;
+	cout << "    32-bit LUT256 preshifted ET: " << testEncode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Encode_LUT256_shifted_ET<uint_fast32_t, uint_fast16_t>, times) << endl;
 	cout << "    32-bit LUT256:               " << testEncode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT256, times) << endl;
 	cout << "    32-bit LUT256 ET:            " << testEncode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Encode_LUT256_ET, times) << endl;
 	cout << "    32-bit Magicbits:            " << testEncode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Encode_magicbits<uint_fast32_t, uint_fast16_t>, times) << endl;
