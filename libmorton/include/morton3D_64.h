@@ -10,8 +10,8 @@
 using namespace std;
 
 // AVAILABLE METHODS
-inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
-inline uint_fast64_t morton3D_64_Encode_LUT256_shifted_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
+template<typename morton, typename coord> inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const coord z);
+template<typename morton, typename coord> inline morton morton3D_Encode_LUT256_shifted_ET(const coord x, const coord y, const coord z);
 inline uint_fast64_t morton3D_64_Encode_LUT256(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
 inline uint_fast64_t morton3D_64_Encode_LUT256_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z);
 
@@ -29,57 +29,56 @@ template<typename morton, typename coord> inline void morton3D_Decode_for(const 
 template<typename morton, typename coord> inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z);
 
 // ENCODE 3D 64-bit morton code : Pre-shifted LUT
-inline uint_fast64_t morton3D_64_Encode_LUT256_shifted(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z) {
-	uint_fast64_t answer =
-		Morton3D_encode_z_256[(z >> 16) & 0x000000FF] |
-		Morton3D_encode_y_256[(y >> 16) & 0x000000FF] |
-		Morton3D_encode_x_256[(x >> 16) & 0x000000FF];
+template<typename morton, typename coord>
+inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const coord z) {
+	morton answer = 0;
+	morton eightbitmask = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	if (sizeof(morton) > 4) {
+		answer = 
+			Morton3D_encode_z_256[(z >> 16) & eightbitmask] |
+			Morton3D_encode_y_256[(y >> 16) & eightbitmask] |
+			Morton3D_encode_x_256[(x >> 16) & eightbitmask];
+	}
 	answer = answer << 24 | // shift by 24 = 3 * 8bits
-		Morton3D_encode_z_256[(z >> 8) & 0x000000FF] |
-		Morton3D_encode_y_256[(y >> 8) & 0x000000FF] |
-		Morton3D_encode_x_256[(x >> 8) & 0x000000FF];
+		Morton3D_encode_z_256[(z >> 8) & eightbitmask] |
+		Morton3D_encode_y_256[(y >> 8) & eightbitmask] |
+		Morton3D_encode_x_256[(x >> 8) & eightbitmask];
 	answer = answer << 24 |
-		Morton3D_encode_z_256[z & 0x000000FF] |
-		Morton3D_encode_y_256[y & 0x000000FF] |
-		Morton3D_encode_x_256[x & 0x000000FF];
+		Morton3D_encode_z_256[z & eightbitmask] |
+		Morton3D_encode_y_256[y & eightbitmask] |
+		Morton3D_encode_x_256[x & eightbitmask];
+	return answer;
+}
+
+template<typename morton, typename coord>
+inline morton compute_shifted_encode(const coord c, const unsigned long maxbit, const uint_fast32_t *LUT) {
+	morton eightbitmask = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	morton answer = LUT[c & eightbitmask];
+	unsigned int i = 8;
+	while (maxbit >= i) {
+		answer |= (LUT[(c >> i) & eightbitmask]) << i*3;
+		i = i + 8;
+	}
 	return answer;
 }
 
 // ENCODE 3D 64-bit morton code : Pre-shifted LUT (Early termination version)
-inline uint_fast64_t morton3D_64_Encode_LUT256_shifted_ET(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z){
+template<typename morton, typename coord>
+inline morton morton3D_Encode_LUT256_shifted_ET(const coord x, const coord y, const coord z){
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
-	uint_fast64_t answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
-	if (findFirstSetBit<uint_fast32_t>(z, &z_max)) {
-		answer_z |= Morton3D_encode_z_256[z & 0x000000FF];
-		if (z_max >= 8) {
-			answer_z |= (Morton3D_encode_z_256[(z >> 8) & 0x000000FF]) << 24;
-			if (z_max >= 16) {
-				answer_z |= (uint_fast64_t) (Morton3D_encode_z_256[(z >> 16) & 0x000000FF]) << 48;
-			}
-		}
-		total = answer_z;
-	}
-	if (findFirstSetBit<uint_fast32_t>(y, &y_max)) {
-		answer_y |= Morton3D_encode_y_256[y & 0x000000FF];
-		if (y_max >= 8) {
-			answer_y |= (Morton3D_encode_y_256[(y >> 8) & 0x000000FF]) << 24;
-			if (y_max >= 16) {
-				answer_y |= (uint_fast64_t) (Morton3D_encode_y_256[(y >> 16) & 0x000000FF]) << 48;
-			}
-		}
-		total |= answer_y;
-	}
-	if (findFirstSetBit<uint_fast32_t>(x, &x_max)) {
-		answer_x |= Morton3D_encode_x_256[x & 0x000000FF];
-		if (x_max >= 8) {
-			answer_x |= (Morton3D_encode_x_256[(x >> 8) & 0x000000FF]) << 24;
-			if (x_max >= 16) {
-				answer_x |= (uint_fast64_t) (Morton3D_encode_x_256[(x >> 16) & 0x000000FF]) << 48;
-			}
-		}
-		total |= answer_x;
-	}
-	return total;
+	morton answer_x = 0, answer_y = 0, answer_z = 0, total = 0;
+	
+	// find first set bits
+	bool check_x = findFirstSetBit<coord>(x, &z_max);
+	bool check_y = findFirstSetBit<coord>(y, &y_max);
+	bool check_z = findFirstSetBit<coord>(z, &x_max);
+
+	// Compute encodings
+	answer_x = check_x ? compute_shifted_encode<morton, coord>(x, x_max, Morton3D_encode_x_256) : 0;
+	answer_y = check_y ? compute_shifted_encode<morton, coord>(y ,y_max, Morton3D_encode_y_256) : 0;
+	answer_z = check_z ? compute_shifted_encode<morton, coord>(z, z_max, Morton3D_encode_z_256) : 0;
+
+	return total | answer_z | answer_y | answer_x;
 }
 
 // ENCODE 3D 64-bit morton code : LUT

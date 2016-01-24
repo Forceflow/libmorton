@@ -13,7 +13,6 @@
 using namespace std;
 
 // AVAILABLE METHODS
-inline uint_fast32_t morton3D_32_Encode_LUT256_shifted(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z);
 inline uint_fast32_t morton3D_32_Encode_LUT256_shifted_ET(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z);
 inline uint_fast32_t morton3D_32_Encode_LUT256(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z);
 inline uint_fast32_t morton3D_32_Encode_LUT256_ET(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z);
