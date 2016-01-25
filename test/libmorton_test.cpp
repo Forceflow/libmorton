@@ -275,10 +275,10 @@ static void Decode_3D_Perf(){
 	cout << "    64-bit For ET:               " << testDecode_3D_Perf<uint_fast64_t, uint_fast32_t>(&morton3D_Decode_for_ET<uint_fast64_t, uint_fast32_t>, times) << endl;
 	cout << "" << endl;
 //#else
-	cout << "    32-bit LUT256 preshifted:    " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Decode_LUT256_shifted, times) << endl;
-	cout << "    32-bit LUT256 preshifted ET: " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Decode_LUT256_shifted_ET, times) << endl;
-	cout << "    32-bit LUT256:               " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Decode_LUT256, times) << endl;
-	cout << "    32-bit LUT256 ET:            " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_32_Decode_LUT256_ET, times) << endl;
+	cout << "    32-bit LUT256 preshifted:    " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Decode_LUT256_shifted<uint_fast32_t, uint_fast16_t>, times) << endl;
+	cout << "    32-bit LUT256 preshifted ET: " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Decode_LUT256_shifted_ET<uint_fast32_t, uint_fast16_t>, times) << endl;
+	cout << "    32-bit LUT256:               " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Decode_LUT256<uint_fast32_t, uint_fast16_t>, times) << endl;
+	cout << "    32-bit LUT256 ET:            " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Decode_LUT256_ET<uint_fast32_t, uint_fast16_t>, times) << endl;
 	cout << "    32-bit Magicbits:            " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Decode_magicbits<uint_fast32_t, uint_fast16_t>, times) << endl;
 	cout << "    32-bit For:                  " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Decode_for<uint_fast32_t, uint_fast16_t>, times) << endl;
 	cout << "    32-bit For ET:               " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&morton3D_Decode_for_ET<uint_fast32_t, uint_fast16_t>, times) << endl;
