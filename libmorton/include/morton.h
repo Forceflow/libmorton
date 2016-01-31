@@ -6,7 +6,7 @@
 
 #include "morton2D_32.h"
 #include "morton2D_64.h"
-#include "morton3D_64.h"
+#include "morton3D.h"
 
 inline uint_fast32_t morton2D_32_encode(const uint_fast16_t x, const uint_fast16_t y);
 inline uint_fast64_t morton2D_64_encode(const uint_fast32_t x, const uint_fast32_t y);

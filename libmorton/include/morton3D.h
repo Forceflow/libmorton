@@ -106,11 +106,11 @@ inline morton morton3D_Encode_LUT256_ET(const coord x, const coord y, const coor
 }
 
 // ENCODE 3D 64-bit morton code : Magic bits (helper method)
-static uint_fast32_t encode_masks32[5] = { 0, 0xff0000ff, 0x0f00f00f, 0xc30c30c3, 0x49249249};
-static uint_fast64_t encode_masks64[5] = { 0xffff00000000ffff, 0x00ff0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249 };
+static uint_fast32_t encode3D_masks32[5] = { 0, 0xff0000ff, 0x0f00f00f, 0xc30c30c3, 0x49249249};
+static uint_fast64_t encode3D_masks64[5] = { 0xffff00000000ffff, 0x00ff0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249 };
 template<typename morton, typename coord>
 static inline morton morton3D_SplitBy3Bits(const coord a) {
-	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(encode_masks32) : reinterpret_cast<morton*>(encode_masks64);
+	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(encode3D_masks32) : reinterpret_cast<morton*>(encode3D_masks64);
 	morton x = a;
 	if (sizeof(morton) > 4) { x = (x | x << 32) & masks[0];}
 	x = (x | x << 16) & masks[1];

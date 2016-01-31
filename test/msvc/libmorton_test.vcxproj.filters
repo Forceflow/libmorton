@@ -6,9 +6,6 @@
   <ItemGroup>
     <ClInclude Include="..\libmorton_test.h" />
     <ClInclude Include="..\util.h" />
-    <ClInclude Include="..\..\libmorton\include\morton3D_64.h">
-      <Filter>libmorton_headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\libmorton\include\morton2D_32.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
@@ -29,6 +26,9 @@
     </ClInclude>
     <ClInclude Include="..\timer.h" />
     <ClInclude Include="..\..\libmorton\include\morton.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton3D.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
   </ItemGroup>
