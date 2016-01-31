@@ -8,8 +8,7 @@
 
 // Load libraries we're going to test
 #include "../libmorton/include/morton_LUT_generators.h"
-#include "../libmorton/include/morton2D_32.h"
-#include "../libmorton/include/morton2D_64.h"
+#include "../libmorton/include/morton2D.h"
 #include "../libmorton/include/morton3D.h"
 
 

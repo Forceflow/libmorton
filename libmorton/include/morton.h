@@ -4,8 +4,7 @@
 // This file will always contain pointers to the fastest Morton encoding/decoding implementation
 // IF you just want to use the fastest method to encode/decode morton codes, include this
 
-#include "morton2D_32.h"
-#include "morton2D_64.h"
+#include "morton2D.h"
 #include "morton3D.h"
 
 inline uint_fast32_t morton2D_32_encode(const uint_fast16_t x, const uint_fast16_t y);
@@ -19,11 +18,11 @@ inline void morton3D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uin
 inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 
 inline uint_fast32_t morton2D_32_encode(const uint_fast16_t x, const uint_fast16_t y) {
-	return morton2D_32_Encode_LUT256_shifted(x, y);
+	return morton2D_Encode_LUT256_shifted<uint_fast32_t, uint_fast16_t>(x, y);
 }
 
 inline uint_fast64_t morton2D_64_encode(const uint_fast32_t x, const uint_fast32_t y) {
-	return morton2D_64_Encode_LUT256_shifted(x, y);
+	return morton2D_Encode_LUT256_shifted<uint_fast64_t, uint_fast32_t>(x, y);
 }
 
 inline uint_fast32_t morton3D_32_encode(const uint_fast16_t x, const uint_fast16_t y, const uint_fast16_t z) {
