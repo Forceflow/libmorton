@@ -10,33 +10,42 @@
 #endif
 
 template<typename morton, typename coord> inline morton morton2D_Encode_for(const coord x, const coord y);
+template<typename morton, typename coord> inline morton morton2D_Encode_magicbits(const coord x, const coord y);
 
 // ENCODE 2D 64-bit morton code : For Loop
 template<typename morton, typename coord>
 inline morton morton2D_Encode_for(const coord x, const coord y){
 	morton answer = 0;
 	unsigned long checkbits = sizeof(coord)*8;
-	for (uint_fast64_t i = 0; i < checkbits; ++i) {
+	for (morton i = 0; i < checkbits; ++i) {
 		answer |= (x & ((morton)0x1 << i)) << (2 * i) | (y & ((morton)0x1 << i)) << ((2 * i) + 1);
 	}
 	return answer;
 }
 
+// ENCODE 3D 64-bit morton code : Magic bits (helper method)
+static uint_fast32_t encode2D_masks32[6] = { 0, 0x0000FFFF, 0x00FF00FF, 0x0F0F0F0F, 0x33333333, 0x55555555};
+static uint_fast64_t encode2D_masks64[6] = { 0x00000000FFFFFFFF, 0x0000FFFF0000FFFF, 0x00FF00FF00FF00FF, 
+											0x0F0F0F0F0F0F0F0F, 0x3333333333333333, 0x5555555555555555};
+
 // ENCODE 2D 64-bit morton code : Magic bits (helper method)
-inline uint_fast64_t morton2D_64_splitby2(const uint_fast32_t a){
-	uint_fast64_t x = a;
-	x = (x | x << 32) & 0x00000000FFFFFFFF;
-	x = (x | x << 16) & 0x0000FFFF0000FFFF;
-	x = (x | x << 8) & 0x00FF00FF00FF00FF;
-	x = (x | x << 4) & 0x0F0F0F0F0F0F0F0F;
-	x = (x | x << 2) & 0x3333333333333333;
-	x = (x | x << 1) & 0x5555555555555555;
+template<typename morton, typename coord>
+inline morton morton2D_splitby2(const coord a){
+	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(encode2D_masks32) : reinterpret_cast<morton*>(encode2D_masks64);
+	morton x = a;
+	if (sizeof(morton) > 4) { x = (x | x << 32) & masks[0]; }
+	x = (x | x << 16) & masks[1];
+	x = (x | x << 8) & masks[2];
+	x = (x | x << 4) & masks[3];
+	x = (x | x << 2) & masks[4];
+	x = (x | x << 1) & masks[5];
 	return x;
 }
 
 // ENCODE 2D 64-bit morton code : Magic bits
-inline uint_fast64_t morton2D_64_Encode_magicbits(const uint_fast32_t x, const uint_fast32_t y){
-	return morton2D_64_splitby2(x) | (morton2D_64_splitby2(y) << 1);
+template<typename morton, typename coord>
+inline morton morton2D_Encode_magicbits(const coord x, const coord y){
+	return morton2D_splitby2<morton, coord>(x) | (morton2D_splitby2<morton, coord>(y) << 1);
 }
 
 // ENCODE 2D 64-bit morton code: LUT preshifted

@@ -1,5 +1,5 @@
 #include "morton2D_64.h"
-#include "morton3D_64.h"
+#include "morton3D.h"
 #include <iostream>
 
 template <typename element>
@@ -17,8 +17,8 @@ void generate2D_EncodeLUT(size_t how_many_bits, uint_fast16_t*& x_table, uint_fa
 	y_table = (uint_fast16_t*)malloc(total * sizeof(uint_fast16_t));
 
 	for (uint_fast32_t i = 0; i < total; i++){
-		x_table[i] = (uint_fast16_t) morton2D_64_Encode_magicbits(i, 0);
-		y_table[i] = (uint_fast16_t) morton2D_64_Encode_magicbits(0, i);
+		x_table[i] = (uint_fast16_t) morton2D_Encode_magicbits<uint_fast32_t, uint_fast16_t>(i, 0);
+		y_table[i] = (uint_fast16_t) morton2D_Encode_magicbits<uint_fast32_t, uint_fast16_t>(0, i);
 	}
 
 	if (print_tables){
@@ -35,8 +35,8 @@ void generate2D_DecodeLUT(size_t how_many_bits, uint_fast8_t*& x_table, uint_fas
 	y_table = (uint_fast8_t*)malloc(total * sizeof(uint_fast8_t));
 
 	for (uint_fast32_t i = 0; i < total; i++){
-		x_table[i] = (uint_fast8_t) morton2D_64_splitby2(i);
-		y_table[i] = (uint_fast8_t) morton2D_64_splitby2(i >> 1);
+		x_table[i] = (uint_fast8_t) morton2D_splitby2<uint_fast64_t, uint_fast32_t>(i);
+		y_table[i] = (uint_fast8_t) morton2D_splitby2<uint_fast64_t, uint_fast32_t>(i >> 1);
 	}
 
 	if (print_tables){
