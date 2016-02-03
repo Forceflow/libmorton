@@ -14,7 +14,6 @@ template<typename morton, typename coord> inline morton morton3D_Encode_LUT256_s
 template<typename morton, typename coord> inline morton morton3D_Encode_LUT256_shifted_ET(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton morton3D_Encode_LUT256_ET(const coord x, const coord y, const coord z);
-
 template<typename morton, typename coord> inline morton morton3D_Encode_magicbits(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton morton3D_Encode_for(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z);
@@ -23,7 +22,6 @@ template<typename morton, typename coord> inline void morton3D_Decode_LUT256_shi
 template<typename morton, typename coord> inline void morton3D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y, coord& z);
 template<typename morton, typename coord> inline void morton3D_Decode_LUT256(const morton m, coord& x, coord& y, coord& z);
 template<typename morton, typename coord> inline void morton3D_Decode_LUT256_ET(const morton m, coord& x, coord& y, coord& z);
-
 template<typename morton, typename coord> inline void morton3D_Decode_magicbits(const morton m, coord& x, coord& y, coord& z);
 template<typename morton, typename coord> inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z);
 template<typename morton, typename coord> inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z);
@@ -67,7 +65,7 @@ inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
 
 // ENCODE 3D Morton code : Pre-shifted LUT (Early termination version)
 template<typename morton, typename coord>
-inline morton morton3D_Encode_LUT256_shifted_ET(const coord x, const coord y, const coord z){
+inline morton morton3D_Encode_LUT256_shifted_ET(const coord x, const coord y, const coord z) {
 	morton answer_x = compute3D_ET_LUT_encode<morton, coord>(x, Morton3D_encode_x_256);
 	morton answer_y = compute3D_ET_LUT_encode<morton, coord>(y, Morton3D_encode_y_256);
 	morton answer_z = compute3D_ET_LUT_encode<morton, coord>(z, Morton3D_encode_z_256);
@@ -224,7 +222,7 @@ inline void morton3D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y
 
 // DECODE 3D 64-bit morton code : LUT
 template<typename morton, typename coord>
-inline void morton3D_Decode_LUT256(const morton m, coord& x, coord& y, coord& z) {
+inline void morton3D_Decode_LUT256(const morton m, coord& x, coord& y, coord& z){
 	x = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_x_512, 0);
 	y = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_x_512, 1);
 	z = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_x_512, 2);

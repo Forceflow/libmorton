@@ -10,6 +10,7 @@ template<typename morton, typename coord> inline morton morton2D_Encode_magicbit
 template<typename morton, typename coord> inline morton morton2D_Encode_LUT256_shifted(const coord x, const coord y);
 template<typename morton, typename coord> inline morton morton2D_Encode_LUT256_shifted_ET(const coord x, const coord y);
 template<typename morton, typename coord> inline morton morton2D_Encode_LUT256(const coord x, const coord y);
+template<typename morton, typename coord> inline morton morton2D_Encode_LUT256_ET(const coord x, const coord y);
 
 // ENCODE 2D morton code : For Loop
 template<typename morton, typename coord>
@@ -112,6 +113,14 @@ inline morton morton2D_Encode_LUT256(const coord x, const coord y) {
 		(Morton2D_encode_x_256[(y)& EIGHTBITMASK]) << 1 | // select next 8 bits
 		Morton2D_encode_x_256[(x)& EIGHTBITMASK];
 	return answer;
+}
+
+// ENCODE 2D morton code: LUT preshifted
+template<typename morton, typename coord>
+inline morton morton2D_Encode_LUT256_ET(const coord x, const coord y) {
+	morton x = compute2D_ET_LUT_encode<typename morton, typename coord>(x, Morton2D_encode_x_256);
+	morton y = compute2D_ET_LUT_encode<typename morton, typename coord>(y, Morton2D_encode_x_256);
+	return (y << 1) | x;
 }
 
 // DECODE 2D morton code : For loop
