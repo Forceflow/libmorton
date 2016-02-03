@@ -55,12 +55,12 @@ template<typename morton, typename coord>
 inline morton compute_ET_LUT_encode(const coord c, const coord *LUT) {
 	unsigned long maxbit = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) {return 0;}
-	const static morton eightbitmask = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
-	morton answer = LUT[c & eightbitmask];
+	const static morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	morton answer = LUT[c & EIGHTBITMASK];
 	unsigned int i = 8;
 	while (maxbit >= i) {
-		answer |= (LUT[(c >> i) & eightbitmask]) << i*3;
-		i = i + 8;
+		answer |= (LUT[(c >> i) & EIGHTBITMASK]) << i*3;
+		i += 8;
 	}
 	return answer;
 }
@@ -78,21 +78,21 @@ inline morton morton3D_Encode_LUT256_shifted_ET(const coord x, const coord y, co
 template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z) {
 	morton answer = 0;
-	const static morton eightbitmask = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	const static morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
 	if (sizeof(morton) > 4) {
 		answer =
-			(Morton3D_encode_x_256[(z >> 16) & eightbitmask] << 2)
-			| (Morton3D_encode_x_256[(y >> 16) & eightbitmask] << 1)
-			| Morton3D_encode_x_256[(x >> 16) & eightbitmask];
+			(Morton3D_encode_x_256[(z >> 16) & EIGHTBITMASK] << 2)
+			| (Morton3D_encode_x_256[(y >> 16) & EIGHTBITMASK] << 1)
+			| Morton3D_encode_x_256[(x >> 16) & EIGHTBITMASK];
 	}
 	answer = answer << 24 |
-		(Morton3D_encode_x_256[(z >> 8) & eightbitmask] << 2)
-		| (Morton3D_encode_x_256[(y >> 8) & eightbitmask] << 1)
-		| Morton3D_encode_x_256[(x >> 8) & eightbitmask];
+		(Morton3D_encode_x_256[(z >> 8) & EIGHTBITMASK] << 2)
+		| (Morton3D_encode_x_256[(y >> 8) & EIGHTBITMASK] << 1)
+		| Morton3D_encode_x_256[(x >> 8) & EIGHTBITMASK];
 	answer = answer << 24 |
-		(Morton3D_encode_x_256[z & eightbitmask] << 2)
-		| (Morton3D_encode_x_256[y & eightbitmask] << 1)
-		| Morton3D_encode_x_256[x & eightbitmask];
+		(Morton3D_encode_x_256[z & EIGHTBITMASK] << 2)
+		| (Morton3D_encode_x_256[y & EIGHTBITMASK] << 1)
+		| Morton3D_encode_x_256[x & EIGHTBITMASK];
 	return answer;
 }
 
@@ -163,16 +163,16 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256_shifted(const morton m, const uint_fast8_t *LUT, unsigned int startshift) {
 	a = 0;
-	morton ninebitmask = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
-	a = LUT[(m >> startshift) & ninebitmask]
-		| (LUT[((m >> (startshift+9)) & ninebitmask)] << 3)
-		| (LUT[((m >> (startshift+18)) & ninebitmask)] << 6)
-		| (LUT[((m >> (startshift+27)) & ninebitmask)] << 9);
+	morton NINEBITMASK = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
+	a = LUT[(m >> startshift) & NINEBITMASK]
+		| (LUT[((m >> (startshift+9)) & NINEBITMASK)] << 3)
+		| (LUT[((m >> (startshift+18)) & NINEBITMASK)] << 6)
+		| (LUT[((m >> (startshift+27)) & NINEBITMASK)] << 9);
 	if (sizeof(morton) > 4) {
 		a |=
-			  (LUT[((m >> (startshift+36)) & ninebitmask)] << 12)
-			| (LUT[((m >> (startshift+46)) & ninebitmask)] << 15)
-			| (LUT[((m >> (startshift+54)) & ninebitmask)] << 18);
+			  (LUT[((m >> (startshift+36)) & NINEBITMASK)] << 12)
+			| (LUT[((m >> (startshift+46)) & NINEBITMASK)] << 15)
+			| (LUT[((m >> (startshift+54)) & NINEBITMASK)] << 18);
 	}
 	return a;
 }
@@ -267,13 +267,13 @@ inline void morton3D_Decode_LUT256_ET(const morton m, coord& x, coord& y, coord&
 	return;
 }
 
-static uint_fast32_t masks32[5] = { 0x49249249, 0x030c30c3, 0x0F00F00F, 0xFF0000FF, 0x0000FFFF };
-static uint_fast64_t masks64[5] = { 0x9249249249249249, 0x030c30c3030c30c3, 0xF00F00F00F00F00F, 0x00FF0000FF0000FF, 0x000000000000FFFF };
+static uint_fast32_t encode3D_masks32[5] = {0x49249249, 0x030c30c3, 0x0F00F00F, 0xFF0000FF, 0x0000FFFF};
+static uint_fast64_t encode2D_masks64[5] = {0x9249249249249249, 0x030c30c3030c30c3, 0xF00F00F00F00F00F, 0x00FF0000FF0000FF, 0x000000000000FFFF};
 
 // DECODE 3D 64-bit morton code : Magic bits (helper method)
 template<typename morton, typename coord>
 static inline coord morton3D_getThirdBits(const morton m) {
-	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(masks32) : reinterpret_cast<morton*>(masks64);
+	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(encode3D_masks32) : reinterpret_cast<morton*>(encode2D_masks64);
 	morton x = m & masks[0];
 	x = (x ^ (x >> 2)) & masks[1];
 	x = (x ^ (x >> 4)) & masks[2];
