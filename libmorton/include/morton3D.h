@@ -52,7 +52,7 @@ inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const
 
 // Helper method for ET LUT encode
 template<typename morton, typename coord>
-inline morton compute_ET_LUT_encode(const coord c, const uint_fast32_t *LUT) {
+inline morton compute_ET_LUT_encode(const coord c, const coord *LUT) {
 	unsigned long maxbit = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) {return 0;}
 	const static morton eightbitmask = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
@@ -107,7 +107,7 @@ inline morton morton3D_Encode_LUT256_ET(const coord x, const coord y, const coor
 
 // ENCODE 3D 64-bit morton code : Magic bits (helper method)
 static const uint_fast32_t encode3D_masks32[5] = { 0, 0xff0000ff, 0x0f00f00f, 0xc30c30c3, 0x49249249};
-static const uint_fast64_t encode3D_masks64[5] = { 0xffff00000000ffff, 0x00ff0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249 };
+static const uint_fast64_t encode3D_masks64[5] = { 0xffff00000000ffff, 0x00ff0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249};
 template<typename morton, typename coord>
 static inline morton morton3D_SplitBy3Bits(const coord a) {
 	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(encode3D_masks32) : reinterpret_cast<const morton*>(encode3D_masks64);
@@ -130,7 +130,7 @@ inline morton morton3D_Encode_magicbits(const coord x, const coord y, const coor
 template<typename morton, typename coord>
 inline morton morton3D_Encode_for(const coord x, const coord y, const coord z){
 	morton answer = 0;
-	unsigned int checkbits = (sizeof(morton) == 4) ? 10 : 21;
+	unsigned int checkbits = (sizeof(morton) <= 4) ? 10 : 21;
 	for (unsigned int i = 0; i <= checkbits; ++i) {
     answer |= ((x & ((morton)0x1 << i)) << 2 * i)     //Here we need to cast 0x1 to the amount of bits in the morton code, 
       | ((y & ((morton)0x1 << i)) << ((2 * i) + 1))   //otherwise there is a bug when morton code is larger than 32 bits
@@ -144,7 +144,7 @@ template<typename morton, typename coord>
 inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
-	unsigned long checkbits = (sizeof(morton) == 4) ? 10 : 21;
+	unsigned long checkbits = (sizeof(morton) <= 4) ? 10 : 21;
 
 	findFirstSetBit<morton>(x, &x_max);
 	findFirstSetBit<morton>(y, &y_max);
@@ -161,7 +161,7 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 }
 
 template<typename morton, typename coord>
-inline coord morton3D_DecodeCoord_LUT256_shifted(const morton m, const uint_fast8_t *LUT, int startshift) {
+inline coord morton3D_DecodeCoord_LUT256_shifted(const morton m, const uint_fast8_t *LUT, unsigned int startshift) {
 	a = 0;
 	morton ninebitmask = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
 	a = LUT[(m >> startshift) & ninebitmask]
@@ -183,43 +183,42 @@ inline void morton3D_Decode_LUT256_shifted(const morton m, coord& x, coord& y, c
 	x = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_x_512, 0);
 	y = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_y_512, 0);
 	z = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_z_512, 0);
-	
 }
 
 // DECODE 3D 64-bit morton code : Shifted LUT (Early termination version)
 template<typename morton, typename coord>
 inline void morton3D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
-	morton ninebitmask = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
+	morton NINEBITMASK = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
-	x = x | Morton3D_decode_x_512[m & ninebitmask];
-	y = y | Morton3D_decode_y_512[m & ninebitmask];
-	z = z | Morton3D_decode_z_512[m & ninebitmask];
+	x = x | Morton3D_decode_x_512[m & NINEBITMASK];
+	y = y | Morton3D_decode_y_512[m & NINEBITMASK];
+	z = z | Morton3D_decode_z_512[m & NINEBITMASK];
 	if (firstbit_location < 9) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 9) & ninebitmask)] << 3);
-	y = y | (Morton3D_decode_y_512[((m >> 9) & ninebitmask)] << 3);
-	z = z | (Morton3D_decode_z_512[((m >> 9) & ninebitmask)] << 3);
+	x = x | (Morton3D_decode_x_512[((m >> 9) & NINEBITMASK)] << 3);
+	y = y | (Morton3D_decode_y_512[((m >> 9) & NINEBITMASK)] << 3);
+	z = z | (Morton3D_decode_z_512[((m >> 9) & NINEBITMASK)] << 3);
 	if (firstbit_location < 18) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 18) & ninebitmask)] << 6);
-	y = y | (Morton3D_decode_y_512[((m >> 18) & ninebitmask)] << 6);
-	z = z | (Morton3D_decode_z_512[((m >> 18) & ninebitmask)] << 6);
+	x = x | (Morton3D_decode_x_512[((m >> 18) & NINEBITMASK)] << 6);
+	y = y | (Morton3D_decode_y_512[((m >> 18) & NINEBITMASK)] << 6);
+	z = z | (Morton3D_decode_z_512[((m >> 18) & NINEBITMASK)] << 6);
 	if (firstbit_location < 27) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 27) & ninebitmask)] << 9);
-	y = y | (Morton3D_decode_y_512[((m >> 27) & ninebitmask)] << 9);
-	z = z | (Morton3D_decode_z_512[((m >> 27) & ninebitmask)] << 9);
+	x = x | (Morton3D_decode_x_512[((m >> 27) & NINEBITMASK)] << 9);
+	y = y | (Morton3D_decode_y_512[((m >> 27) & NINEBITMASK)] << 9);
+	z = z | (Morton3D_decode_z_512[((m >> 27) & NINEBITMASK)] << 9);
 	if (firstbit_location < 36) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 36) & ninebitmask)] << 12);
-	y = y | (Morton3D_decode_y_512[((m >> 36) & ninebitmask)] << 12);
-	z = z | (Morton3D_decode_z_512[((m >> 36) & ninebitmask)] << 12);
+	x = x | (Morton3D_decode_x_512[((m >> 36) & NINEBITMASK)] << 12);
+	y = y | (Morton3D_decode_y_512[((m >> 36) & NINEBITMASK)] << 12);
+	z = z | (Morton3D_decode_z_512[((m >> 36) & NINEBITMASK)] << 12);
 	if (firstbit_location < 46) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 46) & ninebitmask)] << 15);
-	y = y | (Morton3D_decode_y_512[((m >> 46) & ninebitmask)] << 15);
-	z = z | (Morton3D_decode_z_512[((m >> 46) & ninebitmask)] << 15);
+	x = x | (Morton3D_decode_x_512[((m >> 46) & NINEBITMASK)] << 15);
+	y = y | (Morton3D_decode_y_512[((m >> 46) & NINEBITMASK)] << 15);
+	z = z | (Morton3D_decode_z_512[((m >> 46) & NINEBITMASK)] << 15);
 	if (firstbit_location < 54) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 54) & ninebitmask)] << 18);
-	y = y | (Morton3D_decode_y_512[((m >> 54) & ninebitmask)] << 18);
-	z = z | (Morton3D_decode_z_512[((m >> 54) & ninebitmask)] << 18);
+	x = x | (Morton3D_decode_x_512[((m >> 54) & NINEBITMASK)] << 18);
+	y = y | (Morton3D_decode_y_512[((m >> 54) & NINEBITMASK)] << 18);
+	z = z | (Morton3D_decode_z_512[((m >> 54) & NINEBITMASK)] << 18);
 	return;
 }
 
@@ -235,36 +234,36 @@ inline void morton3D_Decode_LUT256(const morton m, coord& x, coord& y, coord& z)
 template<typename morton, typename coord>
 inline void morton3D_Decode_LUT256_ET(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
-	morton ninebitmask = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
+	morton NINEBITMASK = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<uint_fast64_t>(m, &firstbit_location)) { return; }
-	x = x | Morton3D_decode_x_512[m & 0x000001ff];
-	y = y | Morton3D_decode_x_512[(m >> 1) & 0x000001ff];
-	z = z | Morton3D_decode_x_512[(m >> 2) & 0x000001ff];
+	x = x | Morton3D_decode_x_512[m & NINEBITMASK];
+	y = y | Morton3D_decode_x_512[(m >> 1) & NINEBITMASK];
+	z = z | Morton3D_decode_x_512[(m >> 2) & NINEBITMASK];
 	if (firstbit_location < 9) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 9) & 0x000001ff)] << 3);
-	y = y | (Morton3D_decode_x_512[((m >> 10) & 0x000001ff)] << 3);
-	z = z | (Morton3D_decode_x_512[((m >> 11) & 0x000001ff)] << 3);
+	x = x | (Morton3D_decode_x_512[((m >> 9) & NINEBITMASK)] << 3);
+	y = y | (Morton3D_decode_x_512[((m >> 10) & NINEBITMASK)] << 3);
+	z = z | (Morton3D_decode_x_512[((m >> 11) & NINEBITMASK)] << 3);
 	if (firstbit_location < 18) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 18) & 0x000001ff)] << 6);
-	y = y | (Morton3D_decode_x_512[((m >> 19) & 0x000001ff)] << 6);
-	z = z | (Morton3D_decode_x_512[((m >> 20) & 0x000001ff)] << 6);
+	x = x | (Morton3D_decode_x_512[((m >> 18) & NINEBITMASK)] << 6);
+	y = y | (Morton3D_decode_x_512[((m >> 19) & NINEBITMASK)] << 6);
+	z = z | (Morton3D_decode_x_512[((m >> 20) & NINEBITMASK)] << 6);
 	if (firstbit_location < 27) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 27) & 0x000001ff)] << 9);
-	y = y | (Morton3D_decode_x_512[((m >> 28) & 0x000001ff)] << 9);
-	z = z | (Morton3D_decode_x_512[((m >> 29) & 0x000001ff)] << 9);
+	x = x | (Morton3D_decode_x_512[((m >> 27) & NINEBITMASK)] << 9);
+	y = y | (Morton3D_decode_x_512[((m >> 28) & NINEBITMASK)] << 9);
+	z = z | (Morton3D_decode_x_512[((m >> 29) & NINEBITMASK)] << 9);
 	if (firstbit_location < 36) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 36) & 0x000001ff)] << 12);
-	y = y | (Morton3D_decode_x_512[((m >> 37) & 0x000001ff)] << 12);
-	z = z | (Morton3D_decode_x_512[((m >> 38) & 0x000001ff)] << 12);
+	x = x | (Morton3D_decode_x_512[((m >> 36) & NINEBITMASK)] << 12);
+	y = y | (Morton3D_decode_x_512[((m >> 37) & NINEBITMASK)] << 12);
+	z = z | (Morton3D_decode_x_512[((m >> 38) & NINEBITMASK)] << 12);
 	if (firstbit_location < 46) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 46) & 0x000001ff)] << 15);
-	y = y | (Morton3D_decode_x_512[((m >> 47) & 0x000001ff)] << 15);
-	z = z | (Morton3D_decode_x_512[((m >> 48) & 0x000001ff)] << 15);
+	x = x | (Morton3D_decode_x_512[((m >> 46) & NINEBITMASK)] << 15);
+	y = y | (Morton3D_decode_x_512[((m >> 47) & NINEBITMASK)] << 15);
+	z = z | (Morton3D_decode_x_512[((m >> 48) & NINEBITMASK)] << 15);
 	if (firstbit_location < 54) { return; }
-	x = x | (Morton3D_decode_x_512[((m >> 54) & 0x000001ff)] << 18);
-	y = y | (Morton3D_decode_x_512[((m >> 55) & 0x000001ff)] << 18);
-	z = z | (Morton3D_decode_x_512[((m >> 56) & 0x000001ff)] << 18);
+	x = x | (Morton3D_decode_x_512[((m >> 54) & NINEBITMASK)] << 18);
+	y = y | (Morton3D_decode_x_512[((m >> 55) & NINEBITMASK)] << 18);
+	z = z | (Morton3D_decode_x_512[((m >> 56) & NINEBITMASK)] << 18);
 	return;
 }
 
@@ -308,7 +307,6 @@ inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z){
 template<typename morton, typename coord>
 inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z) {
 	x = 0; y = 0; z = 0;
-	unsigned int checkbits;
 	float defaultbits = (sizeof(morton) <= 4) ? 10.0f : 21.0f;
 	unsigned long firstbit_location = 0;
 
@@ -316,7 +314,7 @@ inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z)
 	if(!findFirstSetBit<morton>(m, &firstbit_location)) return;
 
 	// How many bits to check?
-	checkbits = (unsigned int) min(defaultbits, firstbit_location / 3.0f);
+	unsigned int checkbits = (unsigned int) min(defaultbits, firstbit_location / 3.0f);
 	for (morton i = 0; i <= checkbits; ++i) {
 		x |= (m & (1ull << 3 * i)) >> ((2 * i));
 		y |= (m & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
