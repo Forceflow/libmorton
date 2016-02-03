@@ -32,7 +32,7 @@ template<typename morton, typename coord> inline void morton3D_Decode_for_ET(con
 template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const coord z) {
 	morton answer = 0;
-	const static morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	const static morton EIGHTBITMASK = 0x000000FF;
 	if (sizeof(morton) > 4) {
 		answer = 
 			Morton3D_encode_z_256[(z >> 16) & EIGHTBITMASK] |
@@ -55,7 +55,7 @@ template<typename morton, typename coord>
 inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
 	unsigned long maxbit = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) {return 0;}
-	const static morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	const static morton EIGHTBITMASK = 0x000000FF;
 	morton answer = LUT[c & EIGHTBITMASK];
 	unsigned int i = 8;
 	while (maxbit >= i) {
@@ -78,7 +78,7 @@ inline morton morton3D_Encode_LUT256_shifted_ET(const coord x, const coord y, co
 template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z) {
 	morton answer = 0;
-	const static morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	const static morton EIGHTBITMASK = 0x000000FF;
 	if (sizeof(morton) > 4) {
 		answer =
 			(Morton3D_encode_x_256[(z >> 16) & EIGHTBITMASK] << 2)
@@ -163,7 +163,7 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256_shifted(const morton m, const uint_fast8_t *LUT, unsigned int startshift) {
 	a = 0;
-	morton NINEBITMASK = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
+	morton NINEBITMASK = 0x00000000000001ff;
 	a = LUT[(m >> startshift) & NINEBITMASK]
 		| (LUT[((m >> (startshift+9)) & NINEBITMASK)] << 3)
 		| (LUT[((m >> (startshift+18)) & NINEBITMASK)] << 6)
@@ -189,7 +189,7 @@ inline void morton3D_Decode_LUT256_shifted(const morton m, coord& x, coord& y, c
 template<typename morton, typename coord>
 inline void morton3D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
-	morton NINEBITMASK = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
+	morton NINEBITMASK = 0x00000000000001ff;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
 	x = x | Morton3D_decode_x_512[m & NINEBITMASK];
@@ -234,7 +234,7 @@ inline void morton3D_Decode_LUT256(const morton m, coord& x, coord& y, coord& z)
 template<typename morton, typename coord>
 inline void morton3D_Decode_LUT256_ET(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
-	morton NINEBITMASK = (sizeof(morton) <= 4) ? 0x000001ff : 0x00000000000001ff;
+	morton NINEBITMASK = 0x00000000000001ff;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<uint_fast64_t>(m, &firstbit_location)) { return; }
 	x = x | Morton3D_decode_x_512[m & NINEBITMASK];

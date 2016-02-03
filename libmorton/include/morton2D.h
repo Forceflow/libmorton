@@ -50,7 +50,7 @@ inline morton morton2D_Encode_magicbits(const coord x, const coord y){
 template<typename morton, typename coord>
 inline morton morton2D_Encode_LUT256_shifted(const coord x, const coord y){
 	morton answer = 0;
-	static const morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	static const morton EIGHTBITMASK = 0x000000FF;
 	if (sizeof(morton) > 4) {
 		answer =
 			Morton2D_encode_y_256[(y >> 24) & EIGHTBITMASK] | // select 8 upper bits
@@ -74,7 +74,7 @@ template<typename morton, typename coord>
 inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
 	unsigned long maxbit = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
-	const static morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	const static morton EIGHTBITMASK = 0x000000FF;
 	morton answer = LUT[c & EIGHTBITMASK];
 	unsigned int i = 8;
 	while (maxbit >= i) {
@@ -96,7 +96,7 @@ inline morton morton2D_Encode_LUT256_shifted_ET(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline morton morton2D_Encode_LUT256(const coord x, const coord y) {
 	morton answer = 0;
-	static const morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	static const morton EIGHTBITMASK = 0x000000FF;
 	if (sizeof(morton) > 4) {
 		answer =
 			(Morton2D_encode_x_256[(y >> 24) & EIGHTBITMASK]) << 1 | // select 8 upper bits
