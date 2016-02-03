@@ -21,9 +21,9 @@ inline morton morton2D_Encode_for(const coord x, const coord y){
 }
 
 // ENCODE 3D morton code : Magic bits (helper method)
-static const uint_fast32_t encode2D_masks32[6] = { 0, 0x0000FFFF, 0x00FF00FF, 0x0F0F0F0F, 0x33333333, 0x55555555};
-static const uint_fast64_t encode2D_masks64[6] = { 0x00000000FFFFFFFF, 0x0000FFFF0000FFFF, 0x00FF00FF00FF00FF, 
-											0x0F0F0F0F0F0F0F0F, 0x3333333333333333, 0x5555555555555555};
+static const uint_fast32_t encode2D_masks32[6] = {0, 0x0000FFFF, 0x00FF00FF, 0x0F0F0F0F, 0x33333333, 0x55555555};
+static const uint_fast64_t encode2D_masks64[6] = {0x00000000FFFFFFFF, 0x0000FFFF0000FFFF, 0x00FF00FF00FF00FF, 
+													0x0F0F0F0F0F0F0F0F, 0x3333333333333333, 0x5555555555555555};
 
 // ENCODE 2D morton code : Magic bits (helper method)
 template<typename morton, typename coord>
@@ -49,7 +49,7 @@ inline morton morton2D_Encode_magicbits(const coord x, const coord y){
 template<typename morton, typename coord>
 inline morton morton2D_Encode_LUT256_shifted(const coord x, const coord y){
 	morton answer = 0;
-	const morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
+	static const morton EIGHTBITMASK = (sizeof(morton) <= 4) ? 0x00FF : 0x000000FF;
 	if (sizeof(morton) > 4) {
 		answer =
 			Morton2D_encode_y_256[(y >> 24) & EIGHTBITMASK] | // select 8 upper bits
@@ -93,7 +93,7 @@ inline morton morton2D_Encode_LUT256(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline void morton2D_Decode_for(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
-	for (morton i = 0; i < (sizeof(m)*4); i++) {
+	for (morton i = 0; i <= (sizeof(m)*4); ++i) {
 		x |= (m & (1ull << 2 * i)) >> i;
 		y |= (m & (1ull << ((2 * i) + 1))) >> (i + 1);
 	}
