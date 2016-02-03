@@ -1,4 +1,4 @@
-#include "morton2D_64.h"
+#include "morton2D.h"
 #include "morton3D.h"
 #include <iostream>
 
