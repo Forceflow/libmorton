@@ -5,10 +5,6 @@
 #include <stdint.h>
 #include "morton2D_LUTs.h"
 
-#if _MSC_VER
-#include <intrin.h>
-#endif
-
 template<typename morton, typename coord> inline morton morton2D_Encode_for(const coord x, const coord y);
 template<typename morton, typename coord> inline morton morton2D_Encode_magicbits(const coord x, const coord y);
 template<typename morton, typename coord> inline morton morton2D_Encode_LUT256_shifted(const coord x, const coord y);
