@@ -71,7 +71,7 @@ inline morton morton3D_Encode_LUT256_shifted_ET(const coord x, const coord y, co
 	morton answer_x = compute_ET_LUT_encode<morton, coord>(x, Morton3D_encode_x_256);
 	morton answer_y = compute_ET_LUT_encode<morton, coord>(y, Morton3D_encode_y_256);
 	morton answer_z = compute_ET_LUT_encode<morton, coord>(z, Morton3D_encode_z_256);
-	return total | answer_z | answer_y | answer_x;
+	return answer_z | answer_y | answer_x;
 }
 
 // ENCODE 3D Morton code : LUT
