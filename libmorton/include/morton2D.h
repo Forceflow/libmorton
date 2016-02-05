@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include "morton2D_LUTs.h"
+#include "morton_common.h"
 
 template<typename morton, typename coord> inline morton morton2D_Encode_for(const coord x, const coord y);
 template<typename morton, typename coord> inline morton morton2D_Encode_magicbits(const coord x, const coord y);
@@ -88,9 +89,9 @@ inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
 // ENCODE 2D morton code: LUT preshifted
 template<typename morton, typename coord>
 inline morton morton2D_Encode_LUT256_shifted_ET(const coord x, const coord y) {
-	morton x = compute2D_ET_LUT_encode<typename morton, typename coord>(x, Morton2D_encode_x_256);
-	morton y = compute2D_ET_LUT_encode<typename morton, typename coord>(y, Morton2D_encode_y_256);
-	return y | x;
+    morton outX = compute2D_ET_LUT_encode<morton, coord>(x, Morton2D_encode_x_256);
+    morton outY = compute2D_ET_LUT_encode<morton, coord>(y, Morton2D_encode_y_256);
+    return outY | outX;
 }
 
 // ENCODE 2D morton code: LUT
@@ -118,9 +119,9 @@ inline morton morton2D_Encode_LUT256(const coord x, const coord y) {
 // ENCODE 2D morton code: LUT preshifted
 template<typename morton, typename coord>
 inline morton morton2D_Encode_LUT256_ET(const coord x, const coord y) {
-	morton x = compute2D_ET_LUT_encode<typename morton, typename coord>(x, Morton2D_encode_x_256);
-	morton y = compute2D_ET_LUT_encode<typename morton, typename coord>(y, Morton2D_encode_x_256);
-	return (y << 1) | x;
+    morton outX = compute2D_ET_LUT_encode<morton, coord>(x, Morton2D_encode_x_256);
+    morton outY = compute2D_ET_LUT_encode<morton, coord>(y, Morton2D_encode_x_256);
+    return (outY << 1) | outX;
 }
 
 // DECODE 2D morton code : For loop

@@ -4,6 +4,7 @@
 // Load utils
 #include "util.h"
 #include "timer.h"
+#include <bitset>
 #include <string>
 
 // Load libraries we're going to test
