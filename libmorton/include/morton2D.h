@@ -124,6 +124,24 @@ inline morton morton2D_Encode_LUT256_ET(const coord x, const coord y) {
     return (outY << 1) | outX;
 }
 
+template<typename morton, typename coord>
+inline coord morton2D_DecodeCoord_LUT256_shifted(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
+	morton a = 0;
+	morton NINEBITMASK = 0x00000000000001ff;
+	a = LUT[(m >> startshift) & NINEBITMASK]
+		| (LUT[((m >> (startshift + 9)) & NINEBITMASK)] << 3)
+		| (LUT[((m >> (startshift + 18)) & NINEBITMASK)] << 6)
+		| (LUT[((m >> (startshift + 27)) & NINEBITMASK)] << 9);
+	if (sizeof(morton) > 4) {
+		a |=
+			(LUT[((m >> (startshift + 36)) & NINEBITMASK)] << 12)
+			| (LUT[((m >> (startshift + 46)) & NINEBITMASK)] << 15)
+			| (LUT[((m >> (startshift + 54)) & NINEBITMASK)] << 18);
+	}
+	return a;
+}
+
+
 // DECODE 2D morton code : For loop
 template<typename morton, typename coord>
 inline void morton2D_Decode_for(const morton m, coord& x, coord& y) {
