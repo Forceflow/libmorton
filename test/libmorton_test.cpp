@@ -296,7 +296,7 @@ void printHeader(){
 #if _MSC_VER
 	cout << "++ Compiled using MSVC" << endl;
 #elif __GNUC__
-	cout << "++ Compiled using GCC" << endl;<
+    cout << "++ Compiled using GCC" << endl;
 #endif
 }
 

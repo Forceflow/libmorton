@@ -41,7 +41,7 @@ struct Timer { // High performance Win64 timer using QPC events
 		elapsed_time_milliseconds += double((end_time.QuadPart - start_time.QuadPart) / pc_frequency);
 	}
 };
-#elif
+#else
 struct Timer { // High performance timer using standard c++11 chrono
 	double elapsed_time_milliseconds = 0;
 	high_resolution_clock::time_point t1;
