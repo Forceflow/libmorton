@@ -318,6 +318,8 @@ int main(int argc, char *argv[]) {
 	
 	// register functions
 	//f_64_encode.push_back(encode_3D_64("64-bit encode for", &morton3D_64_Encode_for));
+	uint_fast8_t* xtable;
+	uint_fast8_t* ytable;
 
 	cout << "++ Checking all methods for correctness" << endl;
 	check3D_EncodeCorrectness();

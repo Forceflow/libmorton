@@ -6,7 +6,7 @@ template <typename element>
 void printTable(const element* table, size_t howmany, unsigned int splitat){
 	for (size_t i = 0; i < howmany; i++){
 		if (i % splitat == 0){ cout << endl; }
-		cout << table[i] << ", ";
+		printf("%i ,", table[i]);
 	}
 	cout << endl;
 }
@@ -34,12 +34,12 @@ void generate2D_DecodeLUT(size_t how_many_bits, uint_fast8_t*& x_table, uint_fas
 	x_table = (uint_fast8_t*)malloc(total * sizeof(uint_fast8_t));
 	y_table = (uint_fast8_t*)malloc(total * sizeof(uint_fast8_t));
 
-	for (uint_fast32_t i = 0; i < total; i++){
-		x_table[i] = (uint_fast8_t) morton2D_splitby2<uint_fast64_t, uint_fast32_t>(i);
-		y_table[i] = (uint_fast8_t) morton2D_splitby2<uint_fast64_t, uint_fast32_t>(i >> 1);
+	//generate tables
+	for (size_t i = 0; i < total; i++) {
+		morton2D_Decode_for(i, x_table[i], y_table[i]);
 	}
 
-	if (print_tables){
+	if (print_tables) {
 		cout << "X Table " << endl;
 		printTable<uint_fast8_t>(x_table, total, 16);
 		cout << "Y Table " << endl;
