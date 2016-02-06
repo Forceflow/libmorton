@@ -11,9 +11,7 @@
 #include "../libmorton/include/morton_LUT_generators.h"
 #include "../libmorton/include/morton2D.h"
 #include "../libmorton/include/morton3D.h"
-
-
-
+#include "../libmorton/include/morton.h"
 
 // struct for holding a function and its description
 template <typename morton, typename coord>
