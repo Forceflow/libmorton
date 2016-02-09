@@ -159,7 +159,7 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 }
 
 template<typename morton, typename coord>
-inline coord morton3D_DecodeCoord_LUT256_shifted(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
+inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
 	morton NINEBITMASK = 0x00000000000001ff;
 	a = LUT[(m >> startshift) & NINEBITMASK]
@@ -178,9 +178,9 @@ inline coord morton3D_DecodeCoord_LUT256_shifted(const morton m, const uint_fast
 // DECODE 3D 64-bit morton code : Shifted LUT
 template<typename morton, typename coord>
 inline void morton3D_Decode_LUT256_shifted(const morton m, coord& x, coord& y, coord& z) {
-	x = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_x_512, 0);
-	y = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_y_512, 0);
-	z = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_z_512, 0);
+	x = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 0);
+	y = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_y_512, 0);
+	z = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_z_512, 0);
 }
 
 // DECODE 3D 64-bit morton code : Shifted LUT (Early termination version)
@@ -223,9 +223,9 @@ inline void morton3D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y
 // DECODE 3D 64-bit morton code : LUT
 template<typename morton, typename coord>
 inline void morton3D_Decode_LUT256(const morton m, coord& x, coord& y, coord& z){
-	x = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_x_512, 0);
-	y = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_x_512, 1);
-	z = morton3D_DecodeCoord_LUT256_shifted<morton, coord>(m, Morton3D_decode_x_512, 2);
+	x = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 0);
+	y = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 1);
+	z = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 2);
 }
 
 // DECODE 3D 64-bit morton code : LUT (Early termination version)

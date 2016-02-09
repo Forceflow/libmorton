@@ -125,20 +125,28 @@ inline morton morton2D_Encode_LUT256_ET(const coord x, const coord y) {
 }
 
 template<typename morton, typename coord>
-inline coord morton2D_DecodeCoord_LUT256_shifted(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
+inline coord morton2D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
 	morton EIGHTBITMASK = 0x00000000000000ff;
-	a = LUT[(m >> startshift) & EIGHTBITMASK]
-		| (LUT[((m >> (startshift + 8)) & EIGHTBITMASK)] << 3)
-		| (LUT[((m >> (startshift + 16)) & EIGHTBITMASK)] << 6)
-		| (LUT[((m >> (startshift + 24)) & EIGHTBITMASK)] << 9);
+	a =   (LUT[(m >> startshift) & EIGHTBITMASK])
+		| (LUT[((m >> (startshift + 8)) & EIGHTBITMASK)] << 4)
+		| (LUT[((m >> (startshift + 16)) & EIGHTBITMASK)] << 8)
+		| (LUT[((m >> (startshift + 24)) & EIGHTBITMASK)] << 12);
 	if (sizeof(morton) > 4) {
-		a |=
-			(LUT[((m >> (startshift + 32)) & NINEBITMASK)] << 12)
-			| (LUT[((m >> (startshift + 40)) & NINEBITMASK)] << 15)
-			| (LUT[((m >> (startshift + 48)) & NINEBITMASK)] << 18);
+		a |=  (LUT[((m >> (startshift + 32)) & NINEBITMASK)] << 16)
+			| (LUT[((m >> (startshift + 40)) & NINEBITMASK)] << 20)
+			| (LUT[((m >> (startshift + 48)) & NINEBITMASK)] << 24);
+			| (LUT[((m >> (startshift + 56)) & NINEBITMASK)] << 28);
 	}
 	return a;
+}
+
+// DECODE 3D 64-bit morton code : Shifted LUT
+template<typename morton, typename coord>
+inline void morton2D_Decode_LUT256_shifted(const morton m, coord& x, coord& y, coord& z) {
+	x = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 0);
+	y = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_y_512, 0);
+	z = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_z_512, 0);
 }
 
 
