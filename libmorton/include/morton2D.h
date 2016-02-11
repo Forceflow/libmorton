@@ -144,9 +144,8 @@ inline coord morton2D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT
 // DECODE 3D 64-bit morton code : Shifted LUT
 template<typename morton, typename coord>
 inline void morton2D_Decode_LUT256_shifted(const morton m, coord& x, coord& y, coord& z) {
-	x = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 0);
-	y = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_y_512, 0);
-	z = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_z_512, 0);
+	x = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_x_256, 0);
+	y = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_y_256, 0);
 }
 
 
