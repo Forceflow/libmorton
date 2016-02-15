@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <algorithm>
+#include <math.h>
 #include "morton3D_LUTs.h"
 #include "morton_common.h"
 
@@ -26,26 +27,18 @@ template<typename morton, typename coord> inline void morton3D_Decode_magicbits(
 template<typename morton, typename coord> inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z);
 template<typename morton, typename coord> inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z);
 
-// Todo: generalize this
 // ENCODE 3D Morton code : Pre-shifted LUT
 template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	const static morton EIGHTBITMASK = 0x000000FF;
-	if (sizeof(morton) > 4) {
-		answer = 
-			Morton3D_encode_z_256[(z >> 16) & EIGHTBITMASK] |
-			Morton3D_encode_y_256[(y >> 16) & EIGHTBITMASK] |
-			Morton3D_encode_x_256[(x >> 16) & EIGHTBITMASK];
+	unsigned int loops = floor((sizeof(coord) * 8.0f / 9.0f));
+	for (unsigned int i = loops; i > 0; --i) {
+		answer =
+			Morton3D_encode_z_256[(z >> (i - 1)) & EIGHTBITMASK] |
+			Morton3D_encode_y_256[(y >> (i - 1)) & EIGHTBITMASK] |
+			Morton3D_encode_x_256[(x >> (i - 1)) & EIGHTBITMASK];
 	}
-	answer = answer << 24 | // shift by 24 = 3 * 8bits
-		Morton3D_encode_z_256[(z >> 8) & EIGHTBITMASK] |
-		Morton3D_encode_y_256[(y >> 8) & EIGHTBITMASK] |
-		Morton3D_encode_x_256[(x >> 8) & EIGHTBITMASK];
-	answer = answer << 24 |
-		Morton3D_encode_z_256[z & EIGHTBITMASK] |
-		Morton3D_encode_y_256[y & EIGHTBITMASK] |
-		Morton3D_encode_x_256[x & EIGHTBITMASK];
 	return answer;
 }
 
@@ -54,20 +47,13 @@ template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	const static morton EIGHTBITMASK = 0x000000FF;
-	if (sizeof(morton) > 4) {
+	unsigned int loops = floor((sizeof(coord) * 8.0f / 9.0f));
+	for (unsigned int i = loops; i > 0; --i) {
 		answer =
-			(Morton3D_encode_x_256[(z >> 16) & EIGHTBITMASK] << 2)
-			| (Morton3D_encode_x_256[(y >> 16) & EIGHTBITMASK] << 1)
-			| Morton3D_encode_x_256[(x >> 16) & EIGHTBITMASK];
+			(Morton3D_encode_x_256[(z >> (i - 1)) & EIGHTBITMASK] << 2) |
+			(Morton3D_encode_x_256[(y >> (i - 1)) & EIGHTBITMASK] << 1) |
+			Morton3D_encode_x_256[(x >> (i - 1)) & EIGHTBITMASK];
 	}
-	answer = answer << 24 |
-		(Morton3D_encode_x_256[(z >> 8) & EIGHTBITMASK] << 2)
-		| (Morton3D_encode_x_256[(y >> 8) & EIGHTBITMASK] << 1)
-		| Morton3D_encode_x_256[(x >> 8) & EIGHTBITMASK];
-	answer = answer << 24 |
-		(Morton3D_encode_x_256[z & EIGHTBITMASK] << 2)
-		| (Morton3D_encode_x_256[y & EIGHTBITMASK] << 1)
-		| Morton3D_encode_x_256[x & EIGHTBITMASK];
 	return answer;
 }
 
@@ -129,7 +115,7 @@ inline morton morton3D_Encode_magicbits(const coord x, const coord y, const coor
 template<typename morton, typename coord>
 inline morton morton3D_Encode_for(const coord x, const coord y, const coord z){
 	morton answer = 0;
-	unsigned int checkbits = (sizeof(morton) <= 4) ? 10 : 21;
+	unsigned int checkbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
     answer |= ((x & ((morton)0x1 << i)) << 2 * i)     //Here we need to cast 0x1 to the amount of bits in the morton code, 
       | ((y & ((morton)0x1 << i)) << ((2 * i) + 1))   //otherwise there is a bug when morton code is larger than 32 bits
@@ -143,7 +129,7 @@ template<typename morton, typename coord>
 inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
-	unsigned long checkbits = (sizeof(morton) <= 4) ? 10 : 21;
+	unsigned int checkbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	findFirstSetBit<morton>(x, &x_max);
 	findFirstSetBit<morton>(y, &y_max);
 	findFirstSetBit<morton>(z, &z_max);
