@@ -146,7 +146,7 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
-	morton NINEBITMASK = 0x00000000000001ff;
+	morton NINEBITMASK = 0x000001ff;
 	a = LUT[(m >> startshift) & NINEBITMASK]
 		| (LUT[((m >> (startshift+9)) & NINEBITMASK)] << 3)
 		| (LUT[((m >> (startshift+18)) & NINEBITMASK)] << 6)
