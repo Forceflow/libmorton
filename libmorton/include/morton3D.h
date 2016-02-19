@@ -34,10 +34,11 @@ inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const
 	const static morton EIGHTBITMASK = 0x000000FF;
 	unsigned int loops = floor((sizeof(coord) * 8.0f / 9.0f));
 	for (unsigned int i = loops; i > 0; --i) {
+		unsigned int shift = i - 1;
 		answer =
-			Morton3D_encode_z_256[(z >> (i - 1)) & EIGHTBITMASK] |
-			Morton3D_encode_y_256[(y >> (i - 1)) & EIGHTBITMASK] |
-			Morton3D_encode_x_256[(x >> (i - 1)) & EIGHTBITMASK];
+			Morton3D_encode_z_256[(z >> shift) & EIGHTBITMASK] |
+			Morton3D_encode_y_256[(y >> shift) & EIGHTBITMASK] |
+			Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK];
 	}
 	return answer;
 }
@@ -49,10 +50,11 @@ inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z
 	const static morton EIGHTBITMASK = 0x000000FF;
 	unsigned int loops = floor((sizeof(coord) * 8.0f / 9.0f));
 	for (unsigned int i = loops; i > 0; --i) {
+		unsigned int shift = i - 1;
 		answer =
-			(Morton3D_encode_x_256[(z >> (i - 1)) & EIGHTBITMASK] << 2) |
-			(Morton3D_encode_x_256[(y >> (i - 1)) & EIGHTBITMASK] << 1) |
-			Morton3D_encode_x_256[(x >> (i - 1)) & EIGHTBITMASK];
+			(Morton3D_encode_x_256[(z >> shift) & EIGHTBITMASK] << 2) |
+			(Morton3D_encode_x_256[(y >> shift) & EIGHTBITMASK] << 1) |
+			Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK];
 	}
 	return answer;
 }
@@ -117,9 +119,11 @@ inline morton morton3D_Encode_for(const coord x, const coord y, const coord z){
 	morton answer = 0;
 	unsigned int checkbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
-    answer |= ((x & ((morton)0x1 << i)) << 2 * i)     //Here we need to cast 0x1 to the amount of bits in the morton code, 
-      | ((y & ((morton)0x1 << i)) << ((2 * i) + 1))   //otherwise there is a bug when morton code is larger than 32 bits
-      | ((z & ((morton)0x1 << i)) << ((2 * i) + 2));
+		morton m_shifted = (morton)0x1 << i;
+		unsigned int cshift = 2 * i;
+    answer |= ((x & (m_shifted)) << cshift)     //Here we need to cast 0x1 to the amount of bits in the morton code, 
+      | ((y & (m_shifted)) << (cshift + 1))   //otherwise there is a bug when morton code is larger than 32 bits
+      | ((z & (m_shifted)) << (cshift + 2));
 	}
 	return answer;
 }
@@ -136,10 +140,11 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 	checkbits = min(checkbits, max(z_max, max(x_max, y_max)) + (unsigned long) 1);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton m_shifted = (morton)0x1 << i;
+		unsigned int cshift = 2 * i;
 		//Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
-		answer |= ((x & (m_shifted)) << 2 * i)
-			| ((y & (m_shifted)) << ((2 * i) + 1))
-			| ((z & (m_shifted)) << ((2 * i) + 2));
+		answer |= ((x & (m_shifted)) << cshift)
+			| ((y & (m_shifted)) << (cshift + 1))
+			| ((z & (m_shifted)) << (cshift + 2));
 	}
 	return answer;
 }
@@ -258,9 +263,11 @@ inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z){
 	unsigned int checkbits = (sizeof(morton) <= 4) ? 10 : 21;
 
 	for (morton i = 0; i <= checkbits; ++i) {
-		x |= (m & (1ull << 3 * i)) >> ((2 * i));
-		y |= (m & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
-		z |= (m & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
+		unsigned int mshift = 3 * i;
+		unsigned int cshift = 2 * i;
+		x |= (m & (1ull << mshift)) >> cshift;
+		y |= (m & (1ull << (mshift + 1))) >> (cshift + 1);
+		z |= (m & (1ull << (mshift + 2))) >> (cshift + 2);
 	}
 }
 
@@ -277,9 +284,11 @@ inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z)
 	// How many bits to check?
 	unsigned int checkbits = (unsigned int) min(defaultbits, firstbit_location / 3.0f);
 	for (morton i = 0; i <= checkbits; ++i) {
-		x |= (m & (1ull << 3 * i)) >> ((2 * i));
-		y |= (m & (1ull << ((3 * i) + 1))) >> ((2 * i) + 1);
-		z |= (m & (1ull << ((3 * i) + 2))) >> ((2 * i) + 2);
+		unsigned int mshift = 3*i;
+		unsigned int cshift = 2*i;
+		x |= (m & (1ull << mshift)) >> cshift;
+		y |= (m & (1ull << (mshift + 1))) >> (cshift + 1);
+		z |= (m & (1ull << (mshift + 2))) >> (cshift + 2);
 	}
 }
 
