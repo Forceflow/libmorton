@@ -37,8 +37,8 @@ inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const
 		answer =
 			answer << 24 | 
 			(Morton3D_encode_z_256[(z >> shift) & EIGHTBITMASK] |
-			Morton3D_encode_y_256[(y >> shift) & EIGHTBITMASK] |
-			Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK]);
+			 Morton3D_encode_y_256[(y >> shift) & EIGHTBITMASK] |
+			 Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK]);
 	}
 	return answer;
 }
@@ -246,11 +246,12 @@ inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
 	unsigned int checkbits = floor((sizeof(coord) * 8.0f / 3.0f));
 	for (morton i = 0; i <= checkbits; ++i) {
-		morton shift_selector = 3 * i;
+		morton selector = 1;
+		unsigned int shift_selector = 3 * i;
 		unsigned int shiftback = 2 * i;
-		x |= (m & (1ull << shift_selector)) >> (shiftback);
-		y |= (m & (1ull << (shift_selector + 1))) >> (shiftback + 1);
-		z |= (m & (1ull << (shift_selector + 2))) >> (shiftback + 2);
+		x |= (m & (selector << shift_selector)) >> (shiftback);
+		y |= (m & (selector << (shift_selector + 1))) >> (shiftback + 1);
+		z |= (m & (selector << (shift_selector + 2))) >> (shiftback + 2);
 	}
 }
 
@@ -263,10 +264,11 @@ inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z)
 	if(!findFirstSetBit<morton>(m, &firstbit_location)) return;
 	unsigned int checkbits = (unsigned int) min(defaultbits, firstbit_location / 3.0f);
 	for (morton i = 0; i <= checkbits; ++i) {
-		morton shift_selector = 3 * i;
+		morton selector = 1;
+		unsigned int shift_selector = 3 * i;
 		unsigned int shiftback = 2 * i;
-		x |= (m & (1ull << shift_selector)) >> (shiftback);
-		y |= (m & (1ull << (shift_selector + 1))) >> (shiftback + 1);
-		z |= (m & (1ull << (shift_selector + 2))) >> (shiftback + 2);
+		x |= (m & (selector << shift_selector)) >> (shiftback);
+		y |= (m & (selector << (shift_selector + 1))) >> (shiftback + 1);
+		z |= (m & (selector << (shift_selector + 2))) >> (shiftback + 2);
 	}
 }
