@@ -2,8 +2,7 @@
 // Using QueryPerformanceCounter for Win32/Win64
 // And C++11 chrono for other platforms
 
-#ifndef TIMER_H_
-#define TIMER_H_
+#pragma once
 
 #if _MSC_VER
 #include <Windows.h>
@@ -59,6 +58,4 @@ struct Timer { // High performance timer using standard c++11 chrono
 		elapsed_time_milliseconds += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 	}
 };
-#endif
-
 #endif

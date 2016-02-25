@@ -1,5 +1,4 @@
-#ifndef LIBMORTON_TEST_H_
-#define LIBMORTON_TEST_H_
+#pragma once
 
 // Load utils
 #include "util.h"
@@ -831,5 +830,3 @@ static const uint_fast32_t control_3D_Decode[4096][3] = {
 {13,14,14},{12,15,14},{13,15,14},{12,14,15},{13,14,15},{12,15,15},{13,15,15},{14,14,14},
 {15,14,14},{14,15,14},{15,15,14},{14,14,15},{15,14,15},{14,15,15},{15,15,15}
 };
-
-#endif

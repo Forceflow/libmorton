@@ -1,5 +1,4 @@
-#ifndef MORTON3D_LUTS_H_
-#define MORTON3D_LUTS_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -217,5 +216,3 @@ static const uint_fast8_t Morton3D_decode_z_512[512] = {
 	6, 6, 6, 6, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7,
 	6, 6, 6, 6, 7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7
 };
-
-#endif // MORTON3D_LUTS_H_

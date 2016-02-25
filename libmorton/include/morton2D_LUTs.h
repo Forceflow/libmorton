@@ -1,5 +1,4 @@
-#ifndef MORTON2D_LUTS_H_
-#define MORTON2D_LUTS_H_
+#pragma once
 
 #include <stdint.h>
 
@@ -112,5 +111,3 @@ static const uint_fast8_t Morton2D_decode_y[256]{
 	12,12,13,13,12,12,13,13,14,14,15,15,14,14,15,15,
 	12,12,13,13,12,12,13,13,14,14,15,15,14,14,15,15
 };
-
-#endif

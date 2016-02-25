@@ -1,6 +1,5 @@
 // Libmorton - Methods to encode/decode 64-bit morton codes from/to 32-bit (x,y,z) coordinates
-#ifndef MORTON2D_64_H_
-#define MORTON2D_64_H_
+#pragma once
 
 #include <stdint.h>
 #include "morton2D_LUTs.h"
@@ -235,5 +234,3 @@ inline void morton2D_Decode_for(const morton m, coord& x, coord& y) {
 		y |= (m & (1ull << ((2 * i) + 1))) >> (i + 1);
 	}
 }
-
-#endif // MORTON2D_64_H_
