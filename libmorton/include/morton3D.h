@@ -34,11 +34,12 @@ inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const
 	const static morton EIGHTBITMASK = 0x000000FF;
 	unsigned int loops = floor((sizeof(coord) * 8.0f / 9.0f));
 	for (unsigned int i = loops; i > 0; --i) {
-		unsigned int imin = i - 1;
+		unsigned int shift = (i - 1)*8;
 		answer =
-			Morton3D_encode_z_256[(z >> imin) & EIGHTBITMASK] |
-			Morton3D_encode_y_256[(y >> imin) & EIGHTBITMASK] |
-			Morton3D_encode_x_256[(x >> imin) & EIGHTBITMASK];
+			answer << 24 | 
+			(Morton3D_encode_z_256[(z >> shift) & EIGHTBITMASK] |
+			Morton3D_encode_y_256[(y >> shift) & EIGHTBITMASK] |
+			Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK]);
 	}
 	return answer;
 }
@@ -50,11 +51,12 @@ inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z
 	const static morton EIGHTBITMASK = 0x000000FF;
 	unsigned int loops = floor((sizeof(coord) * 8.0f / 9.0f));
 	for (unsigned int i = loops; i > 0; --i) {
-		unsigned int imin = i - 1;
+		unsigned int shift = (i - 1) * 8; 
 		answer =
-			(Morton3D_encode_x_256[(z >> imin) & EIGHTBITMASK] << 2) |
-			(Morton3D_encode_x_256[(y >> imin) & EIGHTBITMASK] << 1) |
-			 Morton3D_encode_x_256[(x >> imin) & EIGHTBITMASK];
+			answer << 24 |
+			(Morton3D_encode_x_256[(z >> shift) & EIGHTBITMASK] << 2) |
+			(Morton3D_encode_x_256[(y >> shift) & EIGHTBITMASK] << 1) |
+			 Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK];
 	}
 	return answer;
 }
