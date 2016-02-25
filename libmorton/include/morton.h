@@ -1,5 +1,4 @@
-#ifndef MORTON_H_
-#define MORTON_H_
+#pragma once
 
 // This file will always contain pointers to the fastest Morton encoding/decoding implementation
 // IF you just want to use the fastest method to encode/decode morton codes, include this
@@ -48,5 +47,3 @@ inline void morton3D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uin
 inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z) {
 	morton3D_Decode_LUT256_shifted<uint_fast64_t, uint_fast32_t>(morton, x, y, z);
 }
-
-#endif

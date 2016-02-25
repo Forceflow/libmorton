@@ -1,6 +1,5 @@
 // Libmorton - Methods to encode/decode 64-bit morton codes from/to 32-bit (x,y,z) coordinates
-#ifndef MORTON3D_64_H_
-#define MORTON3D_64_H_
+#pragma once
 
 #include <stdint.h>
 #include <algorithm>
@@ -32,9 +31,9 @@ template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	const static morton EIGHTBITMASK = 0x000000FF;
-	unsigned int loops = floor((sizeof(coord) * 8.0f / 9.0f));
+	unsigned int loops = sizeof(coord);
 	for (unsigned int i = loops; i > 0; --i) {
-		unsigned int shift = (i - 1)*8;
+		unsigned int shift = (i - 1) * 8;
 		answer =
 			answer << 24 | 
 			(Morton3D_encode_z_256[(z >> shift) & EIGHTBITMASK] |
@@ -49,7 +48,7 @@ template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	const static morton EIGHTBITMASK = 0x000000FF;
-	unsigned int loops = floor((sizeof(coord) * 8.0f / 9.0f));
+	unsigned int loops = sizeof(coord); 
 	for (unsigned int i = loops; i > 0; --i) {
 		unsigned int shift = (i - 1) * 8; 
 		answer =
@@ -271,5 +270,3 @@ inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z)
 		z |= (m & (1ull << (shift_selector + 2))) >> (shiftback + 2);
 	}
 }
-
-#endif // MORTON3D_64_H_
