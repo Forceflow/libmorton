@@ -31,8 +31,7 @@ template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256_shifted(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	const static morton EIGHTBITMASK = 0x000000FF;
-	unsigned int loops = sizeof(coord);
-	for (unsigned int i = loops; i > 0; --i) {
+	for (unsigned int i = sizeof(coord); i > 0; --i) {
 		unsigned int shift = (i - 1) * 8;
 		answer =
 			answer << 24 | 
@@ -48,8 +47,7 @@ template<typename morton, typename coord>
 inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	const static morton EIGHTBITMASK = 0x000000FF;
-	unsigned int loops = sizeof(coord); 
-	for (unsigned int i = loops; i > 0; --i) {
+	for (unsigned int i = sizeof(coord); i > 0; --i) {
 		unsigned int shift = (i - 1) * 8; 
 		answer =
 			answer << 24 |
@@ -66,8 +64,8 @@ inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
 	unsigned long maxbit = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) {return 0;}
 	const static morton EIGHTBITMASK = 0x000000FF;
-	morton answer = LUT[c & EIGHTBITMASK];
-	unsigned int i = 8;
+	morton answer = 0;
+	unsigned int i = 0;
 	while (maxbit >= i) {
 		answer |= (LUT[(c >> i) & EIGHTBITMASK]) << i*3;
 		i += 8;
@@ -120,7 +118,7 @@ inline morton morton3D_Encode_for(const coord x, const coord y, const coord z){
 	morton answer = 0;
 	unsigned int checkbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
-		morton mshifted= (morton)0x1 << i;
+		morton mshifted= (morton) 0x1 << i;
 		unsigned int shift = 2 * i;
     answer |= 
 		((x & (mshifted)) << shift)     //Here we need to cast 0x1 to the amount of bits in the morton code, 
@@ -141,9 +139,8 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 	findFirstSetBit<morton>(z, &z_max);
 	checkbits = min(checkbits, max(z_max, max(x_max, y_max)) + (unsigned long) 1);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
-		morton m_shifted = (morton)0x1 << i;
+		morton m_shifted = (morton)0x1 << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;
-		//Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		answer |= ((x & (m_shifted)) << shift)
 			| ((y & (m_shifted)) << (shift + 1))
 			| ((z & (m_shifted)) << (shift + 2));
@@ -155,7 +152,7 @@ template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
 	morton NINEBITMASK = 0x000001ff;
-	unsigned int loops = floor((sizeof(morton) * 8.0f / 9.0f));
+	unsigned int loops = floor((sizeof(morton) * 8.0f) / 9.0f);
 	for (unsigned int i = 0; i < loops; ++i){
 		a |= (LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i));
 	}
@@ -244,7 +241,7 @@ inline void morton3D_Decode_magicbits(const morton m, coord& x, coord& y, coord&
 template<typename morton, typename coord>
 inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
-	unsigned int checkbits = floor((sizeof(coord) * 8.0f / 3.0f));
+	unsigned int checkbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	for (morton i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
 		unsigned int shift_selector = 3 * i;
@@ -259,7 +256,7 @@ inline void morton3D_Decode_for(const morton m, coord& x, coord& y, coord& z){
 template<typename morton, typename coord>
 inline void morton3D_Decode_for_ET(const morton m, coord& x, coord& y, coord& z) {
 	x = 0; y = 0; z = 0;
-	float defaultbits = floor((sizeof(coord) * 8.0f / 3.0f));
+	float defaultbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	unsigned long firstbit_location = 0;
 	if(!findFirstSetBit<morton>(m, &firstbit_location)) return;
 	unsigned int checkbits = (unsigned int) min(defaultbits, firstbit_location / 3.0f);
