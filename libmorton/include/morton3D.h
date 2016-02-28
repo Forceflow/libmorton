@@ -167,6 +167,14 @@ inline void morton3D_Decode_LUT256_shifted(const morton m, coord& x, coord& y, c
 	z = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_z_512, 0);
 }
 
+// DECODE 3D 64-bit morton code : LUT
+template<typename morton, typename coord>
+inline void morton3D_Decode_LUT256(const morton m, coord& x, coord& y, coord& z) {
+	x = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 0);
+	y = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 1);
+	z = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 2);
+}
+
 // DECODE 3D 64-bit morton code : Shifted LUT (Early termination version)
 template<typename morton, typename coord>
 inline void morton3D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y, coord& z){
@@ -185,14 +193,6 @@ inline void morton3D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y
 		i += 9;
 	}
 	return;
-}
-
-// DECODE 3D 64-bit morton code : LUT
-template<typename morton, typename coord>
-inline void morton3D_Decode_LUT256(const morton m, coord& x, coord& y, coord& z){
-	x = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 0);
-	y = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 1);
-	z = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 2);
 }
 
 // DECODE 3D 64-bit morton code : LUT (Early termination version)
