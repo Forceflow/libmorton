@@ -62,8 +62,7 @@ static bool check3D_DecodeFunction(string method_tested, void (*decode_function)
 	//	if()
 	//}
 
-
-	if (sizeof(morton) >= 4){ // Let's do some more tests
+	if (sizeof(morton) > 4){ // Let's do some more tests
 		decode_function(0x7fffffffffffffff, x, y, z);
 		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff){
 			printIncorrectDecoding3D<morton, coord>(method_tested, 0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
