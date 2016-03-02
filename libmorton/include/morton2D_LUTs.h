@@ -2,6 +2,10 @@
 
 #include <stdint.h>
 
+static const uint_fast32_t encode2D_masks32[6] = { 0, 0x0000FFFF, 0x00FF00FF, 0x0F0F0F0F, 0x33333333, 0x55555555 };
+static const uint_fast64_t encode2D_masks64[6] = { 0x00000000FFFFFFFF, 0x0000FFFF0000FFFF, 0x00FF00FF00FF00FF,
+0x0F0F0F0F0F0F0F0F, 0x3333333333333333, 0x5555555555555555 };
+
 static const uint_fast16_t Morton2D_encode_x_256[256] =
 {
 	0, 1, 4, 5, 16, 17, 20, 21,
