@@ -101,14 +101,18 @@ inline morton morton2D_Encode_magicbits(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline morton morton2D_Encode_for(const coord x, const coord y){
 	morton answer = 0;
-	for (morton i = 0; i < sizeof(coord)*8; ++i) {
-		answer |= (x & ((morton)0x1 << i)) << (2 * i) | (y & ((morton)0x1 << i)) << ((2 * i) + 1);
+	unsigned int checkbits = floor((sizeof(morton) * 4.0f);
+	for (unsigned int i = 0; i <= checkbits; ++i) {
+		morton mshifted = (morton)0x1 << i;
+		unsigned int shift = 2 * i;
+		answer |=
+			  ((x & mshifted) << shift) //Here we need to cast 0x1 to the amount of bits in the morton code, 
+			| ((y & mshifted) << (shift + 1));   //otherwise there is a bug when morton code is larger than 32 bits
 	}
 	return answer;
 }
 
 // DECODE
-
 template<typename morton, typename coord>
 inline coord morton2D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;

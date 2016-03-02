@@ -119,9 +119,9 @@ inline morton morton3D_Encode_for(const coord x, const coord y, const coord z){
 		morton mshifted= (morton) 0x1 << i;
 		unsigned int shift = 2 * i;
     answer |= 
-		((x & (mshifted)) << shift)     //Here we need to cast 0x1 to the amount of bits in the morton code, 
-      | ((y & (mshifted)) << (shift + 1))   //otherwise there is a bug when morton code is larger than 32 bits
-      | ((z & (mshifted)) << (shift + 2));
+		((x & mshifted) << shift)     //Here we need to cast 0x1 to the amount of bits in the morton code, 
+      | ((y & mshifted) << (shift + 1))   //otherwise there is a bug when morton code is larger than 32 bits
+      | ((z & mshifted) << (shift + 2));
 	}
 	return answer;
 }
@@ -139,9 +139,9 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton m_shifted = (morton)0x1 << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;
-		answer |= ((x & (m_shifted)) << shift)
-			| ((y & (m_shifted)) << (shift + 1))
-			| ((z & (m_shifted)) << (shift + 2));
+		answer |= ((x & m_shifted) << shift)
+			| ((y & m_shifted) << (shift + 1))
+			| ((z & m_shifted) << (shift + 2));
 	}
 	return answer;
 }
