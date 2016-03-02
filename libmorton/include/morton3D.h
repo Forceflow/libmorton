@@ -61,10 +61,10 @@ inline morton morton3D_Encode_LUT256(const coord x, const coord y, const coord z
 // Helper method for ET LUT encode
 template<typename morton, typename coord>
 inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
-	unsigned long maxbit = 0;
-	if (findFirstSetBit<coord>(c, &maxbit) == 0) {return 0;}
 	const static morton EIGHTBITMASK = 0x000000FF;
+	unsigned long maxbit = 0;
 	morton answer = 0;
+	if (findFirstSetBit<coord>(c, &maxbit) == 0) {return 0;}
 	unsigned int i = 0;
 	while (maxbit >= i) {
 		answer |= (LUT[(c >> i) & EIGHTBITMASK]) << i*3;
@@ -92,8 +92,6 @@ inline morton morton3D_Encode_LUT256_ET(const coord x, const coord y, const coor
 }
 
 // ENCODE 3D 64-bit morton code : Magic bits (helper method)
-static const uint_fast32_t encode3D_masks32[5] = { 0, 0xff0000ff, 0x0f00f00f, 0xc30c30c3, 0x49249249};
-static const uint_fast64_t encode3D_masks64[5] = { 0xffff00000000ffff, 0x00ff0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249};
 template<typename morton, typename coord>
 static inline morton morton3D_SplitBy3Bits(const coord a) {
 	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(encode3D_masks32) : reinterpret_cast<const morton*>(encode3D_masks64);
