@@ -6,6 +6,7 @@
 #include "morton_common.h"
 
 template<typename morton, typename coord> inline morton morton2D_Encode_for(const coord x, const coord y);
+template<typename morton, typename coord> inline morton morton2D_Encode_for_ET(const coord x, const coord y);
 template<typename morton, typename coord> inline morton morton2D_Encode_magicbits(const coord x, const coord y);
 template<typename morton, typename coord> inline morton morton2D_Encode_LUT256_shifted(const coord x, const coord y);
 template<typename morton, typename coord> inline morton morton2D_Encode_LUT256_shifted_ET(const coord x, const coord y);
@@ -46,7 +47,7 @@ inline morton morton2D_Encode_LUT256(const coord x, const coord y) {
 	return answer;
 }
 
-// Helper method for ET LUT encode
+// HELPER METHOD : ET LUT Encode
 template<typename morton, typename coord>
 inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
 	const static morton EIGHTBITMASK = 0x000000FF;
@@ -77,7 +78,7 @@ inline morton morton2D_Encode_LUT256_ET(const coord x, const coord y) {
 	return (answer_y << 1) | answer_x;
 }
 
-// ENCODE 2D morton code : Magic bits (helper method)
+// HELPER METHOD : Magic bits split by 2
 template<typename morton, typename coord>
 inline morton morton2D_splitby2(const coord a) {
 	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(encode2D_masks32) : reinterpret_cast<const morton*>(encode2D_masks64);
@@ -101,13 +102,31 @@ inline morton morton2D_Encode_magicbits(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline morton morton2D_Encode_for(const coord x, const coord y){
 	morton answer = 0;
-	unsigned int checkbits = floor((sizeof(morton) * 4.0f);
+	unsigned int checkbits = floor(sizeof(morton) * 4.0f);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
-		morton mshifted = (morton)0x1 << i;
+		morton mshifted = (morton)0x1 << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;
 		answer |=
-			  ((x & mshifted) << shift) //Here we need to cast 0x1 to the amount of bits in the morton code, 
-			| ((y & mshifted) << (shift + 1));   //otherwise there is a bug when morton code is larger than 32 bits
+			  ((x & mshifted) << shift)
+			| ((y & mshifted) << (shift + 1));
+	}
+	return answer;
+}
+
+// ENCODE 2D morton code : For Loop (Early termination version)
+template<typename morton, typename coord>
+inline morton morton2D_Encode_for_ET(const coord x, const coord y) {
+	morton answer = 0;
+	unsigned long x_max = 0, y_max = 0,
+	unsigned int checkbits = floor(sizeof(morton) * 4.0f);
+	findFirstSetBit<morton>(x, &x_max);
+	findFirstSetBit<morton>(y, &y_max);
+	checkbits = min(checkbits, max(x_max, y_max) + 1ul);
+	for (unsigned int i = 0; i <= checkbits; ++i) {
+		morton m_shifted = (morton)0x1 << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
+		unsigned int shift = 2 * i;
+		answer |= ((x & m_shifted) << shift)
+			| ((y & m_shifted) << (shift + 1));
 	}
 	return answer;
 }
