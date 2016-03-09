@@ -180,32 +180,18 @@ inline void morton2D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y
 template<typename morton, typename coord>
 inline void morton2D_Decode_LUT256_ET(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
-	static const morton EIGHTBITMASK = 0x000000FF;
+	morton EIGHTBITMASK = 0x000000ff;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
-	x = x | Morton2D_decode_x_256[m & EIGHTBITMASK];
-	y = y | Morton2D_decode_x_256[m & EIGHTBITMASK];
-	if (firstbit_location < 8) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 8) & EIGHTBITMASK)] << 4);
-	y = y | (Morton2D_decode_x_256[((m >> 9) & EIGHTBITMASK)] << 4);
-	if (firstbit_location < 16) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 16) & EIGHTBITMASK)] << 8);
-	y = y | (Morton2D_decode_x_256[((m >> 17) & EIGHTBITMASK)] << 8);
-	if (firstbit_location < 24) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 24) & EIGHTBITMASK)] << 12);
-	y = y | (Morton2D_decode_x_256[((m >> 25) & EIGHTBITMASK)] << 12);
-	if (firstbit_location < 32) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 32) & EIGHTBITMASK)] << 16);
-	y = y | (Morton2D_decode_x_256[((m >> 33) & EIGHTBITMASK)] << 16);
-	if (firstbit_location < 40) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 40) & EIGHTBITMASK)] << 20);
-	y = y | (Morton2D_decode_x_256[((m >> 41) & EIGHTBITMASK)] << 20);
-	if (firstbit_location < 48) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 48) & EIGHTBITMASK)] << 24);
-	y = y | (Morton2D_decode_x_256[((m >> 49) & EIGHTBITMASK)] << 24);
-	if (firstbit_location < 56) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 56) & EIGHTBITMASK)] << 28);
-	y = y | (Morton2D_decode_x_256[((m >> 57) & EIGHTBITMASK)] << 28);
+	unsigned int i = 0;
+	unsigned int shiftback = 0;
+	while (firstbit_location >= i) {
+		morton m_shifted = (m >> i) & EIGHTBITMASK;
+		x |= Morton2D_decode_x_256[(m >> i) & EIGHTBITMASK] << shiftback;
+		y |= Morton2D_decode_x_256[(m >> (i+1)) & EIGHTBITMASK] << shiftback;
+		shiftback += 4;
+		i += 8;
+	}
 	return;
 }
 
