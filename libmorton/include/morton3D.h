@@ -213,9 +213,6 @@ inline void morton3D_Decode_LUT256_ET(const morton m, coord& x, coord& y, coord&
 	return;
 }
 
-static uint_fast32_t decode3D_masks32[5] = {0x49249249, 0x030c30c3, 0x0F00F00F, 0xFF0000FF, 0x0000FFFF};
-static uint_fast64_t decode3D_masks64[5] = {0x9249249249249249, 0x030c30c3030c30c3, 0xF00F00F00F00F00F, 0x00FF0000FF0000FF, 0x000000000000FFFF};
-
 // DECODE 3D 64-bit morton code : Magic bits (helper method)
 template<typename morton, typename coord>
 static inline coord morton3D_getThirdBits(const morton m) {

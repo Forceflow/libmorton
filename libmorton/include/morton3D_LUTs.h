@@ -2,8 +2,13 @@
 
 #include <stdint.h>
 
+// Encode masks
 static const uint_fast32_t encode3D_masks32[5] = { 0, 0xff0000ff, 0x0f00f00f, 0xc30c30c3, 0x49249249 };
 static const uint_fast64_t encode3D_masks64[5] = { 0xffff00000000ffff, 0x00ff0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249 };
+
+// Decode masks
+static const uint_fast32_t decode3D_masks32[5] = { 0x49249249, 0x030c30c3, 0x0F00F00F, 0xFF0000FF, 0x0000FFFF };
+static const uint_fast64_t decode3D_masks64[5] = { 0x9249249249249249, 0x030c30c3030c30c3, 0xF00F00F00F00F00F, 0x00FF0000FF0000FF, 0x000000000000FFFF };
 
 // Version with lookup table
 static const uint_fast32_t Morton3D_encode_x_256[256] =
