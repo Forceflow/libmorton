@@ -146,6 +146,7 @@ inline morton morton3D_Encode_for_ET(const coord x, const coord y, const coord z
 	return answer;
 }
 
+// todo: wouldn't this be better with 8-bit aligned decode LUT?
 template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;

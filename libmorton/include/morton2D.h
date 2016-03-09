@@ -118,7 +118,7 @@ template<typename morton, typename coord>
 inline morton morton2D_Encode_for_ET(const coord x, const coord y) {
 	morton answer = 0;
 	unsigned long x_max = 0, y_max = 0,
-	unsigned int checkbits = floor(sizeof(morton) * 4.0f);
+	unsigned int checkbits = sizeof(morton) * 4;
 	findFirstSetBit<morton>(x, &x_max);
 	findFirstSetBit<morton>(y, &y_max);
 	checkbits = min(checkbits, max(x_max, y_max) + 1ul);
@@ -135,16 +135,10 @@ inline morton morton2D_Encode_for_ET(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline coord morton2D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
-	morton EIGHTBITMASK = 0x00000000000000ff;
-	a =   (LUT[(m >> startshift) & EIGHTBITMASK])
-		| (LUT[((m >> (startshift + 8)) & EIGHTBITMASK)] << 4)
-		| (LUT[((m >> (startshift + 16)) & EIGHTBITMASK)] << 8)
-		| (LUT[((m >> (startshift + 24)) & EIGHTBITMASK)] << 12);
-	if (sizeof(morton) > 4) {
-		a |=  (LUT[((m >> (startshift + 32)) & NINEBITMASK)] << 16)
-			| (LUT[((m >> (startshift + 40)) & NINEBITMASK)] << 20)
-			| (LUT[((m >> (startshift + 48)) & NINEBITMASK)] << 24);
-			| (LUT[((m >> (startshift + 56)) & NINEBITMASK)] << 28);
+	morton EIGHTBITMASK = 0x000000ff;
+	unsigned int loops = sizeof(morton);
+	for (unsigned int i = 0; i < loops; ++i) {
+		a |= (LUT[(m >> ((i * 8) + startshift)) & EIGHTBITMASK] << (2 * i));
 	}
 	return a;
 }
@@ -167,32 +161,18 @@ inline void morton2D_Decode_LUT256(const morton m, coord& x, coord& y) {
 template<typename morton, typename coord>
 inline void morton2D_Decode_LUT256_shifted_ET(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
-	static const morton EIGHTBITMASK = 0x000000FF;
+	morton EIGHTBITMASK = 0x000000ff;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
-	x = x | Morton2D_decode_x_256[m & EIGHTBITMASK];
-	y = y | Morton2D_decode_y_256[m & EIGHTBITMASK];
-	if (firstbit_location < 8) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 8) & EIGHTBITMASK)] << 4);
-	y = y | (Morton2D_decode_y_256[((m >> 8) & EIGHTBITMASK)] << 4);
-	if (firstbit_location < 16) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 16) & EIGHTBITMASK)] << 8);
-	y = y | (Morton2D_decode_y_256[((m >> 16) & EIGHTBITMASK)] << 8);
-	if (firstbit_location < 24) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 24) & EIGHTBITMASK)] << 12);
-	y = y | (Morton2D_decode_y_256[((m >> 24) & EIGHTBITMASK)] << 12);
-	if (firstbit_location < 32) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 32) & EIGHTBITMASK)] << 16);
-	y = y | (Morton2D_decode_y_256[((m >> 32) & EIGHTBITMASK)] << 16);
-	if (firstbit_location < 40) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 40) & EIGHTBITMASK)] << 20);
-	y = y | (Morton2D_decode_y_256[((m >> 40) & EIGHTBITMASK)] << 20);
-	if (firstbit_location < 48) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 48) & EIGHTBITMASK)] << 24);
-	y = y | (Morton2D_decode_y_256[((m >> 48) & EIGHTBITMASK)] << 24);
-	if (firstbit_location < 56) { return; }
-	x = x | (Morton2D_decode_x_256[((m >> 56) & EIGHTBITMASK)] << 28);
-	y = y | (Morton2D_decode_y_256[((m >> 56) & EIGHTBITMASK)] << 28);
+	unsigned int i = 0;
+	unsigned int shiftback = 0;
+	while (firstbit_location >= i) {
+		morton m_shifted = (m >> i) & EIGHTBITMASK;
+		x |= Morton2D_decode_x_256[m_shifted] << shiftback;
+		y |= Morton2D_decode_y_256[m_shifted] << shiftback;
+		shiftback += 4;
+		i += 8;
+	}
 	return;
 }
 
@@ -233,8 +213,11 @@ inline void morton2D_Decode_LUT256_ET(const morton m, coord& x, coord& y) {
 template<typename morton, typename coord>
 inline void morton2D_Decode_for(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
-	for (morton i = 0; i <= (sizeof(m)*4); ++i) {
-		x |= (m & (1ull << 2 * i)) >> i;
-		y |= (m & (1ull << ((2 * i) + 1))) >> (i + 1);
+	unsigned int checkbits = sizeof(morton) * 4;
+	for (morton i = 0; i <= checkbits; ++i) {
+		morton selector = 1;
+		unsigned int shift_selector = 2 * i;
+		x |= (m & (selector << shift_selector)) >> i;
+		y |= (m & (selector << (shift_selector + 1))) >> (i + 1);
 	}
 }
