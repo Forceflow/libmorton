@@ -81,7 +81,7 @@ inline morton morton2D_Encode_LUT256_ET(const coord x, const coord y) {
 // HELPER METHOD : Magic bits split by 2
 template<typename morton, typename coord>
 inline morton morton2D_splitby2(const coord a) {
-	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(encode2D_masks32) : reinterpret_cast<const morton*>(encode2D_masks64);
+	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(magicbit2D_masks32) : reinterpret_cast<const morton*>(magicbit2D_masks64);
 	morton x = a;
 	if (sizeof(morton) > 4) { x = (x | x << 32) & masks[0]; }
 	x = (x | x << 16) & masks[1];

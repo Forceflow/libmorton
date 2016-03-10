@@ -303,17 +303,19 @@ int main(int argc, char *argv[]) {
 	times = 10;
 	printHeader();
 
-	//for (size_t i = 0; i < 100; i++) {
-	//	uint_fast32_t x;
-	//	uint_fast32_t y;
-	//	morton2D_Decode_for<size_t,uint_fast32_t>(i, x, y);
+//	morton2D_Encode_magicbits <uint64_t, uint32_t>(2, 3);
 
-	//	std::bitset<64> ibits(i);
-	//	std::bitset<32> xbits(x);
-	//	std::bitset<32> ybits(y);
-	//	cout << ibits << " " << xbits << " " << ybits << endl;
+	/*for (size_t i = 0; i < 100; i++) {
+		uint_fast32_t x;
+		uint_fast32_t y;
+		morton2D_Decode_for<size_t,uint_fast32_t>(i, x, y);
 
-	//}
+		std::bitset<64> ibits(i);
+		std::bitset<32> xbits(x);
+		std::bitset<32> ybits(y);
+		cout << ibits << " " << xbits << " " << ybits << endl;
+
+	}*/
 	
 	// register functions
 	//f_64_encode.push_back(encode_3D_64("64-bit encode for", &morton3D_64_Encode_for));
