@@ -56,12 +56,6 @@ static bool check3D_DecodeFunction(string method_tested, void (*decode_function)
 		}
 	}
 
-	//// do edge test for 32 bit
-	//decode_function(0x7ffffffff, x, y, z);
-	//if (sizeof(morton) = 4) { // 32 bit function
-	//	if()
-	//}
-
 	if (sizeof(morton) > 4){ // Let's do some more tests
 		decode_function(0x7fffffffffffffff, x, y, z);
 		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff){
@@ -93,6 +87,23 @@ static bool check3D_EncodeFunction(string method_tested, morton (*encode_functio
 }
 
 template <typename morton, typename coord>
+static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
+	Timer timer = Timer();
+	morton runningsum = 0;
+	for (size_t t = 0; t < times; t++) {
+		for (coord i = 0; i < MAX; i++) {
+			for (coord j = 0; j < MAX; j++) {
+					timer.start();
+					runningsum += function(i, j);
+					timer.stop();
+			}
+		}
+	}
+	running_sums.push_back(runningsum);
+	return timer.elapsed_time_milliseconds / (float)times;
+}
+
+template <typename morton, typename coord>
 static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), size_t times){
 	Timer timer = Timer();
 	morton runningsum = 0;
@@ -109,6 +120,32 @@ static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), 
 	}
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float) times;
+}
+
+template <typename morton, typename coord>
+static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t times) {
+	Timer timer = Timer();
+	coord maximum = ~0;
+	morton runningsum = 0;
+	coord x, y, z;
+
+	for (size_t t = 0; t < times; t++) {
+		// Create a pool of random numbers
+		vector<coord> randnumbers;
+		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
+			randnumbers.push_back(rand() % maximum);
+		}
+		// Do the performance test
+		for (size_t i = 0; i < total; i++) {
+			x = randnumbers[i % RAND_POOL_SIZE];
+			y = randnumbers[(i + 1) % RAND_POOL_SIZE];
+			timer.start();
+			runningsum += function(x, y);
+			timer.stop();
+		}
+	}
+	running_sums.push_back(runningsum);
+	return timer.elapsed_time_milliseconds / (float)times;
 }
 
 template <typename morton, typename coord>
