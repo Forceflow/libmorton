@@ -12,6 +12,28 @@
 #include "../libmorton/include/morton3D.h"
 #include "../libmorton/include/morton.h"
 
+
+// struct for holding a function and its description
+template <typename morton, typename coord>
+struct encode_f_2D {
+	char* description;
+	morton(*f)(coord, coord);
+
+	encode_f_2D(char* description, morton(*f)(coord, coord)) :
+		description(description), f(f) {
+	}
+};
+
+template <typename morton, typename coord>
+struct decode_f_2D {
+	char* description;
+	void(*f)(morton, coord, coord);
+
+	encode_f_2D(char* description, void(*f)(morton, coord, coord)) :
+		description(description), f(f) {
+	}
+};
+
 // struct for holding a function and its description
 template <typename morton, typename coord>
 struct encode_f_3D {
@@ -20,6 +42,17 @@ struct encode_f_3D {
 
 	encode_f_3D(char* description, morton(*f)(coord, coord, coord)) :
 	description(description), f(f){
+	}
+};
+
+// struct for holding a function and its description
+template <typename morton, typename coord>
+struct encode_f_3D {
+	char* description;
+	morton(*f)(coord, coord, coord);
+
+	encode_f_3D(char* description, morton(*f)(coord, coord, coord)) :
+		description(description), f(f) {
 	}
 };
 
