@@ -29,8 +29,10 @@ size_t RAND_POOL_SIZE = 9000;
 // Runningsums
 vector<uint_fast64_t> running_sums;
 
-vector<encode_3D_64> f_64_encode; // 64-bit encode functions
-vector<encode_3D_32> f_32_encode; // 32_bit encode functions
+vector<encode_3D_64> f3D_64_encode; // 3D 64-bit encode functions
+vector<encode_3D_32> f3D_32_encode; // 3D 32_bit encode functions
+vector<decode_3D_64> f3D_64_decode; // 3D 64-bit decode functions
+vector<decode_3D_32> f3D_32_decode; // 3D 32_bit decode functions
 
 // Make a total of all running_sum checks and print it
 // This is an elaborate way to ensure no function call gets optimized away
@@ -336,12 +338,32 @@ void printHeader(){
 #endif
 }
 
+void registerFunctions() {
+
+	// Register 3D 64-bit encode functions
+	f3D_64_encode.push_back(encode_3D_64("For", &m3D_e_for<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64("For ET", &m3D_e_for_ET<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64("Magicbits", &m3D_e_magicbits<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64("LUT", &m3D_e_LUT<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64("LUT ET", &m3D_e_LUT_ET<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64("LUT Shifted", &m3D_e_sLUT<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64("LUT Shifted ET", &m3D_e_sLUT_ET<uint_fast64_t, uint_fast32_t>));
+
+	// Register 3D 32-bit encode functions
+	f3D_32_encode.push_back(encode_3D_32("For", &m3D_e_for<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32("For ET", &m3D_e_for_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32("Magicbits", &m3D_e_magicbits<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32("LUT", &m3D_e_LUT<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32("LUT ET", &m3D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32("LUT Shifted", &m3D_e_sLUT<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32("LUT Shifted ET", &m3D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
+
+
+}
+
 int main(int argc, char *argv[]) {
 	times = 10;
 	printHeader();
-
-
-
 	/*for (size_t i = 0; i < 100; i++) {
 		uint_fast32_t x;
 		uint_fast32_t y;
