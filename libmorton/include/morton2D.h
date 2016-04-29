@@ -2,8 +2,12 @@
 #pragma once
 
 #include <stdint.h>
+#include <algorithm>
+#include <math.h>
 #include "morton2D_LUTs.h"
 #include "morton_common.h"
+
+using namespace std;
 
 // Encode methods
 template<typename morton, typename coord> inline morton m2D_e_sLUT(const coord x, const coord y);
@@ -121,11 +125,11 @@ inline morton m2D_e_for(const coord x, const coord y){
 template<typename morton, typename coord>
 inline morton m2D_e_for_ET(const coord x, const coord y) {
 	morton answer = 0;
-	unsigned long x_max = 0, y_max = 0,
+	unsigned long x_max = 0, y_max = 0;
 	unsigned int checkbits = sizeof(morton) * 4;
 	findFirstSetBit<morton>(x, &x_max);
 	findFirstSetBit<morton>(y, &y_max);
-	checkbits = min(checkbits, max(x_max, y_max) + 1ul);
+	checkbits = min((unsigned long)checkbits, max(x_max, y_max) + 1ul);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton m_shifted = (morton)0x1 << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;
