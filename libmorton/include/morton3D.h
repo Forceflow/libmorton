@@ -135,7 +135,7 @@ inline morton m3D_e_for_ET(const coord x, const coord y, const coord z) {
 	findFirstSetBit<morton>(x, &x_max);
 	findFirstSetBit<morton>(y, &y_max);
 	findFirstSetBit<morton>(z, &z_max);
-	checkbits = min(checkbits, max(z_max, max(x_max, y_max)) + (unsigned long) 1);
+	checkbits = min((unsigned long)checkbits, max(z_max, max(x_max, y_max)) + (unsigned long) 1);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton m_shifted = (morton)0x1 << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;

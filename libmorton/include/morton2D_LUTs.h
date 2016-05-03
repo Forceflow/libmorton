@@ -79,7 +79,7 @@ static const uint_fast16_t Morton2D_encode_y_256[256] =
 	43648, 43650, 43656, 43658, 43680, 43682, 43688, 43690
 };
 
-static const uint_fast8_t Morton2D_decode_x[256]{
+static const uint_fast8_t Morton2D_decode_x_256[256]{
 	0,1,0,1,2,3,2,3,0,1,0,1,2,3,2,3,
 	4,5,4,5,6,7,6,7,4,5,4,5,6,7,6,7,
 	0,1,0,1,2,3,2,3,0,1,0,1,2,3,2,3,
@@ -98,7 +98,7 @@ static const uint_fast8_t Morton2D_decode_x[256]{
 	12,13,12,13,14,15,14,15,12,13,12,13,14,15,14,15
 };
 
-static const uint_fast8_t Morton2D_decode_y[256]{
+static const uint_fast8_t Morton2D_decode_y_256[256]{
 	0,0,1,1,0,0,1,1,2,2,3,3,2,2,3,3,
 	0,0,1,1,0,0,1,1,2,2,3,3,2,2,3,3,
 	4,4,5,5,4,4,5,5,6,6,7,7,6,6,7,7,
