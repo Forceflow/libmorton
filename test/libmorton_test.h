@@ -23,7 +23,7 @@ template <typename morton, typename coord>
 struct decode_f_2D {
 	string description;
 	void (*f)(morton, coord, coord);
-	decode_f_2D(string description, void(*f)(morton, coord, coord)) : description(description), f(f) {}
+	decode_f_2D(string description, void(*f)(const morton, coord&, coord&)) : description(description), f(f) {}
 };
 
 template <typename morton, typename coord>
@@ -31,14 +31,15 @@ struct encode_f_3D {
 	string description;
 	morton (*f)(coord, coord, coord);
 	encode_f_3D(string description, morton(*f)(coord, coord, coord)) : description(description), f(f){}
-	encode_f_3D() :description(""), f(0) {}
+	encode_f_3D() : description(""), f(0) {}
 };
 
 template <typename morton, typename coord>
 struct decode_f_3D {
 	string description;
 	void (*f)(morton, coord, coord, coord);
-	decode_f_3D(string description, void(*f)(morton, coord, coord, coord)) : description(description), f(f) {}
+	decode_f_3D(string description, void(*f)(const morton, coord&, coord&, coord&)) : description(description), f(f) {}
+	decode_f_3D() : description(""), f(0) {}
 };
 
 typedef encode_f_3D<uint_fast64_t, uint_fast32_t> encode_3D_64;

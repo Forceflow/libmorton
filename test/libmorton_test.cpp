@@ -357,6 +357,11 @@ void registerFunctions() {
 	f3D_32_encode.push_back(encode_3D_32("LUT ET", &m3D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
 	f3D_32_encode.push_back(encode_3D_32("LUT Shifted", &m3D_e_sLUT<uint_fast32_t, uint_fast16_t>));
 	f3D_32_encode.push_back(encode_3D_32("LUT Shifted ET", &m3D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
+
+	//decode_3D_64 test(string("For"), &m3D_d_for<uint_fast64_t, uint_fast32_t>);
+
+	f3D_64_decode.push_back(decode_3D_64("For", &(m3D_d_for<uint_fast64_t, uint_fast32_t>)));
+	//f3D_64_decode.push_back(decode_3D_64("For ET", &m3D_d_for_ET<uint_fast64_t, uint_fast32_t>));
 }
 
 int main(int argc, char *argv[]) {
