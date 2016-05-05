@@ -29,7 +29,7 @@ uint32_t rand_cmwc(void)
 	i = (i + 1) & 4095;
 	t = a * x[i];
 	c = (t + c) >> 32;
-	x[i] = 0xffffffff - (uint32_t)t;
+	x[i] = 0xffffffff - static_cast<uint32_t>(t);
 
 	return x[i];
 }

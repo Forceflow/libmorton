@@ -360,7 +360,7 @@ void registerFunctions() {
 
 	//decode_3D_64 test(string("For"), &m3D_d_for<uint_fast64_t, uint_fast32_t>);
 
-	f3D_64_decode.push_back(decode_3D_64("For", &(m3D_d_for<uint_fast64_t, uint_fast32_t>)));
+	//f3D_64_decode.push_back(decode_3D_64("For", &(m3D_d_for<uint_fast64_t, uint_fast32_t>)));
 	//f3D_64_decode.push_back(decode_3D_64("For ET", &m3D_d_for_ET<uint_fast64_t, uint_fast32_t>));
 }
 

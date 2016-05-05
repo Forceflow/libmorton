@@ -112,7 +112,7 @@ inline morton m2D_e_for(const coord x, const coord y){
 	morton answer = 0;
 	unsigned int checkbits = floor(sizeof(morton) * 4.0f);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
-		morton mshifted = (morton)0x1 << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
+		morton mshifted = static_cast<morton>(0x1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;
 		answer |=
 			  ((x & mshifted) << shift)
@@ -129,9 +129,9 @@ inline morton m2D_e_for_ET(const coord x, const coord y) {
 	unsigned int checkbits = sizeof(morton) * 4;
 	findFirstSetBit<morton>(x, &x_max);
 	findFirstSetBit<morton>(y, &y_max);
-	checkbits = min((unsigned long)checkbits, max(x_max, y_max) + 1ul);
+	checkbits = min(static_cast<unsigned long>(checkbits), max(x_max, y_max) + 1ul);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
-		morton m_shifted = (morton)0x1 << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
+		morton m_shifted = static_cast<morton>(0x1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;
 		answer |= ((x & m_shifted) << shift)
 			| ((y & m_shifted) << (shift + 1));
@@ -181,7 +181,6 @@ inline void m2D_d_sLUT_ET(const morton m, coord& x, coord& y) {
 		shiftback += 4;
 		i += 8;
 	}
-	return;
 }
 
 // DECODE 2D morton code : Shifted LUT (early termination)
@@ -200,7 +199,6 @@ inline void m2D_d_LUT_ET(const morton m, coord& x, coord& y) {
 		shiftback += 4;
 		i += 8;
 	}
-	return;
 }
 
 template<typename morton, typename coord>
@@ -211,7 +209,7 @@ static inline coord morton2D_GetSecondBits(const morton m) {
 	x = (x ^ (x >> 4)) & masks[2];
 	x = (x ^ (x >> 8)) & masks[1];
 	if (sizeof(morton) > 4) x = (x ^ (x >> 16)) & masks[0];
-	return (coord)x;
+	return static_cast<coord>(x);
 }
 
 // DECODE 2D morton code : For loop
