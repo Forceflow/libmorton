@@ -217,7 +217,7 @@ template<typename morton, typename coord>
 inline void m2D_d_for(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
 	unsigned int checkbits = sizeof(morton) * 4;
-	for (morton i = 0; i <= checkbits; ++i) {
+	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
 		unsigned int shift_selector = 2 * i;
 		x |= (m & (selector << shift_selector)) >> i;

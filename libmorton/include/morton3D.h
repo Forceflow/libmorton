@@ -151,11 +151,11 @@ template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
 	morton NINEBITMASK = 0x000001ff;
-	unsigned int loops = floor((sizeof(morton) * 8.0f) / 9.0f);
+	unsigned int loops = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f) / 9.0f));
 	for (unsigned int i = 0; i < loops; ++i){
 		a |= (LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i));
 	}
-	return a;
+	return static_cast<coord>(a);
 }
 
 // DECODE 3D 64-bit morton code : Shifted LUT
@@ -238,7 +238,7 @@ template<typename morton, typename coord>
 inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
 	unsigned int checkbits = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f / 3.0f)));
-	for (morton i = 0; i <= checkbits; ++i) {
+	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
 		unsigned int shift_selector = 3 * i;
 		unsigned int shiftback = 2 * i;
@@ -256,7 +256,7 @@ inline void m3D_d_for_ET(const morton m, coord& x, coord& y, coord& z) {
 	unsigned long firstbit_location = 0;
 	if(!findFirstSetBit<morton>(m, &firstbit_location)) return;
 	unsigned int checkbits = static_cast<unsigned int> min(defaultbits, firstbit_location / 3.0f);
-	for (morton i = 0; i <= checkbits; ++i) {
+	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
 		unsigned int shift_selector = 3 * i;
 		unsigned int shiftback = 2 * i;
