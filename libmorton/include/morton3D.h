@@ -114,7 +114,7 @@ inline morton m3D_e_magicbits(const coord x, const coord y, const coord z){
 template<typename morton, typename coord>
 inline morton m3D_e_for(const coord x, const coord y, const coord z){
 	morton answer = 0;
-	unsigned int checkbits = floor((sizeof(morton) * 8.0f / 3.0f));
+	unsigned int checkbits = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f / 3.0f)));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton mshifted= static_cast<morton>(0x1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;
@@ -131,7 +131,7 @@ template<typename morton, typename coord>
 inline morton m3D_e_for_ET(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
-	unsigned int checkbits = floor((sizeof(morton) * 8.0f / 3.0f));
+	unsigned int checkbits = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f / 3.0f)));
 	findFirstSetBit<morton>(x, &x_max);
 	findFirstSetBit<morton>(y, &y_max);
 	findFirstSetBit<morton>(z, &z_max);
@@ -237,7 +237,7 @@ inline void m3D_d_magicbits(const morton m, coord& x, coord& y, coord& z){
 template<typename morton, typename coord>
 inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
-	unsigned int checkbits = floor((sizeof(morton) * 8.0f / 3.0f));
+	unsigned int checkbits = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f / 3.0f)));
 	for (morton i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
 		unsigned int shift_selector = 3 * i;
