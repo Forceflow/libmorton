@@ -255,7 +255,7 @@ inline void m3D_d_for_ET(const morton m, coord& x, coord& y, coord& z) {
 	float defaultbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	unsigned long firstbit_location = 0;
 	if(!findFirstSetBit<morton>(m, &firstbit_location)) return;
-	unsigned int checkbits = static_cast<unsigned int> min(defaultbits, firstbit_location / 3.0f);
+	unsigned int checkbits = static_cast<unsigned int>(min(defaultbits, firstbit_location / 3.0f));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
 		unsigned int shift_selector = 3 * i;
