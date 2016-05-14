@@ -25,3 +25,8 @@ inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uin
 
 ## Testing
 The *test* folder contains tools I use to test correctness and performance of the libmorton implementation.
+
+## TODO
+ * Write better test suites
+ * Implement BMI2 instruction set detection and optimization for newer Intel CPU's
+ * More testing
