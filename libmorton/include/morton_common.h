@@ -26,7 +26,7 @@ inline bool findFirstSetBit(const morton x, unsigned long* firstbit_location) {
 	return _BitScanReverse64(firstbit_location, x);
 #elif __GNUC__
 	unsigned int pos = __builtin_ffs(x);
-	*firstbit_location = pos;
+	*firstbit_location = static_cast<unsigned long>(pos);
 	return pos;
 #endif
 }
