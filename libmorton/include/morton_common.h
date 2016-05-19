@@ -9,7 +9,7 @@ template<typename morton>
 inline bool findFirstSetBit(const morton x, unsigned long* firstbit_location) {
 #if _MSC_VER && !_WIN64
 	// 32 BIT on 32 BIT
-	if(sizeof(morton) <= 4) { 
+	if (sizeof(morton) <= 4) {
 		return _BitScanReverse(firstbit_location, x);
 	}
 	// 64 BIT on 32 BIT
@@ -25,8 +25,12 @@ inline bool findFirstSetBit(const morton x, unsigned long* firstbit_location) {
 	// 32 or 64 BIT on 64 BIT
 	return _BitScanReverse64(firstbit_location, x);
 #elif __GNUC__
-	unsigned int pos = __builtin_ffs(x);
-	*firstbit_location = static_cast<unsigned long>(pos);
-	return pos;
+	if (x == 0) {
+		return false;
+	}
+	else {
+		*firstbit_location = static_cast<unsigned long>((sizeof(morton)*8) - __builtin_clzll(x));
+		return true;
+	}
 #endif
 }
