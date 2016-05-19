@@ -11,20 +11,20 @@
 #include "../libmorton/include/morton2D.h"
 #include "../libmorton/include/morton3D.h"
 #include "../libmorton/include/morton.h"
-
-template <typename morton, typename coord>
-struct encode_f_2D {
-	string description;
-	morton (*f)(coord, coord);
-	encode_f_2D(string description, morton(*f)(coord, coord)) : description(description), f(f) {}
-};
-
-template <typename morton, typename coord>
-struct decode_f_2D {
-	string description;
-	void (*f)(morton, coord, coord);
-	decode_f_2D(string description, void(*f)(const morton, coord&, coord&)) : description(description), f(f) {}
-};
+//
+//template <typename morton, typename coord>
+//struct encode_f_2D {
+//	string description;
+//	morton (*f)(coord, coord);
+//	encode_f_2D(string description, morton(*f)(coord, coord)) : description(description), f(f) {}
+//};
+//
+//template <typename morton, typename coord>
+//struct decode_f_2D {
+//	string description;
+//	void (*f)(morton, coord, coord);
+//	decode_f_2D(string description, void(*f)(morton, coord&, coord&)) : description(description), f(f) {}
+//};
 
 template <typename morton, typename coord>
 struct encode_f_3D {
@@ -37,8 +37,8 @@ struct encode_f_3D {
 template <typename morton, typename coord>
 struct decode_f_3D {
 	string description;
-	void (*f)(morton, coord, coord, coord);
-	decode_f_3D(string description, void(*f)(const morton, coord&, coord&, coord&)) : description(description), f(f) {}
+	void (*f)(morton, coord&, coord&, coord&);
+	decode_f_3D(string description, void(*f)(morton, coord&, coord&, coord&)) : description(description), f(f) {}
 	decode_f_3D() : description(""), f(0) {}
 };
 
