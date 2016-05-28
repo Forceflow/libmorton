@@ -1,4 +1,6 @@
 // Libmorton - Methods to encode/decode 64-bit morton codes from/to 32-bit (x,y,z) coordinates
+// Warning: morton.h will always point to the functions that use the fastest available method.
+
 #pragma once
 
 #include <stdint.h>
@@ -9,7 +11,7 @@
 
 using namespace std;
 
-// AVAILABLE METHODS
+// AVAILABLE METHODS FOR ENCODING
 template<typename morton, typename coord> inline morton m3D_e_sLUT(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton m3D_e_sLUT_ET(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton m3D_e_LUT(const coord x, const coord y, const coord z);
@@ -18,6 +20,7 @@ template<typename morton, typename coord> inline morton m3D_e_magicbits(const co
 template<typename morton, typename coord> inline morton m3D_e_for(const coord x, const coord y, const coord z);
 template<typename morton, typename coord> inline morton m3D_e_for_ET(const coord x, const coord y, const coord z);
 
+// AVAILABLE METHODS FOR DECODING
 template<typename morton, typename coord> inline void m3D_d_sLUT(const morton m, coord& x, coord& y, coord& z);
 template<typename morton, typename coord> inline void m3D_d_sLUT_ET(const morton m, coord& x, coord& y, coord& z);
 template<typename morton, typename coord> inline void m3D_d_LUT(const morton m, coord& x, coord& y, coord& z);
@@ -26,7 +29,7 @@ template<typename morton, typename coord> inline void m3D_d_magicbits(const mort
 template<typename morton, typename coord> inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z);
 template<typename morton, typename coord> inline void m3D_d_for_ET(const morton m, coord& x, coord& y, coord& z);
 
-// ENCODE 3D Morton code : Pre-shifted LUT
+// ENCODE 3D Morton code : Pre-Shifted LookUpTable (sLUT)
 template<typename morton, typename coord>
 inline morton m3D_e_sLUT(const coord x, const coord y, const coord z) {
 	morton answer = 0;
@@ -42,7 +45,7 @@ inline morton m3D_e_sLUT(const coord x, const coord y, const coord z) {
 	return answer;
 }
 
-// ENCODE 3D Morton code : LUT
+// ENCODE 3D Morton code : LookUpTable (LUT)
 template<typename morton, typename coord>
 inline morton m3D_e_LUT(const coord x, const coord y, const coord z) {
 	morton answer = 0;
@@ -58,7 +61,7 @@ inline morton m3D_e_LUT(const coord x, const coord y, const coord z) {
 	return answer;
 }
 
-// Helper method for ET LUT encode
+// HELPER METHOD for ET LUT encode
 template<typename morton, typename coord>
 inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
 	const static morton EIGHTBITMASK = 0x000000FF;
@@ -73,7 +76,9 @@ inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
 	return answer;
 }
 
-// ENCODE 3D Morton code : Pre-shifted LUT (Early termination version)
+// ENCODE 3D Morton code : Pre-shifted LookUpTable (LUT) (Early Termination version)
+// This version tries to terminate early when there are no more bits to process
+// Figuring this out is probably too costly in most cases.
 template<typename morton, typename coord>
 inline morton m3D_e_sLUT_ET(const coord x, const coord y, const coord z) {
 	morton answer_x = compute3D_ET_LUT_encode<morton, coord>(x, Morton3D_encode_x_256);
@@ -82,7 +87,9 @@ inline morton m3D_e_sLUT_ET(const coord x, const coord y, const coord z) {
 	return answer_z | answer_y | answer_x;
 }
 
-// ENCODE 3D 64-bit morton code : LUT (Early termination version)
+// ENCODE 3D Morton code : LookUpTable (LUT) (Early termination version)
+// This version tries to terminate early when there are no more bits to process
+// Figuring this out is probably too costly in most cases.
 template<typename morton, typename coord>
 inline morton m3D_e_LUT_ET(const coord x, const coord y, const coord z) {
 	morton answer_x = compute3D_ET_LUT_encode<morton, coord>(x, Morton3D_encode_x_256);
@@ -91,7 +98,7 @@ inline morton m3D_e_LUT_ET(const coord x, const coord y, const coord z) {
 	return (answer_z << 2) | (answer_y << 1) | answer_x;
 }
 
-// ENCODE 3D 64-bit morton code : Magic bits (helper method)
+// HELPER METHOD: Magic bits encoding (helper method)
 template<typename morton, typename coord>
 static inline morton morton3D_SplitBy3bits(const coord a) {
 	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(magicbit3D_masks32) : reinterpret_cast<const morton*>(magicbit3D_masks64);
@@ -104,13 +111,15 @@ static inline morton morton3D_SplitBy3bits(const coord a) {
 	return x;
 }
 
-// ENCODE 3D 64-bit morton code : Magic bits
+// ENCODE 3D Morton code : Magic bits method
+// This method uses certain bit patterns (magic bits) to split bits in the coordinates
 template<typename morton, typename coord>
 inline morton m3D_e_magicbits(const coord x, const coord y, const coord z){
 	return morton3D_SplitBy3bits<morton, coord>(x) | (morton3D_SplitBy3bits<morton, coord>(y) << 1) | (morton3D_SplitBy3bits<morton, coord>(z) << 2);
 }
 
-// ENCODE 3D 64-bit morton code : For loop
+// ENCODE 3D Morton code : For loop
+// This is the most naive way of encoding coordinates into a morton code
 template<typename morton, typename coord>
 inline morton m3D_e_for(const coord x, const coord y, const coord z){
 	morton answer = 0;
@@ -126,7 +135,8 @@ inline morton m3D_e_for(const coord x, const coord y, const coord z){
 	return answer;
 }
 
-// ENCODE 3D 64-bit morton code : For loop (Early termination version)
+// ENCODE 3D Morton code : For loop (Early termination version)
+// In case of the for loop, figuring out when to stop early has huge benefits.
 template<typename morton, typename coord>
 inline morton m3D_e_for_ET(const coord x, const coord y, const coord z) {
 	morton answer = 0;
@@ -146,6 +156,8 @@ inline morton m3D_e_for_ET(const coord x, const coord y, const coord z) {
 	return answer;
 }
 
+
+// HELPER METHOD for LUT decoding
 // todo: wouldn't this be better with 8-bit aligned decode LUT?
 template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
@@ -158,7 +170,7 @@ inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT
 	return static_cast<coord>(a);
 }
 
-// DECODE 3D 64-bit morton code : Shifted LUT
+// DECODE 3D Morton code : Shifted LUT
 template<typename morton, typename coord>
 inline void m3D_d_sLUT(const morton m, coord& x, coord& y, coord& z) {
 	x = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 0);
@@ -166,7 +178,7 @@ inline void m3D_d_sLUT(const morton m, coord& x, coord& y, coord& z) {
 	z = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_z_512, 0);
 }
 
-// DECODE 3D 64-bit morton code : LUT
+// DECODE 3D Morton code : LUT
 template<typename morton, typename coord>
 inline void m3D_d_LUT(const morton m, coord& x, coord& y, coord& z) {
 	x = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 0);
@@ -174,7 +186,7 @@ inline void m3D_d_LUT(const morton m, coord& x, coord& y, coord& z) {
 	z = morton3D_DecodeCoord_LUT256<morton, coord>(m, Morton3D_decode_x_512, 2);
 }
 
-// DECODE 3D 64-bit morton code : Shifted LUT (Early termination version)
+// DECODE 3D Morton code : Shifted LUT (Early termination version)
 template<typename morton, typename coord>
 inline void m3D_d_sLUT_ET(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
@@ -194,7 +206,7 @@ inline void m3D_d_sLUT_ET(const morton m, coord& x, coord& y, coord& z){
 	return;
 }
 
-// DECODE 3D 64-bit morton code : LUT (Early termination version)
+// DECODE 3D Morton code : LUT (Early termination version)
 template<typename morton, typename coord>
 inline void m3D_d_LUT_ET(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
@@ -213,7 +225,7 @@ inline void m3D_d_LUT_ET(const morton m, coord& x, coord& y, coord& z){
 	return;
 }
 
-// DECODE 3D 64-bit morton code : Magic bits (helper method)
+// HELPER METHOD for Magic bits decoding
 template<typename morton, typename coord>
 static inline coord morton3D_GetThirdBits(const morton m) {
 	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(magicbit3D_masks32) : reinterpret_cast<morton*>(magicbit3D_masks64);
@@ -225,7 +237,8 @@ static inline coord morton3D_GetThirdBits(const morton m) {
 	return static_cast<coord>(x);
 }
 
-// DECODE 3D 64-bit morton code : Magic bits
+// DECODE 3D Mrton code : Magic bits
+// This method splits the morton codes bits by using certain patterns (magic bits)
 template<typename morton, typename coord>
 inline void m3D_d_magicbits(const morton m, coord& x, coord& y, coord& z){
 	x = morton3D_GetThirdBits<morton, coord>(m);
@@ -233,7 +246,7 @@ inline void m3D_d_magicbits(const morton m, coord& x, coord& y, coord& z){
 	z = morton3D_GetThirdBits<morton, coord>(m >> 2);
 }
 
-// DECODE 3D 64-bit morton code : For loop
+// DECODE 3D Morton code : For loop
 template<typename morton, typename coord>
 inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
@@ -248,7 +261,7 @@ inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z){
 	}
 }
 
-// DECODE 3D 64-bit morton code : For loop (Early termination version)
+// DECODE 3D Morton code : For loop (Early termination version)
 template<typename morton, typename coord>
 inline void m3D_d_for_ET(const morton m, coord& x, coord& y, coord& z) {
 	x = 0; y = 0; z = 0;
