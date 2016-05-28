@@ -1,11 +1,9 @@
+#pragma once
+
 // Libmorton - Methods to encode/decode 64-bit morton codes from/to 32-bit (x,y,z) coordinates
 // Warning: morton.h will always point to the functions that use the fastest available method.
 
-#pragma once
-
 #include <stdint.h>
-#include <algorithm>
-#include <math.h>
 #include "morton3D_LUTs.h"
 #include "morton_common.h"
 
@@ -237,7 +235,7 @@ static inline coord morton3D_GetThirdBits(const morton m) {
 	return static_cast<coord>(x);
 }
 
-// DECODE 3D Mrton code : Magic bits
+// DECODE 3D Morton code : Magic bits
 // This method splits the morton codes bits by using certain patterns (magic bits)
 template<typename morton, typename coord>
 inline void m3D_d_magicbits(const morton m, coord& x, coord& y, coord& z){

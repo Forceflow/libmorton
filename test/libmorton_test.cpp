@@ -365,6 +365,11 @@ void registerFunctions() {
 int main(int argc, char *argv[]) {
 	times = 10;
 	printHeader();
+
+	uint_fast64_t morton = m3D_e_sLUT<uint_fast64_t, uint_fast32_t>(2097151, 2097151, 2097151);
+	uint_fast32_t x, y, z;
+	m3D_d_sLUT<uint_fast64_t, uint_fast32_t>(morton, x, y, z);
+	cout << x << " " << y << " " << z << endl;
 	/*for (size_t i = 0; i < 100; i++) {
 		uint_fast32_t x;
 		uint_fast32_t y;

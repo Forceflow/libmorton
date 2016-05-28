@@ -1,9 +1,9 @@
-// Libmorton - Methods to encode/decode 64-bit morton codes from/to 32-bit (x,y,z) coordinates
 #pragma once
 
+// Libmorton - Methods to encode/decode 64-bit morton codes from/to 32-bit (x,y) coordinates
+// Warning: morton.h will always point to the functions that use the fastest available method.
+
 #include <stdint.h>
-#include <algorithm>
-#include <math.h>
 #include "morton2D_LUTs.h"
 #include "morton_common.h"
 
@@ -23,9 +23,10 @@ template<typename morton, typename coord> inline void m2D_d_sLUT(const morton m,
 template<typename morton, typename coord> inline void m2D_d_sLUT_ET(const morton m, coord& x, coord& y);
 template<typename morton, typename coord> inline void m2D_d_LUT(const morton m, coord& x, coord& y);
 template<typename morton, typename coord> inline void m2D_d_LUT_ET(const morton m, coord& x, coord& y);
+template<typename morton, typename coord> inline void m2D_d_magicbits(const morton m, coord& x, coord& y);
 template<typename morton, typename coord> inline void m2D_d_for(const morton m, coord& x, coord& y);
 
-// ENCODE 2D Morton code : Pre-shifted LUTs
+// ENCODE 2D Morton code : Pre-shifted LookUpTable (sLUT)
 template<typename morton, typename coord>
 inline morton m2D_e_sLUT(const coord x, const coord y) {
 	morton answer = 0;
@@ -40,7 +41,7 @@ inline morton m2D_e_sLUT(const coord x, const coord y) {
 	return answer;
 }
 
-// ENCODE 2D Morton code : LUT
+// ENCODE 2D Morton code : LookUpTable (LUT)
 template<typename morton, typename coord>
 inline morton m2D_e_LUT(const coord x, const coord y) {
 	morton answer = 0;
@@ -55,7 +56,7 @@ inline morton m2D_e_LUT(const coord x, const coord y) {
 	return answer;
 }
 
-// HELPER METHOD : ET LUT Encode
+// HELPER METHOD for Early Termination LUT Encode
 template<typename morton, typename coord>
 inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
 	const static morton EIGHTBITMASK = 0x000000FF;
@@ -71,6 +72,8 @@ inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
 }
 
 // ENCODE 2D Morton code : Pre-shifted LUT (Early termination version)
+// This version tries to terminate early when there are no more bits to process
+// Figuring this out is probably too costly in most cases.
 template<typename morton, typename coord>
 inline morton m2D_e_sLUT_ET(const coord x, const coord y) {
 	morton answer_x = compute2D_ET_LUT_encode<morton, coord>(x, Morton2D_encode_x_256);
@@ -78,7 +81,7 @@ inline morton m2D_e_sLUT_ET(const coord x, const coord y) {
 	return answer_y | answer_x;
 }
 
-// ENCODE 2D 64-bit morton code : LUT (Early termination version)
+// ENCODE 2D Morton code : LUT (Early termination version)
 template<typename morton, typename coord>
 inline morton m2D_e_LUT_ET(const coord x, const coord y) {
 	morton answer_x = compute2D_ET_LUT_encode<morton, coord>(x, Morton2D_encode_x_256);
@@ -86,7 +89,7 @@ inline morton m2D_e_LUT_ET(const coord x, const coord y) {
 	return (answer_y << 1) | answer_x;
 }
 
-// HELPER METHOD : Magic bits split by 2
+// HELPER METHOD for Magic bits encoding - split by 2
 template<typename morton, typename coord>
 inline morton morton2D_SplitBy2Bits(const coord a) {
 	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(magicbit2D_masks32) : reinterpret_cast<const morton*>(magicbit2D_masks64);
@@ -100,13 +103,13 @@ inline morton morton2D_SplitBy2Bits(const coord a) {
 	return x;
 }
 
-// ENCODE 2D morton code : Magic bits
+// ENCODE 2D Morton code : Magic bits
 template<typename morton, typename coord>
 inline morton m2D_e_magicbits(const coord x, const coord y) {
 	return morton2D_SplitBy2Bits<morton, coord>(x) | (morton2D_SplitBy2Bits<morton, coord>(y) << 1);
 }
 
-// ENCODE 2D morton code : For Loop
+// ENCODE 2D Morton code : For Loop
 template<typename morton, typename coord>
 inline morton m2D_e_for(const coord x, const coord y){
 	morton answer = 0;
@@ -121,7 +124,7 @@ inline morton m2D_e_for(const coord x, const coord y){
 	return answer;
 }
 
-// ENCODE 2D morton code : For Loop (Early termination version)
+// ENCODE 2D Morton code : For Loop (Early termination version)
 template<typename morton, typename coord>
 inline morton m2D_e_for_ET(const coord x, const coord y) {
 	morton answer = 0;
@@ -139,7 +142,7 @@ inline morton m2D_e_for_ET(const coord x, const coord y) {
 	return answer;
 }
 
-// DECODE 2D Morton code: LUT
+// HELPER METHODE for LUT decoding
 template<typename morton, typename coord>
 inline coord morton2D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
@@ -165,7 +168,7 @@ inline void m2D_d_LUT(const morton m, coord& x, coord& y) {
 	y = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_x_256, 1);
 }
 
-// DECODE 2D morton code : Shifted LUT (early termination)
+// DECODE 2D Morton code : Shifted LUT (early termination)
 template<typename morton, typename coord>
 inline void m2D_d_sLUT_ET(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
@@ -183,7 +186,7 @@ inline void m2D_d_sLUT_ET(const morton m, coord& x, coord& y) {
 	}
 }
 
-// DECODE 2D morton code : Shifted LUT (early termination)
+// DECODE 2D Morton code : LUT (early termination)
 template<typename morton, typename coord>
 inline void m2D_d_LUT_ET(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
@@ -201,6 +204,7 @@ inline void m2D_d_LUT_ET(const morton m, coord& x, coord& y) {
 	}
 }
 
+// HELPER method for Magicbits decoding
 template<typename morton, typename coord>
 static inline coord morton2D_GetSecondBits(const morton m) {
 	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(magicbit2D_masks32) : reinterpret_cast<morton*>(magicbit2D_masks64);
@@ -211,6 +215,15 @@ static inline coord morton2D_GetSecondBits(const morton m) {
 	if (sizeof(morton) > 4) x = (x ^ (x >> 16)) & masks[0];
 	return static_cast<coord>(x);
 }
+
+// DECODE 2D Morton code : Magic bits
+// This method splits the morton codes bits by using certain patterns (magic bits)
+template<typename morton, typename coord>
+inline void m2D_d_magicbits(const morton m, coord& x, coord& y) {
+	x = morton2D_GetSecondBits<morton, coord>(m);
+	y = morton2D_GetSecondBits<morton, coord>(m >> 1);
+}
+
 
 // DECODE 2D morton code : For loop
 template<typename morton, typename coord>
