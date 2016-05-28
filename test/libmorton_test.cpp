@@ -34,6 +34,11 @@ vector<encode_3D_32> f3D_32_encode; // 3D 32_bit encode functions
 vector<decode_3D_64> f3D_64_decode; // 3D 64-bit decode functions
 vector<decode_3D_32> f3D_32_decode; // 3D 32_bit decode functions
 
+vector<encode_2D_64> f2D_64_encode; // 2D 64-bit encode functions
+vector<encode_2D_32> f2D_32_encode; // 2D 32_bit encode functions
+vector<decode_2D_64> f2D_64_decode; // 2D 64-bit decode functions
+vector<decode_2D_32> f2D_32_decode; // 2D 32_bit decode functions
+
 // Make a total of all running_sum checks and print it
 // This is an elaborate way to ensure no function call gets optimized away
 void printRunningSums(){
@@ -45,23 +50,23 @@ void printRunningSums(){
 	cout << t << endl;
 }
 
+// Check a 3D Decode Function for correctness
 template <typename morton, typename coord>
-static bool check3D_DecodeFunction(string method_tested, void (*decode_function)(const morton m, coord &x, coord &y, coord &z)){
+static bool check3D_DecodeFunction(const decode_f_3D<morton, coord> &function) {
 	bool everything_okay = true;
 	coord x, y, z;
 	// check first items
-	for (morton i = 0; i < 4096; i++){
-		decode_function(i, x, y, z);
-		if (x != control_3D_Decode[i][0] || y != control_3D_Decode[i][1] || z != control_3D_Decode[i][2]){
-			printIncorrectDecoding3D<morton,coord>(method_tested, i, x, y, z, control_3D_Decode[i][0], control_3D_Decode[i][1], control_3D_Decode[i][2]);
+	for (morton i = 0; i < 4096; i++) {
+		function.decode(i, x, y, z);
+		if (x != control_3D_Decode[i][0] || y != control_3D_Decode[i][1] || z != control_3D_Decode[i][2]) {
+			printIncorrectDecoding3D<morton, coord>(function.description, i, x, y, z, control_3D_Decode[i][0], control_3D_Decode[i][1], control_3D_Decode[i][2]);
 			everything_okay = false;
 		}
 	}
-
-	if (sizeof(morton) > 4){ // Let's do some more tests
-		decode_function(0x7fffffffffffffff, x, y, z);
-		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff){
-			printIncorrectDecoding3D<morton, coord>(method_tested, 0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
+	if (sizeof(morton) > 4) { // Let's do some more tests
+		function.decode(0x7fffffffffffffff, x, y, z);
+		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff) {
+			printIncorrectDecoding3D<morton, coord>(function.description, 0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
 			everything_okay = false;
 		}
 	}
@@ -69,17 +74,17 @@ static bool check3D_DecodeFunction(string method_tested, void (*decode_function)
 }
 
 template <typename morton, typename coord>
-static bool check3D_EncodeFunction(string method_tested, morton (*encode_function)(const coord x, const coord y, const coord z)){
+static bool check3D_EncodeFunction(const encode_f_3D<morton, coord> &function){
 	bool everything_okay = true;
 	morton computed_code, correct_code = 0;
-	for (coord i = 0; i < 16; i++){
-		for (coord j = 0; j < 16; j++){
-			for (coord k = 0; k < 16; k++){
+	for (coord i = 0; i < 16; i++) {
+		for (coord j = 0; j < 16; j++) {
+			for (coord k = 0; k < 16; k++) {
 				correct_code = control_3D_Encode[k + (j * 16) + (i * 16 * 16)];
-				computed_code = encode_function(i, j, k);
-				if (computed_code != correct_code){
+				computed_code = function.encode(i, j, k);
+				if (computed_code != correct_code) {
 					everything_okay = false;
-					cout << endl << "    Incorrect encoding of (" << i << ", " << j << ", " << k << ") in method " << method_tested.c_str() << ": " << computed_code <<
+					cout << endl << "    Incorrect encoding of (" << i << ", " << j << ", " << k << ") in method " << function.description.c_str() << ": " << computed_code <<
 						" != " << correct_code << endl;
 				}
 			}
@@ -233,7 +238,7 @@ static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, co
 template <typename morton, typename coord>
 static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times) {
 	stringstream os;
-	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3) << testDecode_3D_Linear_Perf<morton, coord>(function, times) << " ms " 
+	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3) << testDecode_3D_Linear_Perf<morton, coord>(function, times) << " ms "
 		<< testDecode_3D_Random_Perf<morton, coord>(function, times) << " ms";
 	return os.str();
 }
@@ -241,45 +246,25 @@ static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coor
 static void check3D_EncodeCorrectness() {
 	printf("++ Checking correctness of 3D encoding methods ... ");
 	bool ok = true;
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT256 ", &m3D_e_sLUT<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT256 ET ", &m3D_e_sLUT_ET<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT256 ", &m3D_e_LUT<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT256 ET ", &m3D_e_LUT_ET<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Magicbits", &m3D_e_magicbits<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For", &m3D_e_for<uint_fast64_t>);
-	ok &= check3D_EncodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For ET", &m3D_e_for_ET<uint_fast64_t>);
-
-	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Shifted LUT256 ", &m3D_e_sLUT<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Shifted LUT256 ET ", &m3D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D LUT256 ", &m3D_e_LUT<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D LUT256 ET ", &m3D_e_LUT_ET<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Magicbits", &m3D_e_magicbits<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D For", &m3D_e_for<uint_fast32_t>);
-	ok &= check3D_EncodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D For ET", &m3D_e_for_ET<uint_fast32_t>);
-	if (ok) { printf(" Passed. \n"); }
-	else { printf("    One or more methods failed. \n"); }
+	for (std::vector<encode_3D_64>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); ++it) {
+		ok &= check3D_EncodeFunction(*it);
+	}
+	for (std::vector<encode_3D_32>::iterator it = f3D_32_encode.begin(); it != f3D_32_encode.end(); ++it) {
+		ok &= check3D_EncodeFunction(*it);
+	}
+	if (ok) { printf(" Passed. \n"); } else { printf("    One or more methods failed. \n"); }
 }
 
 static void check3D_DecodeCorrectness() {
 	printf("++ Checking correctness of 3D decoding methods ... ");
 	bool ok = true;
-	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT256 ", &m3D_d_sLUT<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Shifted LUT256 ET", &m3D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT256 ", &m3D_d_LUT<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D LUT256 ET", &m3D_d_LUT_ET<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D Magicbits", &m3D_d_magicbits<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For", &m3D_d_for<uint_fast64_t, uint_fast32_t>);
-	ok &= check3D_DecodeFunction<uint_fast64_t, uint_fast32_t>("64bit 3D For ET", &m3D_d_for_ET<uint_fast64_t, uint_fast32_t>);
-
-	ok &= check3D_DecodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Shifted LUT256 ", &m3D_d_sLUT<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_DecodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Shifted LUT256 ET", &m3D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_DecodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D LUT256 ", &m3D_d_LUT<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_DecodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D LUT256 ET", &m3D_d_LUT_ET<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_DecodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D Magicbits", &m3D_d_magicbits<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_DecodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D For", &m3D_d_for<uint_fast32_t, uint_fast16_t>);
-	ok &= check3D_DecodeFunction<uint_fast32_t, uint_fast16_t>("32bit 3D For ET", &m3D_d_for_ET<uint_fast32_t, uint_fast16_t>);
-	if (ok) { printf(" Passed. \n"); }
-	else { printf("    One or more methods failed. \n"); }
+	for (std::vector<decode_3D_64>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); ++it) {
+		ok &= check3D_DecodeFunction(*it);
+	}
+	for (std::vector<decode_3D_32>::iterator it = f3D_32_decode.begin(); it != f3D_32_decode.end(); ++it) {
+		ok &= check3D_DecodeFunction(*it);
+	}
+	if (ok) { printf(" Passed. \n"); } else { printf("    One or more methods failed. \n"); }
 }
 
 static void Encode_3D_Perf() {
