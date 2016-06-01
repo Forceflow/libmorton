@@ -268,36 +268,23 @@ static void check3D_DecodeCorrectness() {
 }
 
 static void Encode_3D_Perf() {
-	cout << "++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl << endl;
+	cout << "++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
 	for (std::vector<encode_3D_64>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
 		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 64-bit " << (*it).description << endl;
 	}
-	cout << endl;
 	for (std::vector<encode_3D_32>::iterator it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
 		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 32-bit " << (*it).description << endl;
 	}
 }
 
-static void Decode_3D_Perf(){
-	cout << "++ Decoding " << MAX << "^3 morton codes in LINEAR order (" << total << " in total)" << endl;
-//#if _WIN64 || __x86_64__
-	cout << "    64-bit LUT256 preshifted:    " << testDecode_3D_Perf<uint_fast64_t, uint_fast32_t>(&m3D_d_sLUT<uint_fast64_t, uint_fast32_t>, times) << endl;
-	cout << "    64-bit LUT256 preshifted ET: " << testDecode_3D_Perf<uint_fast64_t, uint_fast32_t>(&m3D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>, times) << endl;
-	cout << "    64-bit LUT256:               " << testDecode_3D_Perf<uint_fast64_t, uint_fast32_t>(&m3D_d_LUT<uint_fast64_t, uint_fast32_t>, times) << endl;
-	cout << "    64-bit LUT256 ET:            " << testDecode_3D_Perf<uint_fast64_t, uint_fast32_t>(&m3D_d_LUT_ET<uint_fast64_t, uint_fast32_t>, times) << endl;
-	cout << "    64-bit Magicbits:            " << testDecode_3D_Perf<uint_fast64_t, uint_fast32_t>(&m3D_d_magicbits<uint_fast64_t, uint_fast32_t>, times) << endl;
-	cout << "    64-bit For:                  " << testDecode_3D_Perf<uint_fast64_t, uint_fast32_t>(&m3D_d_for<uint_fast64_t, uint_fast32_t>, times) << endl;
-	cout << "    64-bit For ET:               " << testDecode_3D_Perf<uint_fast64_t, uint_fast32_t>(&m3D_d_for_ET<uint_fast64_t, uint_fast32_t>, times) << endl;
-	cout << "" << endl;
-//#else
-	cout << "    32-bit LUT256 preshifted:    " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&m3D_d_sLUT<uint_fast32_t, uint_fast16_t>, times) << endl;
-	cout << "    32-bit LUT256 preshifted ET: " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&m3D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>, times) << endl;
-	cout << "    32-bit LUT256:               " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&m3D_d_LUT<uint_fast32_t, uint_fast16_t>, times) << endl;
-	cout << "    32-bit LUT256 ET:            " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&m3D_d_LUT_ET<uint_fast32_t, uint_fast16_t>, times) << endl;
-	cout << "    32-bit Magicbits:            " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&m3D_d_magicbits<uint_fast32_t, uint_fast16_t>, times) << endl;
-	cout << "    32-bit For:                  " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&m3D_d_for<uint_fast32_t, uint_fast16_t>, times) << endl;
-	cout << "    32-bit For ET:               " << testDecode_3D_Perf<uint_fast32_t, uint_fast16_t>(&m3D_d_for_ET<uint_fast32_t, uint_fast16_t>, times) << endl;
-//#endif
+static void Decode_3D_Perf() {
+	cout << "++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+	for (std::vector<decode_3D_64>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
+		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 64-bit " << (*it).description << endl;
+	}
+	for (std::vector<decode_3D_32>::iterator it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
+		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 32-bit " << (*it).description << endl;
+	}
 }
 
 void printHeader(){

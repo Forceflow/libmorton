@@ -1,3 +1,5 @@
+combine enc/decoding on one line
+
 - Cycles time test
 - Linear test: start randomly in domain
 - Random test: test permutations
