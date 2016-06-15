@@ -23,8 +23,8 @@ inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uin
 
 #define morton2D_32_encode m2D_e_sLUT<uint_fast32_t, uint_fast16_t>
 #define morton2D_64_encode m2D_e_sLUT<uint_fast64_t, uint_fast32_t>
-#define morton2D_32_decode m2D_d_magicbits<uint_fast32_t, uint_fast16_t>
-#define morton2D_64_decode m2D_d_magicbits<uint_fast64_t, uint_fast32_t>
+#define morton2D_32_decode m2D_d_sLUT<uint_fast32_t, uint_fast16_t>
+#define morton2D_64_decode m2D_d_sLUT<uint_fast64_t, uint_fast32_t>
 
 #define morton3D_32_encode m3D_e_sLUT<uint_fast32_t, uint_fast16_t>
 #define morton3D_64_encode m3D_e_sLUT<uint_fast64_t, uint_fast32_t>
