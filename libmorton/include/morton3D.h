@@ -121,7 +121,7 @@ inline morton m3D_e_magicbits(const coord x, const coord y, const coord z){
 template<typename morton, typename coord>
 inline morton m3D_e_for(const coord x, const coord y, const coord z){
 	morton answer = 0;
-	unsigned int checkbits = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f / 3.0f)));
+	unsigned int checkbits = static_cast<unsigned int>(std::floor((sizeof(morton) * 8.0f / 3.0f)));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton mshifted= static_cast<morton>(1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i; // because you have to shift back i and forth 3*i
@@ -139,7 +139,7 @@ template<typename morton, typename coord>
 inline morton m3D_e_for_ET(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	unsigned long x_max = 0, y_max = 0, z_max = 0;
-	unsigned int checkbits = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f / 3.0f)));
+	unsigned int checkbits = static_cast<unsigned int>(std::floor((sizeof(morton) * 8.0f / 3.0f)));
 	findFirstSetBit<morton>(x, &x_max);
 	findFirstSetBit<morton>(y, &y_max);
 	findFirstSetBit<morton>(z, &z_max);
@@ -161,7 +161,7 @@ template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
 	morton NINEBITMASK = 0x000001ff;
-	unsigned int loops = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f) / 9.0f));
+	unsigned int loops = static_cast<unsigned int>(std::floor((sizeof(morton) * 8.0f) / 9.0f));
 	for (unsigned int i = 0; i < loops; ++i){
 		a |= (LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i));
 	}
@@ -248,7 +248,7 @@ inline void m3D_d_magicbits(const morton m, coord& x, coord& y, coord& z){
 template<typename morton, typename coord>
 inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z){
 	x = 0; y = 0; z = 0;
-	unsigned int checkbits = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f / 3.0f)));
+	unsigned int checkbits = static_cast<unsigned int>(std::floor((sizeof(morton) * 8.0f / 3.0f)));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
 		unsigned int shift_selector = 3 * i;
@@ -263,7 +263,7 @@ inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z){
 template<typename morton, typename coord>
 inline void m3D_d_for_ET(const morton m, coord& x, coord& y, coord& z) {
 	x = 0; y = 0; z = 0;
-	float defaultbits = floor((sizeof(morton) * 8.0f / 3.0f));
+	float defaultbits = std::floor((sizeof(morton) * 8.0f / 3.0f));
 	unsigned long firstbit_location = 0;
 	if(!findFirstSetBit<morton>(m, &firstbit_location)) return;
 	unsigned int checkbits = static_cast<unsigned int>(min(defaultbits, firstbit_location / 3.0f));

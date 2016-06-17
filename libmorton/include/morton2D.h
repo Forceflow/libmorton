@@ -113,7 +113,7 @@ inline morton m2D_e_magicbits(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline morton m2D_e_for(const coord x, const coord y){
 	morton answer = 0;
-	unsigned int checkbits = floor(sizeof(morton) * 4.0f);
+	unsigned int checkbits = std::floor(sizeof(morton) * 4.0f);
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton mshifted = static_cast<morton>(0x1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i;
@@ -151,7 +151,7 @@ inline coord morton2D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT
 	for (unsigned int i = 0; i < loops; ++i) {
 		a |= (LUT[(m >> ((i * 8) + startshift)) & EIGHTBITMASK] << (2 * i));
 	}
-	return a;
+	return static_cast<coord>(a);
 }
 
 // DECODE 2D Morton code : Shifted LUT
