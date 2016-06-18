@@ -29,11 +29,13 @@ size_t RAND_POOL_SIZE = 9000;
 // Runningsums
 vector<uint_fast64_t> running_sums;
 
+// 3D encoding
 vector<encode_3D_64> f3D_64_encode; // 3D 64-bit encode functions
 vector<encode_3D_32> f3D_32_encode; // 3D 32_bit encode functions
 vector<decode_3D_64> f3D_64_decode; // 3D 64-bit decode functions
 vector<decode_3D_32> f3D_32_decode; // 3D 32_bit decode functions
 
+// 2D encoding
 vector<encode_2D_64> f2D_64_encode; // 2D 64-bit encode functions
 vector<encode_2D_32> f2D_32_encode; // 2D 32_bit encode functions
 vector<decode_2D_64> f2D_64_decode; // 2D 64-bit decode functions
@@ -331,7 +333,7 @@ void registerFunctions() {
 	f3D_64_decode.push_back(decode_3D_64("LUT Shifted", &m3D_d_sLUT<uint_fast64_t, uint_fast32_t>));
 	f3D_64_decode.push_back(decode_3D_64("LUT Shifted ET", &m3D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>));
 
-	// Register 3D 32-bit encode functions
+	// Register 3D 32-bit decode functions
 	f3D_32_decode.push_back(decode_3D_32("For", &m3D_d_for<uint_fast32_t, uint_fast16_t>));
 	f3D_32_decode.push_back(decode_3D_32("For ET", &m3D_d_for_ET<uint_fast32_t, uint_fast16_t>));
 	f3D_32_decode.push_back(decode_3D_32("Magicbits", &m3D_d_magicbits<uint_fast32_t, uint_fast16_t>));
@@ -339,6 +341,42 @@ void registerFunctions() {
 	f3D_32_decode.push_back(decode_3D_32("LUT ET", &m3D_d_LUT_ET<uint_fast32_t, uint_fast16_t>));
 	f3D_32_decode.push_back(decode_3D_32("LUT Shifted", &m3D_d_sLUT<uint_fast32_t, uint_fast16_t>));
 	f3D_32_decode.push_back(decode_3D_32("LUT Shifted ET", &m3D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>));
+
+	// Register 2D 64-bit encode functions	
+	f2D_64_encode.push_back(encode_2D_64("LUT Shifted ET", &m2D_e_sLUT_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64("LUT Shifted", &m2D_e_sLUT<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64("LUT ET", &m2D_e_LUT_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64("LUT", &m2D_e_LUT<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64("Magicbits", &m2D_e_magicbits<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64("For ET", &m2D_e_for_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64("For", &m2D_e_for<uint_fast64_t, uint_fast32_t>));
+
+	// Register 2D 32-bit encode functions
+	f2D_32_encode.push_back(encode_2D_32("For", &m2D_e_for<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32("For ET", &m2D_e_for_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32("Magicbits", &m2D_e_magicbits<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32("LUT", &m2D_e_LUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32("LUT ET", &m2D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32("LUT Shifted", &m2D_e_sLUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32("LUT Shifted ET", &m2D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
+
+	// Register 2D 64-bit decode functions
+	f2D_64_decode.push_back(decode_2D_64("For", &m2D_d_for<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64("For ET", &m2D_d_for_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64("Magicbits", &m2D_d_magicbits<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64("LUT", &m2D_d_LUT<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64("LUT ET", &m2D_d_LUT_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64("LUT Shifted", &m2D_d_sLUT<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64("LUT Shifted ET", &m2D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>));
+
+	// Register 2D 32-bit decode functions
+	f2D_32_decode.push_back(decode_2D_32("For", &m2D_d_for<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32("For ET", &m2D_d_for_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32("Magicbits", &m2D_d_magicbits<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32("LUT", &m2D_d_LUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32("LUT ET", &m2D_d_LUT_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32("LUT Shifted", &m2D_d_sLUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32("LUT Shifted ET", &m2D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>));
 }
 
 int main(int argc, char *argv[]) {
