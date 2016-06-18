@@ -238,3 +238,19 @@ inline void m2D_d_for(const morton m, coord& x, coord& y) {
 		y |= (m & (selector << (shift_selector + 1))) >> (i + 1);
 	}
 }
+
+// DECODE 3D Morton code : For loop (Early termination version)
+template<typename morton, typename coord>
+inline void m2D_d_for_ET(const morton m, coord& x, coord& y) {
+	x = 0; y = 0;
+	float defaultbits = sizeof(morton) * 4;
+	unsigned long firstbit_location = 0;
+	if (!findFirstSetBit<morton>(m, &firstbit_location)) return;
+	unsigned int checkbits = static_cast<unsigned int>(min(defaultbits, firstbit_location / 2.0f));
+	for (unsigned int i = 0; i <= checkbits; ++i) {
+		morton selector = 1;
+		unsigned int shift_selector = 2 * i;
+		x |= (m & (selector << shift_selector)) >> i;
+		y |= (m & (selector << (shift_selector + 1))) >> (i + 1);
+	}
+}
