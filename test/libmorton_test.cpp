@@ -61,7 +61,7 @@ static bool check3D_Match (const encode_f_3D<morton, coord> &encode, decode_f_3D
 		coord x = rand() % maximum;
 		coord y = rand() % maximum;
 		coord z = rand() % maximum;
-		coord x_result; y_result, z_result;
+		coord x_result, y_result, z_result;
 		decode(encode(x, y, z), x_result, y_result, z_result);
 		if (x != x_result | y != y_result | z != z_result) {
 			everythingokay = false;
