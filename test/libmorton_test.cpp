@@ -52,6 +52,44 @@ void printRunningSums(){
 	cout << t << endl;
 }
 
+// Check a 3D Encode/Decode function for correct encode-decode process
+template<typename morton, typename coord>
+static bool check3D_Match (const encode_f_3D<morton, coord> &encode, decode_f_3D<morton, coord> &decode, unsigned int times){
+	bool everythingokay = true;
+	for (unsigned int i = 0; i < times; ++i) {
+		coord maximum = ~0;
+		coord x = rand() % maximum;
+		coord y = rand() % maximum;
+		coord z = rand() % maximum;
+		coord x_result; y_result, z_result;
+		decode(encode(x, y, z), x_result, y_result, z_result);
+		if (x != x_result | y != y_result | z != z_result) {
+			everythingokay = false;
+		}
+	}
+}
+
+// Check a 3D Encode Function for correctness
+template <typename morton, typename coord>
+static bool check3D_EncodeFunction(const encode_f_3D<morton, coord> &function){
+	bool everything_okay = true;
+	morton computed_code, correct_code = 0;
+	for (coord i = 0; i < 16; i++) {
+		for (coord j = 0; j < 16; j++) {
+			for (coord k = 0; k < 16; k++) {
+				correct_code = control_3D_Encode[k + (j * 16) + (i * 16 * 16)];
+				computed_code = function.encode(i, j, k);
+				if (computed_code != correct_code) {
+					everything_okay = false;
+					cout << endl << "    Incorrect encoding of (" << i << ", " << j << ", " << k << ") in method " << function.description.c_str() << ": " << computed_code <<
+						" != " << correct_code << endl;
+				}
+			}
+		}
+	}
+	return everything_okay;
+}
+
 // Check a 3D Decode Function for correctness
 template <typename morton, typename coord>
 static bool check3D_DecodeFunction(const decode_f_3D<morton, coord> &function) {
@@ -70,26 +108,6 @@ static bool check3D_DecodeFunction(const decode_f_3D<morton, coord> &function) {
 		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff) {
 			printIncorrectDecoding3D<morton, coord>(function.description, 0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
 			everything_okay = false;
-		}
-	}
-	return everything_okay;
-}
-
-template <typename morton, typename coord>
-static bool check3D_EncodeFunction(const encode_f_3D<morton, coord> &function){
-	bool everything_okay = true;
-	morton computed_code, correct_code = 0;
-	for (coord i = 0; i < 16; i++) {
-		for (coord j = 0; j < 16; j++) {
-			for (coord k = 0; k < 16; k++) {
-				correct_code = control_3D_Encode[k + (j * 16) + (i * 16 * 16)];
-				computed_code = function.encode(i, j, k);
-				if (computed_code != correct_code) {
-					everything_okay = false;
-					cout << endl << "    Incorrect encoding of (" << i << ", " << j << ", " << k << ") in method " << function.description.c_str() << ": " << computed_code <<
-						" != " << correct_code << endl;
-				}
-			}
 		}
 	}
 	return everything_okay;
