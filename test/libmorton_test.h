@@ -54,31 +54,22 @@ typedef encode_f_3D<uint_fast32_t, uint_fast16_t> encode_3D_32;
 typedef decode_f_3D<uint_fast64_t, uint_fast32_t> decode_3D_64;
 typedef decode_f_3D<uint_fast32_t, uint_fast16_t> decode_3D_32;
 
+template <typename valtype>
+inline string getBitString(valtype val) {
+	// bitset needs size to be known at runtime, and introducing boost dependency
+	// for dynamic bitsets is undesirable, so we get crazy and cut the relevant bits. 
+	// NASTY STUFF Don't try this at home kids
+	std::bitset<128> bs(val);
+	std::string s = bs.to_string();
+	return s.substr(s.length() - (sizeof(valtype) * 8));
+}
+
 template <typename morton, typename coord>
 void printIncorrectDecoding3D(string method_tested, morton m, coord x, coord y, coord z, coord correct_x, coord correct_y, coord correct_z) {
-	int howmanybits = sizeof(morton) * 8;
-	if (howmanybits == 32) {
-		std::bitset<32> mbits(m);
-		std::bitset<16> xbits(x);
-		std::bitset<16> ybits(y);
-		std::bitset<16> zbits(z);
-		std::bitset<16> correct_xbits(correct_x);
-		std::bitset<16> correct_ybits(correct_y);
-		std::bitset<16> correct_zbits(correct_z);
-		cout << endl << "    Incorrect decoding of " << mbits << " in method " << method_tested.c_str() << ": (" << xbits << ", " << ybits << ", " << zbits
-			<< ") != (" << correct_xbits << ", " << correct_ybits << ", " << correct_zbits << ")" << endl;
-	}
-	else {
-		std::bitset<64> mbits(m);
-		std::bitset<32> xbits(x);
-		std::bitset<32> ybits(y);
-		std::bitset<32> zbits(z);
-		std::bitset<32> correct_xbits(correct_x);
-		std::bitset<32> correct_ybits(correct_y);
-		std::bitset<32> correct_zbits(correct_z);
-		cout << endl << "    Incorrect decoding of " << mbits << " in method " << method_tested.c_str() << ": (" << xbits << ", " << ybits << ", " << zbits
-			<< ") != (" << correct_xbits << ", " << correct_ybits << ", " << correct_zbits << ")" << endl;
-	}
+	cout << endl << "    Incorrect decoding of " << getBitString<morton>(m) << " in method " << method_tested.c_str() << ": ("
+		<< getBitString<coord>(x) << ", " << getBitString<coord>(y) << ", " << getBitString<coord>(z)
+		<< ") != (" << getBitString<coord>(correct_x) << ", " << getBitString<coord>(correct_y) << ", "
+		<< getBitString<coord>(correct_z) << ")" << endl;
 }
 
 // correct morton codes for 16 x 16 x 16, with z running fastest, then y, then x (4096 in total)
