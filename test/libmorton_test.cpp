@@ -24,7 +24,7 @@ using namespace std::chrono;
 size_t MAX;
 unsigned int times;
 size_t total;
-size_t RAND_POOL_SIZE = 9000;
+size_t RAND_POOL_SIZE = 10000;
 
 // Runningsums
 vector<uint_fast64_t> running_sums;
