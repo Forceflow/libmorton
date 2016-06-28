@@ -8,7 +8,7 @@ template <typename element>
 void printTable(const element* table, size_t howmany, unsigned int splitat){
 	for (size_t i = 0; i < howmany; i++){
 		if (i % splitat == 0){ cout << endl; }
-		printf("%i ,", table[i]);
+		printf("%u ,", static_cast<unsigned int>(table[i]));
 	}
 	cout << endl;
 }
