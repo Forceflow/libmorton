@@ -36,10 +36,10 @@ inline morton m3D_e_sLUT(const coord x, const coord y, const coord z) {
 	for (unsigned int i = sizeof(coord); i > 0; --i) {
 		unsigned int shift = (i - 1) * 8;
 		answer =
-			answer << 24 | 
+			answer << 24 |
 			(Morton3D_encode_z_256[(z >> shift) & EIGHTBITMASK] |
-			 Morton3D_encode_y_256[(y >> shift) & EIGHTBITMASK] |
-			 Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK]);
+				Morton3D_encode_y_256[(y >> shift) & EIGHTBITMASK] |
+				Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK]);
 	}
 	return answer;
 }
@@ -50,12 +50,12 @@ inline morton m3D_e_LUT(const coord x, const coord y, const coord z) {
 	morton answer = 0;
 	const static morton EIGHTBITMASK = 0x000000FF;
 	for (unsigned int i = sizeof(coord); i > 0; --i) {
-		unsigned int shift = (i - 1) * 8; 
+		unsigned int shift = (i - 1) * 8;
 		answer =
 			answer << 24 |
 			(Morton3D_encode_x_256[(z >> shift) & EIGHTBITMASK] << 2) |
 			(Morton3D_encode_x_256[(y >> shift) & EIGHTBITMASK] << 1) |
-			 Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK];
+			Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK];
 	}
 	return answer;
 }
@@ -66,11 +66,10 @@ inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
 	const static morton EIGHTBITMASK = 0x000000FF;
 	unsigned long maxbit = 0;
 	morton answer = 0;
-	if (findFirstSetBit<coord>(c, &maxbit) == 0) {return 0;}
-	unsigned int i = 0;
-	while (maxbit >= i) {
-		answer |= (LUT[(c >> i) & EIGHTBITMASK]) << i*3;
-		i += 8;
+	if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
+	for (int i = ceil((maxbit + 1) / 8.0f) ; i >= 0; --i){
+		unsigned int shift = i* 8;
+		answer = answer << 24 | (LUT[(c >> shift) & EIGHTBITMASK]);
 	}
 	return answer;
 }
@@ -126,10 +125,9 @@ inline morton m3D_e_for(const coord x, const coord y, const coord z){
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton mshifted= static_cast<morton>(1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 		unsigned int shift = 2 * i; // because you have to shift back i and forth 3*i
-    answer |= 
-		((x & mshifted) << shift)
-      | ((y & mshifted) << (shift + 1))
-      | ((z & mshifted) << (shift + 2));
+		answer |= ((x & mshifted) << shift)
+				| ((y & mshifted) << (shift + 1))
+				| ((z & mshifted) << (shift + 2));
 	}
 	return answer;
 }
