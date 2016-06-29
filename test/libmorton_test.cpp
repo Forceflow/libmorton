@@ -57,7 +57,7 @@ template<typename morton, typename coord>
 static bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, decode_f_3D_wrapper<morton, coord> &decode, unsigned int times){
 	bool everythingokay = true;
 	for (unsigned int i = 0; i < times; ++i) {
-		coord maximum = ~0;
+		coord maximum = ~(coord)0;
 		coord x = rand() % maximum;
 		coord y = rand() % maximum;
 		coord z = rand() % maximum;
@@ -73,7 +73,10 @@ static bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, deco
 			cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")" << endl;
 			cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")" << endl;
 			cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")" << endl;
-			cout << "using methods encode " << decode.description << " and decode " << decode.description << endl;
+			if (sizeof(morton) == 8) { cout << "64-bit "; }
+			else { cout << "32-bit "; }
+			cout << "using methods encode " << encode.description << " and decode " << decode.description << endl;
+			mortonresult = encode.encode(x, y, z);
 			everythingokay = false;
 		}
 	}
@@ -433,9 +436,10 @@ int main(int argc, char *argv[]) {
 	registerFunctions();
 
 	cout << "++ Checking all methods for correctness" << endl;
+	check3D_EncodeDecodeMatch();
 	check3D_EncodeCorrectness();
 	check3D_DecodeCorrectness();
-	check3D_EncodeDecodeMatch();
+	
 	cout << "++ Running each performance test " << times << " times and averaging results" << endl;
 	for (int i = 128; i <= 512; i = i * 2){
 		MAX = i;
