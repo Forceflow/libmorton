@@ -30,16 +30,16 @@ size_t RAND_POOL_SIZE = 10000;
 vector<uint_fast64_t> running_sums;
 
 // 3D encoding
-vector<encode_3D_64> f3D_64_encode; // 3D 64-bit encode functions
-vector<encode_3D_32> f3D_32_encode; // 3D 32_bit encode functions
-vector<decode_3D_64> f3D_64_decode; // 3D 64-bit decode functions
-vector<decode_3D_32> f3D_32_decode; // 3D 32_bit decode functions
+vector<encode_3D_64_wrapper> f3D_64_encode; // 3D 64-bit encode functions
+vector<encode_3D_32_wrapper> f3D_32_encode; // 3D 32_bit encode functions
+vector<decode_3D_64_wrapper> f3D_64_decode; // 3D 64-bit decode functions
+vector<decode_3D_32_wrapper> f3D_32_decode; // 3D 32_bit decode functions
 
 // 2D encoding
-vector<encode_2D_64> f2D_64_encode; // 2D 64-bit encode functions
-vector<encode_2D_32> f2D_32_encode; // 2D 32_bit encode functions
-vector<decode_2D_64> f2D_64_decode; // 2D 64-bit decode functions
-vector<decode_2D_32> f2D_32_decode; // 2D 32_bit decode functions
+vector<encode_2D_64_wrapper> f2D_64_encode; // 2D 64-bit encode functions
+vector<encode_2D_32_wrapper> f2D_32_encode; // 2D 32_bit encode functions
+vector<decode_2D_64_wrapper> f2D_64_decode; // 2D 64-bit decode functions
+vector<decode_2D_32_wrapper> f2D_32_decode; // 2D 32_bit decode functions
 
 // Make a total of all running_sum checks and print it
 // This is an elaborate way to ensure no function call gets optimized away
@@ -54,7 +54,7 @@ void printRunningSums(){
 
 // Check a 3D Encode/Decode function for correct encode-decode process
 template<typename morton, typename coord>
-static bool check3D_Match (const encode_f_3D<morton, coord> &encode, decode_f_3D<morton, coord> &decode, unsigned int times){
+static bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, decode_f_3D_wrapper<morton, coord> &decode, unsigned int times){
 	bool everythingokay = true;
 	for (unsigned int i = 0; i < times; ++i) {
 		coord maximum = ~0;
@@ -62,16 +62,26 @@ static bool check3D_Match (const encode_f_3D<morton, coord> &encode, decode_f_3D
 		coord y = rand() % maximum;
 		coord z = rand() % maximum;
 		coord x_result, y_result, z_result;
-		decode(encode(x, y, z), x_result, y_result, z_result);
+		morton mortonresult = encode.encode(x, y, z);
+		decode.decode(mortonresult, x_result, y_result, z_result);
 		if (x != x_result | y != y_result | z != z_result) {
+			cout << endl << "x: " << getBitString<coord>(x) << " (" << x << ")" << endl;
+			cout << "y: " << getBitString<coord>(y) << " (" << y << ")" << endl;
+			cout << "z: " << getBitString<coord>(z) << " (" << z << ")" << endl;
+			cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")" << endl;
+			cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")" << endl;
+			cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")" << endl;
+			cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")" << endl;
+			cout << "using methods encode " << decode.description << " and decode " << decode.description << endl;
 			everythingokay = false;
 		}
 	}
+	return everythingokay;
 }
 
 // Check a 3D Encode Function for correctness
 template <typename morton, typename coord>
-static bool check3D_EncodeFunction(const encode_f_3D<morton, coord> &function){
+static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &function){
 	bool everything_okay = true;
 	morton computed_code, correct_code = 0;
 	for (coord i = 0; i < 16; i++) {
@@ -92,7 +102,7 @@ static bool check3D_EncodeFunction(const encode_f_3D<morton, coord> &function){
 
 // Check a 3D Decode Function for correctness
 template <typename morton, typename coord>
-static bool check3D_DecodeFunction(const decode_f_3D<morton, coord> &function) {
+static bool check3D_DecodeFunction(const decode_f_3D_wrapper<morton, coord> &function) {
 	bool everything_okay = true;
 	coord x, y, z;
 	// check first items
@@ -266,10 +276,10 @@ static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coor
 static void check3D_EncodeCorrectness() {
 	printf("++ Checking correctness of 3D encoding methods ... ");
 	bool ok = true;
-	for (std::vector<encode_3D_64>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
+	for (std::vector<encode_3D_64_wrapper>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
 		ok &= check3D_EncodeFunction(*it);
 	}
-	for (std::vector<encode_3D_32>::iterator it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
+	for (std::vector<encode_3D_32_wrapper>::iterator it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
 		ok &= check3D_EncodeFunction(*it);
 	}
 	if (ok) { printf(" Passed. \n"); } else { printf("    One or more methods failed. \n"); }
@@ -278,31 +288,48 @@ static void check3D_EncodeCorrectness() {
 static void check3D_DecodeCorrectness() {
 	printf("++ Checking correctness of 3D decoding methods ... ");
 	bool ok = true;
-	for (std::vector<decode_3D_64>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
+	for (std::vector<decode_3D_64_wrapper>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
 		ok &= check3D_DecodeFunction(*it);
 	}
-	for (std::vector<decode_3D_32>::iterator it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
+	for (std::vector<decode_3D_32_wrapper>::iterator it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
 		ok &= check3D_DecodeFunction(*it);
 	}
 	if (ok) { printf(" Passed. \n"); } else { printf("    One or more methods failed. \n"); }
 }
 
+static void check3D_EncodeDecodeMatch() {
+	printf("++ Checking 3D methods encode/decode match ... ");
+	bool ok = true;
+	for (std::vector<encode_3D_64_wrapper>::iterator et = f3D_64_encode.begin(); et != f3D_64_encode.end(); et++) {
+		for (std::vector<decode_3D_64_wrapper>::iterator dt = f3D_64_decode.begin(); dt != f3D_64_decode.end(); dt++) {
+			ok &= check3D_Match(*et, *dt, 1);
+		}
+	}
+	for (std::vector<encode_3D_32_wrapper>::iterator et = f3D_32_encode.begin(); et != f3D_32_encode.end(); et++) {
+		for (std::vector<decode_3D_32_wrapper>::iterator dt = f3D_32_decode.begin(); dt != f3D_32_decode.end(); dt++) {
+			ok &= check3D_Match(*et, *dt, 1);
+		}
+	}
+	if (ok) { printf(" Passed. \n"); }
+	else { printf("    One or more methods failed. \n"); }
+}
+
 static void Encode_3D_Perf() {
 	cout << "++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
-	for (std::vector<encode_3D_64>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
+	for (std::vector<encode_3D_64_wrapper>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
 		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 64-bit " << (*it).description << endl;
 	}
-	for (std::vector<encode_3D_32>::iterator it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
+	for (std::vector<encode_3D_32_wrapper>::iterator it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
 		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 32-bit " << (*it).description << endl;
 	}
 }
 
 static void Decode_3D_Perf() {
 	cout << "++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
-	for (std::vector<decode_3D_64>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
+	for (std::vector<decode_3D_64_wrapper>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
 		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 64-bit " << (*it).description << endl;
 	}
-	for (std::vector<decode_3D_32>::iterator it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
+	for (std::vector<decode_3D_32_wrapper>::iterator it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
 		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 32-bit " << (*it).description << endl;
 	}
 }
@@ -325,76 +352,76 @@ void printHeader(){
 // Register all the functions we want to be tested here!
 void registerFunctions() {
 	// Register 3D 64-bit encode functions	
-	f3D_64_encode.push_back(encode_3D_64("LUT Shifted ET", &m3D_e_sLUT_ET<uint_fast64_t, uint_fast32_t>));
-	f3D_64_encode.push_back(encode_3D_64("LUT Shifted", &m3D_e_sLUT<uint_fast64_t, uint_fast32_t>));
-	f3D_64_encode.push_back(encode_3D_64("LUT ET", &m3D_e_LUT_ET<uint_fast64_t, uint_fast32_t>));
-	f3D_64_encode.push_back(encode_3D_64("LUT", &m3D_e_LUT<uint_fast64_t, uint_fast32_t>));
-	f3D_64_encode.push_back(encode_3D_64("Magicbits", &m3D_e_magicbits<uint_fast64_t, uint_fast32_t>));
-	f3D_64_encode.push_back(encode_3D_64("For ET", &m3D_e_for_ET<uint_fast64_t, uint_fast32_t>));
-	f3D_64_encode.push_back(encode_3D_64("For", &m3D_e_for<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64_wrapper("LUT Shifted ET", &m3D_e_sLUT_ET<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64_wrapper("LUT Shifted", &m3D_e_sLUT<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64_wrapper("LUT ET", &m3D_e_LUT_ET<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64_wrapper("LUT", &m3D_e_LUT<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64_wrapper("Magicbits", &m3D_e_magicbits<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64_wrapper("For ET", &m3D_e_for_ET<uint_fast64_t, uint_fast32_t>));
+	f3D_64_encode.push_back(encode_3D_64_wrapper("For", &m3D_e_for<uint_fast64_t, uint_fast32_t>));
 
 	// Register 3D 32-bit encode functions
-	f3D_32_encode.push_back(encode_3D_32("For", &m3D_e_for<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32("For ET", &m3D_e_for_ET<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32("Magicbits", &m3D_e_magicbits<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32("LUT", &m3D_e_LUT<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32("LUT ET", &m3D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32("LUT Shifted", &m3D_e_sLUT<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32("LUT Shifted ET", &m3D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("For", &m3D_e_for<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("For ET", &m3D_e_for_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("Magicbits", &m3D_e_magicbits<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT", &m3D_e_LUT<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT ET", &m3D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT Shifted", &m3D_e_sLUT<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT Shifted ET", &m3D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
 
 	// Register 3D 64-bit decode functions
-	f3D_64_decode.push_back(decode_3D_64("For", &m3D_d_for<uint_fast64_t, uint_fast32_t>));
-	f3D_64_decode.push_back(decode_3D_64("For ET", &m3D_d_for_ET<uint_fast64_t, uint_fast32_t>));
-	f3D_64_decode.push_back(decode_3D_64("Magicbits", &m3D_d_magicbits<uint_fast64_t, uint_fast32_t>));
-	f3D_64_decode.push_back(decode_3D_64("LUT", &m3D_d_LUT<uint_fast64_t, uint_fast32_t>));
-	f3D_64_decode.push_back(decode_3D_64("LUT ET", &m3D_d_LUT_ET<uint_fast64_t, uint_fast32_t>));
-	f3D_64_decode.push_back(decode_3D_64("LUT Shifted", &m3D_d_sLUT<uint_fast64_t, uint_fast32_t>));
-	f3D_64_decode.push_back(decode_3D_64("LUT Shifted ET", &m3D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>));
+	f3D_64_decode.push_back(decode_3D_64_wrapper("For", &m3D_d_for<uint_fast64_t, uint_fast32_t>));
+	f3D_64_decode.push_back(decode_3D_64_wrapper("For ET", &m3D_d_for_ET<uint_fast64_t, uint_fast32_t>));
+	f3D_64_decode.push_back(decode_3D_64_wrapper("Magicbits", &m3D_d_magicbits<uint_fast64_t, uint_fast32_t>));
+	f3D_64_decode.push_back(decode_3D_64_wrapper("LUT", &m3D_d_LUT<uint_fast64_t, uint_fast32_t>));
+	f3D_64_decode.push_back(decode_3D_64_wrapper("LUT ET", &m3D_d_LUT_ET<uint_fast64_t, uint_fast32_t>));
+	f3D_64_decode.push_back(decode_3D_64_wrapper("LUT Shifted", &m3D_d_sLUT<uint_fast64_t, uint_fast32_t>));
+	f3D_64_decode.push_back(decode_3D_64_wrapper("LUT Shifted ET", &m3D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>));
 
 	// Register 3D 32-bit decode functions
-	f3D_32_decode.push_back(decode_3D_32("For", &m3D_d_for<uint_fast32_t, uint_fast16_t>));
-	f3D_32_decode.push_back(decode_3D_32("For ET", &m3D_d_for_ET<uint_fast32_t, uint_fast16_t>));
-	f3D_32_decode.push_back(decode_3D_32("Magicbits", &m3D_d_magicbits<uint_fast32_t, uint_fast16_t>));
-	f3D_32_decode.push_back(decode_3D_32("LUT", &m3D_d_LUT<uint_fast32_t, uint_fast16_t>));
-	f3D_32_decode.push_back(decode_3D_32("LUT ET", &m3D_d_LUT_ET<uint_fast32_t, uint_fast16_t>));
-	f3D_32_decode.push_back(decode_3D_32("LUT Shifted", &m3D_d_sLUT<uint_fast32_t, uint_fast16_t>));
-	f3D_32_decode.push_back(decode_3D_32("LUT Shifted ET", &m3D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_decode.push_back(decode_3D_32_wrapper("For", &m3D_d_for<uint_fast32_t, uint_fast16_t>));
+	f3D_32_decode.push_back(decode_3D_32_wrapper("For ET", &m3D_d_for_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_decode.push_back(decode_3D_32_wrapper("Magicbits", &m3D_d_magicbits<uint_fast32_t, uint_fast16_t>));
+	f3D_32_decode.push_back(decode_3D_32_wrapper("LUT", &m3D_d_LUT<uint_fast32_t, uint_fast16_t>));
+	f3D_32_decode.push_back(decode_3D_32_wrapper("LUT ET", &m3D_d_LUT_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_decode.push_back(decode_3D_32_wrapper("LUT Shifted", &m3D_d_sLUT<uint_fast32_t, uint_fast16_t>));
+	f3D_32_decode.push_back(decode_3D_32_wrapper("LUT Shifted ET", &m3D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>));
 
 	// Register 2D 64-bit encode functions	
-	f2D_64_encode.push_back(encode_2D_64("LUT Shifted ET", &m2D_e_sLUT_ET<uint_fast64_t, uint_fast32_t>));
-	f2D_64_encode.push_back(encode_2D_64("LUT Shifted", &m2D_e_sLUT<uint_fast64_t, uint_fast32_t>));
-	f2D_64_encode.push_back(encode_2D_64("LUT ET", &m2D_e_LUT_ET<uint_fast64_t, uint_fast32_t>));
-	f2D_64_encode.push_back(encode_2D_64("LUT", &m2D_e_LUT<uint_fast64_t, uint_fast32_t>));
-	f2D_64_encode.push_back(encode_2D_64("Magicbits", &m2D_e_magicbits<uint_fast64_t, uint_fast32_t>));
-	f2D_64_encode.push_back(encode_2D_64("For ET", &m2D_e_for_ET<uint_fast64_t, uint_fast32_t>));
-	f2D_64_encode.push_back(encode_2D_64("For", &m2D_e_for<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64_wrapper("LUT Shifted ET", &m2D_e_sLUT_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64_wrapper("LUT Shifted", &m2D_e_sLUT<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64_wrapper("LUT ET", &m2D_e_LUT_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64_wrapper("LUT", &m2D_e_LUT<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64_wrapper("Magicbits", &m2D_e_magicbits<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64_wrapper("For ET", &m2D_e_for_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_encode.push_back(encode_2D_64_wrapper("For", &m2D_e_for<uint_fast64_t, uint_fast32_t>));
 
 	// Register 2D 32-bit encode functions
-	f2D_32_encode.push_back(encode_2D_32("For", &m2D_e_for<uint_fast32_t, uint_fast16_t>));
-	f2D_32_encode.push_back(encode_2D_32("For ET", &m2D_e_for_ET<uint_fast32_t, uint_fast16_t>));
-	f2D_32_encode.push_back(encode_2D_32("Magicbits", &m2D_e_magicbits<uint_fast32_t, uint_fast16_t>));
-	f2D_32_encode.push_back(encode_2D_32("LUT", &m2D_e_LUT<uint_fast32_t, uint_fast16_t>));
-	f2D_32_encode.push_back(encode_2D_32("LUT ET", &m2D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
-	f2D_32_encode.push_back(encode_2D_32("LUT Shifted", &m2D_e_sLUT<uint_fast32_t, uint_fast16_t>));
-	f2D_32_encode.push_back(encode_2D_32("LUT Shifted ET", &m2D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32_wrapper("For", &m2D_e_for<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32_wrapper("For ET", &m2D_e_for_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32_wrapper("Magicbits", &m2D_e_magicbits<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32_wrapper("LUT", &m2D_e_LUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32_wrapper("LUT ET", &m2D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32_wrapper("LUT Shifted", &m2D_e_sLUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_encode.push_back(encode_2D_32_wrapper("LUT Shifted ET", &m2D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
 
 	// Register 2D 64-bit decode functions
-	f2D_64_decode.push_back(decode_2D_64("For", &m2D_d_for<uint_fast64_t, uint_fast32_t>));
-	f2D_64_decode.push_back(decode_2D_64("For ET", &m2D_d_for_ET<uint_fast64_t, uint_fast32_t>));
-	f2D_64_decode.push_back(decode_2D_64("Magicbits", &m2D_d_magicbits<uint_fast64_t, uint_fast32_t>));
-	f2D_64_decode.push_back(decode_2D_64("LUT", &m2D_d_LUT<uint_fast64_t, uint_fast32_t>));
-	f2D_64_decode.push_back(decode_2D_64("LUT ET", &m2D_d_LUT_ET<uint_fast64_t, uint_fast32_t>));
-	f2D_64_decode.push_back(decode_2D_64("LUT Shifted", &m2D_d_sLUT<uint_fast64_t, uint_fast32_t>));
-	f2D_64_decode.push_back(decode_2D_64("LUT Shifted ET", &m2D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64_wrapper("For", &m2D_d_for<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64_wrapper("For ET", &m2D_d_for_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64_wrapper("Magicbits", &m2D_d_magicbits<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64_wrapper("LUT", &m2D_d_LUT<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64_wrapper("LUT ET", &m2D_d_LUT_ET<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64_wrapper("LUT Shifted", &m2D_d_sLUT<uint_fast64_t, uint_fast32_t>));
+	f2D_64_decode.push_back(decode_2D_64_wrapper("LUT Shifted ET", &m2D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>));
 
 	// Register 2D 32-bit decode functions
-	f2D_32_decode.push_back(decode_2D_32("For", &m2D_d_for<uint_fast32_t, uint_fast16_t>));
-	f2D_32_decode.push_back(decode_2D_32("For ET", &m2D_d_for_ET<uint_fast32_t, uint_fast16_t>));
-	f2D_32_decode.push_back(decode_2D_32("Magicbits", &m2D_d_magicbits<uint_fast32_t, uint_fast16_t>));
-	f2D_32_decode.push_back(decode_2D_32("LUT", &m2D_d_LUT<uint_fast32_t, uint_fast16_t>));
-	f2D_32_decode.push_back(decode_2D_32("LUT ET", &m2D_d_LUT_ET<uint_fast32_t, uint_fast16_t>));
-	f2D_32_decode.push_back(decode_2D_32("LUT Shifted", &m2D_d_sLUT<uint_fast32_t, uint_fast16_t>));
-	f2D_32_decode.push_back(decode_2D_32("LUT Shifted ET", &m2D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("For", &m2D_d_for<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("For ET", &m2D_d_for_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("Magicbits", &m2D_d_magicbits<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("LUT", &m2D_d_LUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("LUT ET", &m2D_d_LUT_ET<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("LUT Shifted", &m2D_d_sLUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("LUT Shifted ET", &m2D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>));
 }
 
 int main(int argc, char *argv[]) {
@@ -407,6 +434,7 @@ int main(int argc, char *argv[]) {
 	cout << "++ Checking all methods for correctness" << endl;
 	check3D_EncodeCorrectness();
 	check3D_DecodeCorrectness();
+	check3D_EncodeDecodeMatch();
 	cout << "++ Running each performance test " << times << " times and averaging results" << endl;
 	for (int i = 128; i <= 512; i = i * 2){
 		MAX = i;
