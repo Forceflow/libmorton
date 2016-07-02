@@ -1,10 +1,11 @@
 #pragma once
 
 // Load utils
-#include "util.h"
-#include "timer.h"
+#include <math.h>
 #include <bitset>
 #include <string>
+#include "util.h"
+#include "timer.h"
 
 // Load libraries we're going to test
 #include "../libmorton/include/morton_LUT_generators.h"
