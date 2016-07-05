@@ -162,7 +162,7 @@ inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT
 	morton NINEBITMASK = 0x000001ff;
 	unsigned int loops = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f) / 9.0f));
 	for (unsigned int i = 0; i < loops; ++i){
-		a |= (LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i));
+		a |= (LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i)); // problem: sometimes this shifts too far!
 	}
 	return static_cast<coord>(a);
 }
