@@ -29,13 +29,12 @@ size_t RAND_POOL_SIZE = 10000;
 // Runningsums
 vector<uint_fast64_t> running_sums;
 
-// 3D encoding
+// 3D functions
 vector<encode_3D_64_wrapper> f3D_64_encode; // 3D 64-bit encode functions
 vector<encode_3D_32_wrapper> f3D_32_encode; // 3D 32_bit encode functions
 vector<decode_3D_64_wrapper> f3D_64_decode; // 3D 64-bit decode functions
 vector<decode_3D_32_wrapper> f3D_32_decode; // 3D 32_bit decode functions
-
-// 2D encoding
+// 2D functions
 vector<encode_2D_64_wrapper> f2D_64_encode; // 2D 64-bit encode functions
 vector<encode_2D_32_wrapper> f2D_32_encode; // 2D 32_bit encode functions
 vector<decode_2D_64_wrapper> f2D_64_decode; // 2D 64-bit decode functions
@@ -436,10 +435,13 @@ int main(int argc, char *argv[]) {
 	// register functions
 	registerFunctions();
 
-	cout << "++ Checking all methods for correctness" << endl;
+	cout << "++ Checking 3D methods for correctness" << endl;
 	check3D_EncodeDecodeMatch();
 	check3D_EncodeCorrectness();
 	check3D_DecodeCorrectness();
+
+	cout << "++ Checking 2D methods for correctness" << endl;
+	// TODO
 	
 	cout << "++ Running each performance test " << times << " times and averaging results" << endl;
 	for (int i = 128; i <= 512; i = i * 2){
