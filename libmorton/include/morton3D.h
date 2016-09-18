@@ -160,9 +160,9 @@ template<typename morton, typename coord>
 inline coord morton3D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
 	morton NINEBITMASK = 0x000001ff;
-	unsigned int loops = static_cast<unsigned int>(floor((sizeof(morton) * 8.0f) / 9.0f));
+	unsigned int loops = (sizeof(morton) <= 4) ? 4 : 7; // ceil for 32bit, floor for 64bit
 	for (unsigned int i = 0; i < loops; ++i){
-		a |= (LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i)); // problem: sometimes this shifts too far!
+		a |= (LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i));
 	}
 	return static_cast<coord>(a);
 }
