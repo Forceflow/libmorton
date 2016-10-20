@@ -4,7 +4,7 @@ combine enc/decoding on one line
 - Linear test: start randomly in domain
 - Random test: test permutations
 
-- BMI instructions
+- BMI2 instructions, assembly input
 - Make calls more templated, this is a mess (see BMI issue)
 
 
