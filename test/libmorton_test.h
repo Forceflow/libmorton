@@ -60,9 +60,9 @@ inline string getBitString(valtype val) {
 	// bitset needs size to be known at runtime, and introducing boost dependency
 	// for dynamic bitsets is undesirable, so we get crazy and cut the relevant bits. 
 	// NASTY STUFF Don't try this at home kids
-	std::bitset<128> bs(val);
-	std::string s = bs.to_string();
-	return s.substr(s.length() - (sizeof(valtype) * 8));
+	std::bitset<128> bs(val); // we make the bitset a max of 128
+	std::string s = bs.to_string(); // stringify it
+	return s.substr(s.length() - (sizeof(valtype) * 8)); // cut to the actual length
 }
 
 template <typename morton, typename coord>
