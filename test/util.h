@@ -1,5 +1,4 @@
-#ifndef UTIL_H_
-#define UTIL_H_
+#pragma once
 
 #include <ctime>
 #include <stdint.h>
@@ -33,4 +32,3 @@ uint32_t rand_cmwc(void)
 
 	return x[i];
 }
-#endif
