@@ -1,10 +1,11 @@
 #pragma once
 
-// This file will always contain pointers to the fastest Morton encoding/decoding implementation
-// IF you just want to use the fastest method to encode/decode morton codes, include this
+// This file will always contain #define clauses to the fastest Morton encoding/decoding implementation
+// IF you just want to use the fastest method to encode/decode morton codes, include this header.
 
 #include "morton2D.h"
 #include "morton3D.h"
+#include "morton_BMI.h"
 
 //// ENCODE
 //inline uint_fast32_t morton2D_32_encode(const uint_fast16_t x, const uint_fast16_t y);
@@ -26,7 +27,13 @@
 #define morton2D_32_decode m2D_d_sLUT<uint_fast32_t, uint_fast16_t>
 #define morton2D_64_decode m2D_d_sLUT<uint_fast64_t, uint_fast32_t>
 
+#if defined(__BMI2__)
+#define morton3D_32_encode m3D_e_BMI<uint_fast32_t, uint_fast16_t>
+#define morton3D_64_encode m3D_e_BMI<uint_fast64_t, uint_fast32_t>
+#else
 #define morton3D_32_encode m3D_e_sLUT<uint_fast32_t, uint_fast16_t>
 #define morton3D_64_encode m3D_e_sLUT<uint_fast64_t, uint_fast32_t>
+#endif
+
 #define morton3D_32_decode m3D_d_sLUT<uint_fast32_t, uint_fast16_t>
 #define morton3D_64_decode m3D_d_sLUT<uint_fast64_t, uint_fast32_t>
