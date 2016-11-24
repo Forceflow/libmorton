@@ -32,7 +32,7 @@ inline morton m3D_e_BMI(const coord x, const coord y, const coord z){
 }
 
 template<typename morton, typename coord>
-inline morton m3d_d_BMI(const morton m, coord& x, coord& y, coord& z) {
+inline void m3D_d_BMI(const morton m, coord& x, coord& y, coord& z){
 	x = static_cast<coord>(bmi2_detail::pext(m, static_cast<morton>(BMI_X_MASK)));
 	y = static_cast<coord>(bmi2_detail::pext(m, static_cast<morton>(BMI_Y_MASK)));
 	z = static_cast<coord>(bmi2_detail::pext(m, static_cast<morton>(BMI_Z_MASK)));
