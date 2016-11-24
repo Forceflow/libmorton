@@ -5,17 +5,7 @@
 
 // Utility headers
 #include "libmorton_test.h"
-
-// Standard headers
-#include <cstdlib>
-#include <iostream>
-#include <sstream>
-#include <chrono>
-#include <ctime>
-#include <string>
-#include <vector>
-#include <iomanip>
-#include <bitset>
+#include "libmorton_test_3D.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -276,43 +266,6 @@ static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coor
 	return os.str();
 }
 
-template <typename morton, typename coord>
-static void check3D_EncodeCorrectness(vector<encode_f_3D_wrapper<morton, coord>> encoders) {
-	unsigned int bit = sizeof(morton) * 8;
-	printf("++ Checking correctness of 3D encoders (%u bit) methods ... ", bit);
-	bool ok = true;
-	for (std::vector<encode_f_3D_wrapper<morton, coord>>::iterator it = encoders.begin(); it != encoders.end(); it++) {
-		ok &= check3D_EncodeFunction(*it);
-	}
-	if (ok) { printf(" Passed. \n"); }
-	else { printf("    One or more methods failed. \n"); }
-}
-
-template <typename morton, typename coord>
-static void check3D_DecodeCorrectness(vector<decode_f_3D_wrapper<morton, coord>> decoders) {
-	unsigned int bit = sizeof(morton) * 8;
-	printf("++ Checking correctness of 3D decoding (%u bit) methods ... ", bit);
-	bool ok = true;
-	for (std::vector<decode_f_3D_wrapper<morton, coord>>::iterator it = decoders.begin(); it != decoders.end(); it++) {
-		ok &= check3D_DecodeFunction(*it);
-	}
-	if (ok) { printf(" Passed. \n"); } else { printf("    One or more methods failed. \n"); }
-}
-
-template <typename morton, typename coord>
-static void check3D_EncodeDecodeMatch(vector<encode_f_3D_wrapper<morton, coord>> encoders, vector<decode_f_3D_wrapper<morton, coord>> decoders) {
-	unsigned int bit = sizeof(morton) * 8;
-	printf("++ Checking 3D methods (%u bit) encode/decode match ... ", bit);
-	bool ok = true;
-	for (std::vector<encode_f_3D_wrapper<morton, coord>>::iterator et = encoders.begin(); et != encoders.end(); et++) {
-		for (std::vector<decode_f_3D_wrapper<morton, coord>>::iterator dt = decoders.begin(); dt != decoders.end(); dt++) {
-			ok &= check3D_Match(*et, *dt, times);
-		}
-	}
-	if (ok) { printf(" Passed. \n"); }
-	else { printf("    One or more methods failed. \n"); }
-}
-
 static void Encode_3D_Perf() {
 	cout << "++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
 	for (std::vector<encode_3D_64_wrapper>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
@@ -323,7 +276,7 @@ static void Encode_3D_Perf() {
 	}
 }
 
-static void Decode_3D_Perf() {
+inline static void Decode_3D_Perf() {
 	cout << "++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
 	for (std::vector<decode_3D_64_wrapper>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
 		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 64-bit " << (*it).description << endl;

@@ -31,6 +31,7 @@
     <ClInclude Include="..\..\libmorton\include\morton_BMI.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\libmorton_test_3D.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\todo.txt" />

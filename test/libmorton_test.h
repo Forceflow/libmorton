@@ -1,9 +1,18 @@
 #pragma once
 
-// Load utils
+// Standard headers
+#include <cstdlib>
 #include <math.h>
+#include <iostream>
+#include <sstream>
+#include <chrono>
 #include <bitset>
 #include <string>
+#include <ctime>
+#include <vector>
+#include <iomanip>
+
+// Load utils
 #include "util.h"
 #include "timer.h"
 
