@@ -276,40 +276,36 @@ static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coor
 	return os.str();
 }
 
-static void check3D_EncodeCorrectness() {
-	printf("++ Checking correctness of 3D encoding methods ... ");
+template <typename morton, typename coord>
+static void check3D_EncodeCorrectness(vector<encode_f_3D_wrapper<morton, coord>> encoders) {
+	unsigned int bit = sizeof(morton) * 8;
+	printf("++ Checking correctness of 3D encoders (%u bit) methods ... ", bit);
 	bool ok = true;
-	for (std::vector<encode_3D_64_wrapper>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
+	for (std::vector<encode_f_3D_wrapper<morton, coord>>::iterator it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check3D_EncodeFunction(*it);
 	}
-	for (std::vector<encode_3D_32_wrapper>::iterator it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
-		ok &= check3D_EncodeFunction(*it);
+	if (ok) { printf(" Passed. \n"); }
+	else { printf("    One or more methods failed. \n"); }
+}
+
+template <typename morton, typename coord>
+static void check3D_DecodeCorrectness(vector<decode_f_3D_wrapper<morton, coord>> decoders) {
+	unsigned int bit = sizeof(morton) * 8;
+	printf("++ Checking correctness of 3D decoding (%u bit) methods ... ", bit);
+	bool ok = true;
+	for (std::vector<decode_f_3D_wrapper<morton, coord>>::iterator it = decoders.begin(); it != decoders.end(); it++) {
+		ok &= check3D_DecodeFunction(*it);
 	}
 	if (ok) { printf(" Passed. \n"); } else { printf("    One or more methods failed. \n"); }
 }
 
-static void check3D_DecodeCorrectness() {
-	printf("++ Checking correctness of 3D decoding methods ... ");
+template <typename morton, typename coord>
+static void check3D_EncodeDecodeMatch(vector<encode_f_3D_wrapper<morton, coord>> encoders, vector<decode_f_3D_wrapper<morton, coord>> decoders) {
+	unsigned int bit = sizeof(morton) * 8;
+	printf("++ Checking 3D methods (%u bit) encode/decode match ... ", bit);
 	bool ok = true;
-	for (std::vector<decode_3D_64_wrapper>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
-		ok &= check3D_DecodeFunction(*it);
-	}
-	for (std::vector<decode_3D_32_wrapper>::iterator it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
-		ok &= check3D_DecodeFunction(*it);
-	}
-	if (ok) { printf(" Passed. \n"); } else { printf("    One or more methods failed. \n"); }
-}
-
-static void check3D_EncodeDecodeMatch() {
-	printf("++ Checking 3D methods encode/decode match ... ");
-	bool ok = true;
-	for (std::vector<encode_3D_64_wrapper>::iterator et = f3D_64_encode.begin(); et != f3D_64_encode.end(); et++) {
-		for (std::vector<decode_3D_64_wrapper>::iterator dt = f3D_64_decode.begin(); dt != f3D_64_decode.end(); dt++) {
-			ok &= check3D_Match(*et, *dt, times);
-		}
-	}
-	for (std::vector<encode_3D_32_wrapper>::iterator et = f3D_32_encode.begin(); et != f3D_32_encode.end(); et++) {
-		for (std::vector<decode_3D_32_wrapper>::iterator dt = f3D_32_decode.begin(); dt != f3D_32_decode.end(); dt++) {
+	for (std::vector<encode_f_3D_wrapper<morton, coord>>::iterator et = encoders.begin(); et != encoders.end(); et++) {
+		for (std::vector<decode_f_3D_wrapper<morton, coord>>::iterator dt = decoders.begin(); dt != decoders.end(); dt++) {
 			ok &= check3D_Match(*et, *dt, times);
 		}
 	}
@@ -435,9 +431,12 @@ int main(int argc, char *argv[]) {
 	registerFunctions();
 
 	cout << "++ Checking 3D methods for correctness" << endl;
-	check3D_EncodeDecodeMatch();
-	check3D_EncodeCorrectness();
-	check3D_DecodeCorrectness();
+	check3D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t>(f3D_64_encode, f3D_64_decode);
+	check3D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t>(f3D_32_encode, f3D_32_decode);
+	check3D_EncodeCorrectness<uint_fast64_t, uint_fast32_t>(f3D_64_encode);
+	check3D_EncodeCorrectness<uint_fast32_t, uint_fast16_t>(f3D_32_encode);
+	check3D_DecodeCorrectness<uint_fast64_t, uint_fast32_t>(f3D_64_decode);
+	check3D_DecodeCorrectness<uint_fast32_t, uint_fast16_t>(f3D_32_decode);
 
 	cout << "++ Checking 2D methods for correctness" << endl;
 	// TODO
