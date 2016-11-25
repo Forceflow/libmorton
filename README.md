@@ -23,6 +23,8 @@ inline void morton3D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uin
 inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 </pre>
 
+If you want to take advantage of the BMI2 instruction set (only available on Intel Haswell processors and newer), make sure `__BMI2__` is defined before you include `morton.h`.
+
 ## Testing
 The *test* folder contains tools I use to test correctness and performance of the libmorton implementation. This section is under heavy re-writing, but might contain some useful code for advanced usage.
 
