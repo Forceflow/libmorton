@@ -4,6 +4,7 @@
  * Libmorton is a **lightweight and portable** library - in its most basic form it only depends on standard C++ headers. Architecture-specific optimizations are implemented incrementally.
  * This library is under active development. SHIT MIGHT BREAK.
  * More info and some benchmarks in these blogposts:
+   * http://www.forceflow.be/2016/11/25/using-the-bmi2-instruction-set-to-encode-decode-morton-codes/
    * http://www.forceflow.be/2016/01/18/libmorton-a-library-for-morton-order-encoding-decoding/
    * http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/
 
