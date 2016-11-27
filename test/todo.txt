@@ -1,12 +1,14 @@
-combine enc/decoding on one line
+- Simpler naming scheme for functions
+- BMI2
+-- Check for AVX on MSVC
+-- Implement 2D methods
+- Test suite
+-- Unroll some loops
+-- Do LUT trash test
 
 - Cycles time test
 - Linear test: start randomly in domain
 - Random test: test permutations
-
-- BMI2 instructions, assembly input
-- Make calls more templated, this is a mess (see BMI issue)
-
 
 - early termination methods
 - add more LUT sizes (LUT8, for example)
