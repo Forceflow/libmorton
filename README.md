@@ -29,6 +29,6 @@ If you want to take advantage of the BMI2 instruction set (only available on Int
 The *test* folder contains tools I use to test correctness and performance of the libmorton implementation. This section is under heavy re-writing, but might contain some useful code for advanced usage.
 
 ## TODO
- * Write better test suites
- * Implement BMI2 instruction set detection and optimization for newer Intel CPU's
- * More testing
+ * Write better test suite (with L1/L2 trashing, better tests, ...)
+ * BMI2 implementation for 2D methods
+ * A better naming system for the functions, because m3D_e_sLUT_shifted? That escalated quickly.
