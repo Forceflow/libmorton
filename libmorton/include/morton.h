@@ -27,7 +27,7 @@
 #define morton2D_32_decode m2D_d_sLUT<uint_fast32_t, uint_fast16_t>
 #define morton2D_64_decode m2D_d_sLUT<uint_fast64_t, uint_fast32_t>
 
-#if defined(__BMI2__)
+#if defined(__BMI2__) || __AVX2__
 #define morton3D_32_encode m3D_e_BMI<uint_fast32_t, uint_fast16_t>
 #define morton3D_64_encode m3D_e_BMI<uint_fast64_t, uint_fast32_t>
 #else
@@ -35,7 +35,7 @@
 #define morton3D_64_encode m3D_e_sLUT<uint_fast64_t, uint_fast32_t>
 #endif
 
-#if defined(__BMI2__)
+#if defined(__BMI2__) || __AVX2__
 #define morton3D_32_decode m3D_d_BMI<uint_fast32_t, uint_fast16_t>
 #define morton3D_64_decode m3D_d_BMI<uint_fast64_t, uint_fast32_t>
 #else
