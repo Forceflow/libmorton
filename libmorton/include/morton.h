@@ -22,8 +22,13 @@
 // Functions under this are stubs which will always point to fastest implementation at the moment
 //-----------------------------------------------------------------------------------------------
 
-#define morton2D_32_encode m2D_e_sLUT<uint_fast32_t, uint_fast16_t>
-#define morton2D_64_encode m2D_e_sLUT<uint_fast64_t, uint_fast32_t>
+inline uint_fast32_t morton2D_32_encode(const uint_fast16_t x, const uint_fast16_t y) {
+	return m2D_e_sLUT<uint_fast32_t, uint_fast16_t>(x, y);
+}
+inline uint_fast64_t morton2D_64_encode(const uint_fast32_t x, const uint_fast32_t y) {
+	return m2D_e_sLUT<uint_fast64_t, uint_fast32_t>(x, y);
+}
+
 #define morton2D_32_decode m2D_d_sLUT<uint_fast32_t, uint_fast16_t>
 #define morton2D_64_decode m2D_d_sLUT<uint_fast64_t, uint_fast32_t>
 
