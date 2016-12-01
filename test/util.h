@@ -13,8 +13,6 @@ static uint32_t a = 18705;
 void init_randcmwc(uint32_t seed)
 {
 	int i;
-
-	/* Initialize random seed: */
 	srand(seed);
 	for (i = 0; i < 4096; i++)
 		x[i] = rand();
