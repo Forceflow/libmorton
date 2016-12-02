@@ -1,5 +1,5 @@
 # Libmorton
-
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
  * Libmorton is a **C++ header-only library** with methods to efficiently encode/decode between 64, 32 and 16-bit morton codes and coordinates, in 2D and 3D. *Morton order* is also known as *Z-order* or *[the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)*.
  * Libmorton is a **lightweight and portable** library - in its most basic form it only depends on standard C++ headers. Architecture-specific optimizations are implemented incrementally.
  * This library is under active development. SHIT MIGHT BREAK.
