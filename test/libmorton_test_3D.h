@@ -26,7 +26,7 @@ inline void check3D_DecodeCorrectness(vector<decode_f_3D_wrapper<morton, coord>>
 }
 
 template <typename morton, typename coord>
-inline void check3D_EncodeDecodeMatch(vector<encode_f_3D_wrapper<morton, coord>> encoders, vector<decode_f_3D_wrapper<morton, coord>> decoders) {
+inline void check3D_EncodeDecodeMatch(vector<encode_f_3D_wrapper<morton, coord>> encoders, vector<decode_f_3D_wrapper<morton, coord>> decoders, unsigned int times) {
 	unsigned int bit = sizeof(morton) * 8;
 	printf("++ Checking 3D methods (%u bit) encode/decode match ... ", bit);
 	bool ok = true;
