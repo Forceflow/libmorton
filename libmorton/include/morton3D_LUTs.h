@@ -2,9 +2,12 @@
 
 #include <stdint.h>
 
-// Magicbits masks
-static uint_fast32_t magicbit3D_masks32[5] = { 0x000003ff, 0x30000ff, 0x0300f00f, 0x30c30c3, 0x9249249 };
-static uint_fast64_t magicbit3D_masks64[5] = { 0x1f000000001ffff, 0x1f0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249 };
+// Magicbits masks (encode)
+static uint_fast32_t magicbit3D_masks32_encode[6] = { 0x000003ff, 0, 0x30000ff, 0x0300f00f, 0x30c30c3, 0x9249249 }; // we add a 0 on position 1 in this array to use same code for 32-bit and 64-bit cases
+static uint_fast64_t magicbit3D_masks64_encode[6] = { 0x1fffff, 0x1f00000000ffff, 0x1f0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249 };
+
+static uint_fast32_t magicbit3D_masks32_decode[6] = { 0, 0x000003ff, 0x30000ff, 0x0300f00f, 0x30c30c3, 0x9249249 }; // we add a 0 on position 0 in this array to use same code for 32-bit and 64-bit cases
+static uint_fast64_t magicbit3D_masks64_decode[6] = { 0x1fffff, 0x1f00000000ffff, 0x1f0000ff0000ff, 0x100f00f00f00f00f, 0x10c30c30c30c30c3, 0x1249249249249249 };
 
 // Version with lookup table
 static const uint_fast32_t Morton3D_encode_x_256[256] =

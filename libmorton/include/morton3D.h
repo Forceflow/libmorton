@@ -99,13 +99,14 @@ inline morton m3D_e_LUT_ET(const coord x, const coord y, const coord z) {
 // HELPER METHOD: Magic bits encoding (helper method)
 template<typename morton, typename coord>
 static inline morton morton3D_SplitBy3bits(const coord a) {
-	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(magicbit3D_masks32) : reinterpret_cast<const morton*>(magicbit3D_masks64);
+	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(magicbit3D_masks32_encode) : reinterpret_cast<const morton*>(magicbit3D_masks64_encode);
 	morton x = a;
 	x = x & masks[0];
-	x = (x | x << 16) & masks[1];
-	x = (x | x << 8)  & masks[2];
-	x = (x | x << 4)  & masks[3];
-	x = (x | x << 2)  & masks[4];
+	if (sizeof(morton) == 8) {x = (x | x << 32) & masks[1];} // for 64-bit case
+	x = (x | x << 16) & masks[2];
+	x = (x | x << 8)  & masks[3];
+	x = (x | x << 4)  & masks[4];
+	x = (x | x << 2)  & masks[5];
 	return x;
 }
 
@@ -225,12 +226,13 @@ inline void m3D_d_LUT_ET(const morton m, coord& x, coord& y, coord& z){
 // HELPER METHOD for Magic bits decoding
 template<typename morton, typename coord>
 static inline coord morton3D_GetThirdBits(const morton m) {
-	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(magicbit3D_masks32) : reinterpret_cast<morton*>(magicbit3D_masks64);
-	morton x = m & masks[4];
-	x = (x ^ (x >> 2)) & masks[3];
-	x = (x ^ (x >> 4)) & masks[2];
-	x = (x ^ (x >> 8)) & masks[1];
-	x = (x ^ (x >> 16)) & masks[0];
+	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(magicbit3D_masks32_decode) : reinterpret_cast<morton*>(magicbit3D_masks64_decode);
+	morton x = m & masks[5];
+	x = (x ^ (x >> 2)) & masks[4];
+	x = (x ^ (x >> 4)) & masks[3];
+	x = (x ^ (x >> 8)) & masks[2];
+	x = (x ^ (x >> 16)) & masks[1];
+	if (sizeof(morton) > 4) {x = (x ^ (x >> 16)) & masks[0];}
 	return static_cast<coord>(x);
 }
 
