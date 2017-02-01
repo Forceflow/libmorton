@@ -232,7 +232,7 @@ static inline coord morton3D_GetThirdBits(const morton m) {
 	x = (x ^ (x >> 4)) & masks[3];
 	x = (x ^ (x >> 8)) & masks[2];
 	x = (x ^ (x >> 16)) & masks[1];
-	if (sizeof(morton) > 4) {x = (x ^ (x >> 16)) & masks[0];}
+	if (sizeof(morton) > 4) {x = (x ^ (x >> 32)) & masks[0];}
 	return static_cast<coord>(x);
 }
 
