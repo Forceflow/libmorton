@@ -41,37 +41,6 @@ void printRunningSums(){
 	cout << t << endl;
 }
 
-// Check a 3D Encode/Decode function for correct encode-decode process
-template<typename morton, typename coord>
-static bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, decode_f_3D_wrapper<morton, coord> &decode, unsigned int times){
-	bool everythingokay = true;
-	for (unsigned int i = 0; i < times; ++i) {
-		coord maximum = pow(2, floor((sizeof(morton)*8) / 3.0f))-1;
-		// generate random coordinates
-		coord x = rand() % maximum;
-		coord y = rand() % maximum;
-		coord z = rand() % maximum;
-		coord x_result, y_result, z_result;
-		morton mortonresult = encode.encode(x, y, z);
-		decode.decode(mortonresult, x_result, y_result, z_result);
-		if (x != x_result | y != y_result | z != z_result) {
-			cout << endl;
-			cout << "x: " << getBitString<coord>(x) << " (" << x << ")" << endl;
-			cout << "y: " << getBitString<coord>(y) << " (" << y << ")" << endl;
-			cout << "z: " << getBitString<coord>(z) << " (" << z << ")" << endl;
-			cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")" << endl;
-			cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")" << endl;
-			cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")" << endl;
-			cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")" << endl;
-			if (sizeof(morton) == 8) { cout << "64-bit "; }
-			else { cout << "32-bit "; }
-			cout << "using methods encode " << encode.description << " and decode " << decode.description << endl;
-			everythingokay = false;
-		}
-	}
-	return everythingokay;
-}
-
 // Check a 3D Encode Function for correctness
 template <typename morton, typename coord>
 static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &function){
@@ -392,8 +361,8 @@ int main(int argc, char *argv[]) {
 	registerFunctions();
 
 	cout << "++ Checking 3D methods for correctness" << endl;
-	check3D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t>(f3D_64_encode, f3D_64_decode);
-	check3D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t>(f3D_32_encode, f3D_32_decode);
+	check3D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t>(f3D_64_encode, f3D_64_decode, times);
+	check3D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t>(f3D_32_encode, f3D_32_decode, times);
 	check3D_EncodeCorrectness<uint_fast64_t, uint_fast32_t>(f3D_64_encode);
 	check3D_EncodeCorrectness<uint_fast32_t, uint_fast16_t>(f3D_32_encode);
 	check3D_DecodeCorrectness<uint_fast64_t, uint_fast32_t>(f3D_64_decode);
