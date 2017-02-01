@@ -29,6 +29,9 @@ If you want to take advantage of the BMI2 instruction set (only available on Int
 ## Testing
 The *test* folder contains tools I use to test correctness and performance of the libmorton implementation. This section is under heavy re-writing, but might contain some useful code for advanced usage.
 
+## Thanks
+ * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
+
 ## TODO
  * Write better test suite (with L1/L2 trashing, better tests, ...)
  * BMI2 implementation for 2D methods
