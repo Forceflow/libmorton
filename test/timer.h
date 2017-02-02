@@ -7,9 +7,7 @@
 #if _MSC_VER
 #include <Windows.h>
 #elif __GNUC__
-#include <ctime>
-#include <chrono>
-using namespace std::chrono;
+#include "time.h"
 #endif
 
 using namespace std;
@@ -43,19 +41,19 @@ struct Timer { // High performance Win64 timer using QPC events
 #else
 struct Timer { // High performance timer using standard c++11 chrono
 	double elapsed_time_milliseconds = 0;
-	high_resolution_clock::time_point t1;
-	high_resolution_clock::time_point t2;
+	timespec t1;
+	timespec t2;
 
 	inline Timer() {
 	}
 
 	inline void start() {
-		t1 = high_resolution_clock::now();
+		clock_gettime(std::CLOCK_REALTIME, &t1);
 	}
 
 	inline void stop() {
-		t2 = high_resolution_clock::now();
-		elapsed_time_milliseconds += std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+		clock_gettime(std::CLOCK_REALTIME, &t2);
+		elapsed_time_milliseconds += t2.tv_sec - t1.tv_sec,
 	}
 };
 #endif
