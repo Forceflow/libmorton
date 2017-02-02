@@ -39,6 +39,9 @@ struct Timer { // High performance Win64 timer using QPC events
 	}
 };
 #else
+
+#define MILLION 1000000.0f
+
 struct Timer { // High performance timer using standard c++11 chrono
 	double elapsed_time_milliseconds = 0;
 	timespec t1;
@@ -48,12 +51,13 @@ struct Timer { // High performance timer using standard c++11 chrono
 	}
 
 	inline void start() {
-		clock_gettime(std::CLOCK_REALTIME, &t1);
+		clock_gettime(CLOCK_REALTIME, &t1);
 	}
 
 	inline void stop() {
-		clock_gettime(std::CLOCK_REALTIME, &t2);
-		elapsed_time_milliseconds += t2.tv_sec - t1.tv_sec,
+		clock_gettime(CLOCK_REALTIME, &t2);
+		elapsed_time_milliseconds += (t2.tv_sec - t1.tv_sec) * 1000.0f;
+		elapsed_time_milliseconds += ((float)(t2.tv_nsec - t1.tv_nsec)) / MILLION;
 	}
 };
 #endif
