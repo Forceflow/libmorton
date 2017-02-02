@@ -1,6 +1,6 @@
 // Portable high-precision timer
 // Using QueryPerformanceCounter for Win32/Win64
-// And C++11 chrono for other platforms
+// And POSIX get_clock() for other platforms
 
 #pragma once
 

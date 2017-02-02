@@ -109,9 +109,16 @@ static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), 
 	for (size_t t = 0; t < times; t++){
 		for (coord i = 0; i < MAX; i++){
 			for (coord j = 0; j < MAX; j++){
-				for (coord k = 0; k < MAX; k++){
+				for (coord k = 0; k < MAX; k += 8){
 					timer.start();
 					runningsum += function(i, j, k);
+					runningsum += function(i, j, k+1);
+					runningsum += function(i, j, k+2);
+					runningsum += function(i, j, k+3);
+					runningsum += function(i, j, k+4);
+					runningsum += function(i, j, k+5);
+					runningsum += function(i, j, k+6);
+					runningsum += function(i, j, k+7);
 					timer.stop();
 				}
 			}
@@ -188,11 +195,25 @@ static double testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, co
 	coord x, y, z;
 	morton runningsum = 0;
 	for (size_t t = 0; t < times; t++){
-		for (morton i = 0; i < total; i++){
+		for (morton i = 0; i < total; i += 8){
 			timer.start();
-			function(i,x,y,z);
-			timer.stop();
+			function(i, x, y, z);
 			runningsum += x + y + z;
+			function(i+1, x, y, z);
+			runningsum += x + y + z;
+			function(i+2, x, y, z);
+			runningsum += x + y + z;
+			function(i+3, x, y, z);
+			runningsum += x + y + z;
+			function(i+4, x, y, z);
+			runningsum += x + y + z;
+			function(i+5, x, y, z);
+			runningsum += x + y + z;
+			function(i+6, x, y, z);
+			runningsum += x + y + z;
+			function(i+7, x, y, z);
+			runningsum += x + y + z;
+			timer.stop();
 		}
 	}
 	running_sums.push_back(runningsum);
