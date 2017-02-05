@@ -159,7 +159,10 @@ static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), 
 	Timer timer = Timer();
 	coord maximum = ~0;
 	morton runningsum = 0;
-	coord x, y, z;
+	const unsigned int stride = 8;
+	coord x[stride];
+	coord y[stride];
+	coord z[stride];
 
 	for (size_t t = 0; t < times; t++){
 		// Create a pool of random numbers
@@ -168,12 +171,22 @@ static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), 
 			randnumbers.push_back(rand() % maximum);
 		}
 		// Do the performance test
-		for (size_t i = 0; i < total; i++){
-			x = randnumbers[i % RAND_POOL_SIZE];
-			y = randnumbers[(i + 1) % RAND_POOL_SIZE];
-			z = randnumbers[(i + 2) % RAND_POOL_SIZE];
+		for (size_t i = 0; i < total; i+=stride){
+			// grab all the random numbers for this stride
+			for (unsigned int j = 0; j < stride; j++) {
+				x[j] = randnumbers[(i+j) % RAND_POOL_SIZE];
+				y[j] = randnumbers[(i+j + 1) % RAND_POOL_SIZE];
+				z[j] = randnumbers[(i+j + 2) % RAND_POOL_SIZE];
+			}
 			timer.start();
-			runningsum += function(x,y,z);
+			runningsum += function(x[0], y[0], z[0]);
+			runningsum += function(x[1], y[1], z[1]);
+			runningsum += function(x[2], y[2], z[2]);
+			runningsum += function(x[3], y[3], z[3]);
+			runningsum += function(x[4], y[4], z[4]);
+			runningsum += function(x[5], y[5], z[5]);
+			runningsum += function(x[6], y[6], z[6]);
+			runningsum += function(x[7], y[7], z[7]);
 			timer.stop();
 		}
 	}
