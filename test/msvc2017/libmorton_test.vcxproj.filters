@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\libmorton_test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\libmorton_test.h" />
+    <ClInclude Include="..\util.h" />
+    <ClInclude Include="..\..\libmorton\include\morton_common.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton_LUT_generators.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton3D_LUTs.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton2D_LUTs.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\timer.h" />
+    <ClInclude Include="..\..\libmorton\include\morton.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton3D.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton2D.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libmorton\include\morton_BMI.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libmorton_test_3D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\todo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="libmorton_headers">
+      <UniqueIdentifier>{fb4eb107-a763-4742-9111-cd941c432a26}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
