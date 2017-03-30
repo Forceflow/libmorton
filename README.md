@@ -31,6 +31,7 @@ The *test* folder contains tools I use to test correctness and performance of th
 
 ## Thanks
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
+ * Everyone making comments and suggestions on the [original blogpost](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/)
 
 ## TODO
  * Write better test suite (with L1/L2 trashing, better tests, ...)
