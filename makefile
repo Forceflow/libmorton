@@ -1,12 +1,12 @@
 CC=g++
 CFLAGS=-O3 -m64 -std=c++11 -I libmorton/include/
 
-all: libmorton_test
+all: test bmi2
 
-libmorton_test:
+test:
 	$(CC) $(CFLAGS) test/libmorton_test.cpp -o libmorton_test
 
-bmi2_build:
+bmi2:
 	$(CC) $(CFLAGS) -march=haswell test/libmorton_test.cpp -o libmorton_test_bmi2
 
 clean:
