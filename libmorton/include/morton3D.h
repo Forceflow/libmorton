@@ -67,7 +67,7 @@ inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
 	unsigned long maxbit = 0;
 	morton answer = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
-	for (int i = ceil((maxbit + 1) / 8.0f) ; i >= 0; --i){
+	for (int i = (int) ceil((maxbit + 1) / 8.0f) ; i >= 0; --i){
 		unsigned int shift = i* 8;
 		answer = answer << 24 | (LUT[(c >> shift) & EIGHTBITMASK]);
 	}
@@ -102,7 +102,7 @@ static inline morton morton3D_SplitBy3bits(const coord a) {
 	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(magicbit3D_masks32_encode) : reinterpret_cast<const morton*>(magicbit3D_masks64_encode);
 	morton x = a;
 	x = x & masks[0];
-	if (sizeof(morton) == 8) {x = (x | x << 32) & masks[1];} // for 64-bit case
+	if (sizeof(morton) == 8) {x = (x | (uint_fast64_t) x << 32) & masks[1];} // for 64-bit case
 	x = (x | x << 16) & masks[2];
 	x = (x | x << 8)  & masks[3];
 	x = (x | x << 4)  & masks[4];
@@ -232,7 +232,7 @@ static inline coord morton3D_GetThirdBits(const morton m) {
 	x = (x ^ (x >> 4)) & masks[3];
 	x = (x ^ (x >> 8)) & masks[2];
 	x = (x ^ (x >> 16)) & masks[1];
-	if (sizeof(morton) > 4) {x = (x ^ (x >> 32)) & masks[0];}
+	if (sizeof(morton) > 4) {x = (x ^ ((uint_fast64_t) x >> 32)) & masks[0];}
 	return static_cast<coord>(x);
 }
 
