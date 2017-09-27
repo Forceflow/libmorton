@@ -1,4 +1,4 @@
 dist: trusty
 language: cpp
 compiler: gcc
-script: make -f libmorton/test/makefile test
+script: make -f test/makefile clean && make -f test/makefile test
