@@ -155,6 +155,7 @@
     <ClInclude Include="..\..\libmorton\include\morton_common.h" />
     <ClInclude Include="..\libmorton_test.h" />
     <ClInclude Include="..\libmorton_test_3D.h" />
+    <ClInclude Include="..\libmorton_test_controlvalues.h" />
     <ClInclude Include="..\timer.h" />
     <ClInclude Include="..\util.h" />
   </ItemGroup>
