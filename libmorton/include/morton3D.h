@@ -100,8 +100,7 @@ inline morton m3D_e_LUT_ET(const coord x, const coord y, const coord z) {
 template<typename morton, typename coord>
 static inline morton morton3D_SplitBy3bits(const coord a) {
 	const morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<const morton*>(magicbit3D_masks32_encode) : reinterpret_cast<const morton*>(magicbit3D_masks64_encode);
-	morton x = a;
-	x = x & masks[0];
+	morton x = ((morton) a) & masks[0];
 	if (sizeof(morton) == 8) {x = (x | (uint_fast64_t) x << 32) & masks[1];} // for 64-bit case
 	x = (x | x << 16) & masks[2];
 	x = (x | x << 8)  & masks[3];
