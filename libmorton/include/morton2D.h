@@ -61,8 +61,8 @@ inline morton m2D_e_LUT(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
 	unsigned long maxbit = 0;
-	morton answer = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
+	morton answer = 0;
 	unsigned int i = 0;
 	while (maxbit >= i) {
 		answer |= (LUT[(c >> i) & EIGHTBITMASK]) << i * 2;
@@ -239,9 +239,9 @@ inline void m2D_d_for(const morton m, coord& x, coord& y) {
 template<typename morton, typename coord>
 inline void m2D_d_for_ET(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
-	float defaultbits = sizeof(morton) * 4;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<morton>(m, &firstbit_location)) return;
+	float defaultbits = sizeof(morton) * 4;
 	unsigned int checkbits = static_cast<unsigned int>(min(defaultbits, firstbit_location / 2.0f));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
