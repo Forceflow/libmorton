@@ -76,13 +76,12 @@ inline string getBitString(valtype val) {
 }
 
 template <typename valtype>
-inline string getSpacedBitString(valtype val, unsigned int spaces) {
-	std::string bitstring= getBitString<valtype>(val);
+inline string getSpacedBitString(valtype val, unsigned int frequency, unsigned int spaces) {
+	std::string bitstring= getBitString<valtype>(val); // converted bitstring
 	std::string base = ""; // base string
 	std::string spacestring(spaces, ' '); // spaces
-
-	for (int i = 0; i < bitstring.size(); i++) {
-		base = bitstring[i] + spacestring + base;
+	for (unsigned int i = 0; i < bitstring.size(); i++) {
+		base = (i % frequency == 0) ? bitstring[i] + spacestring + base : bitstring[i] + base;
 	}
 	return base;
 }
