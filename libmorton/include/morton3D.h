@@ -65,8 +65,8 @@ inline morton m3D_e_LUT(const coord x, const coord y, const coord z) {
 template<typename morton, typename coord>
 inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
 	unsigned long maxbit = 0;
-	morton answer = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
+	morton answer = 0;
 	for (int i = (int) ceil((maxbit + 1) / 8.0f) ; i >= 0; --i){
 		unsigned int shift = i* 8;
 		answer = answer << 24 | (LUT[(c >> shift) & EIGHTBITMASK]);
@@ -260,9 +260,9 @@ inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z){
 template<typename morton, typename coord>
 inline void m3D_d_for_ET(const morton m, coord& x, coord& y, coord& z) {
 	x = 0; y = 0; z = 0;
-	float defaultbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	unsigned long firstbit_location = 0;
 	if(!findFirstSetBit<morton>(m, &firstbit_location)) return;
+	float defaultbits = floor((sizeof(morton) * 8.0f / 3.0f));
 	unsigned int checkbits = static_cast<unsigned int>(min(defaultbits, firstbit_location / 3.0f));
 	for (unsigned int i = 0; i <= checkbits; ++i) {
 		morton selector = 1;
