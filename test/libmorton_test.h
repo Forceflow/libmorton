@@ -75,6 +75,18 @@ inline string getBitString(valtype val) {
 	return s.substr(s.length() - (sizeof(valtype) * 8)); // cut to the actual length
 }
 
+template <typename valtype>
+inline string getSpacedBitString(valtype val, unsigned int spaces) {
+	std::string bitstring= getBitString<valtype>(val);
+	std::string base = ""; // base string
+	std::string spacestring(spaces, ' '); // spaces
+
+	for (int i = 0; i < bitstring.size(); i++) {
+		base = bitstring[i] + spacestring + base;
+	}
+	return base;
+}
+
 template <typename morton, typename coord>
 void printIncorrectDecoding3D(string method_tested, morton m, coord x, coord y, coord z, coord correct_x, coord correct_y, coord correct_z) {
 	cout << endl << "    Incorrect decoding of " << getBitString<morton>(m) << " in method " << method_tested.c_str() << ": ("
