@@ -8,6 +8,8 @@
 #include "morton2D_LUTs.h"
 #include "morton_common.h"
 
+#define EIGHTBITMASK (morton) 0x000000FF
+
 using namespace std;
 
 // Encode methods
@@ -31,7 +33,6 @@ template<typename morton, typename coord> inline void m2D_d_for(const morton m, 
 template<typename morton, typename coord>
 inline morton m2D_e_sLUT(const coord x, const coord y) {
 	morton answer = 0;
-	const static morton EIGHTBITMASK = 0x000000FF;
 	for (unsigned int i = sizeof(coord); i > 0; --i) {
 		unsigned int shift = (i - 1) * 8;
 		answer =
@@ -46,7 +47,6 @@ inline morton m2D_e_sLUT(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline morton m2D_e_LUT(const coord x, const coord y) {
 	morton answer = 0;
-	const static morton EIGHTBITMASK = 0x000000FF;
 	for (unsigned int i = sizeof(coord); i > 0; --i) {
 		unsigned int shift = (i - 1) * 8; 
 		answer =
@@ -60,7 +60,6 @@ inline morton m2D_e_LUT(const coord x, const coord y) {
 // HELPER METHOD for Early Termination LUT Encode
 template<typename morton, typename coord>
 inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
-	const static morton EIGHTBITMASK = 0x000000FF;
 	unsigned long maxbit = 0;
 	morton answer = 0;
 	if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
@@ -147,7 +146,6 @@ inline morton m2D_e_for_ET(const coord x, const coord y) {
 template<typename morton, typename coord>
 inline coord morton2D_DecodeCoord_LUT256(const morton m, const uint_fast8_t *LUT, const unsigned int startshift) {
 	morton a = 0;
-	morton EIGHTBITMASK = 0x000000ff;
 	unsigned int loops = sizeof(morton);
 	for (unsigned int i = 0; i < loops; ++i) {
 		a |= (LUT[(m >> ((i * 8) + startshift)) & EIGHTBITMASK] << (4 * i));
@@ -173,7 +171,6 @@ inline void m2D_d_LUT(const morton m, coord& x, coord& y) {
 template<typename morton, typename coord>
 inline void m2D_d_sLUT_ET(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
-	morton EIGHTBITMASK = 0x000000ff;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
 	unsigned int i = 0;
@@ -191,7 +188,6 @@ inline void m2D_d_sLUT_ET(const morton m, coord& x, coord& y) {
 template<typename morton, typename coord>
 inline void m2D_d_LUT_ET(const morton m, coord& x, coord& y) {
 	x = 0; y = 0;
-	morton EIGHTBITMASK = 0x000000ff;
 	unsigned long firstbit_location = 0;
 	if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
 	unsigned int i = 0;
