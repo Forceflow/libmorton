@@ -81,7 +81,7 @@ inline string getSpacedBitString(valtype val, unsigned int frequency, unsigned i
 	std::string base = ""; // base string
 	std::string spacestring(spaces, ' '); // spaces
 	for (unsigned int i = 0; i < bitstring.size(); i++) {
-		base = (i % frequency == 0) ? bitstring[i] + spacestring + base : bitstring[i] + base;
+		base = (i % frequency == 0) ? base + spacestring + bitstring[i] : base + bitstring[i];
 	}
 	return base;
 }
