@@ -205,7 +205,8 @@ inline void m2D_d_LUT_ET(const morton m, coord& x, coord& y) {
 template<typename morton, typename coord>
 static inline coord morton2D_GetSecondBits(const morton m) {
 	morton* masks = (sizeof(morton) <= 4) ? reinterpret_cast<morton*>(magicbit2D_masks32) : reinterpret_cast<morton*>(magicbit2D_masks64);
-	morton x = m & masks[4];
+	morton x = m & masks[5];
+	x = (x ^ (x >> 1)) & masks[4];
 	x = (x ^ (x >> 2)) & masks[3];
 	x = (x ^ (x >> 4)) & masks[2];
 	x = (x ^ (x >> 8)) & masks[1];
