@@ -234,34 +234,6 @@ static double testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, co
 }
 
 template <typename morton, typename coord>
-static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times){
-	Timer timer = Timer();
-	coord x, y, z;
-	morton maximum = ~0; // maximum for the random morton codes
-	morton runningsum = 0;
-	morton m;
-
-	// Create a pool of randum numbers
-	vector<morton> randnumbers;
-	for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
-		randnumbers.push_back((rand() + rand()) % maximum);
-	}
-	
-	// Start performance test
-	for (int t = 0; t < times; t++){
-		for (size_t i = 0; i < total; i++){
-			m = randnumbers[i % RAND_POOL_SIZE];
-			timer.start();
-			function(m,x,y,z);
-			timer.stop();
-			runningsum += x + y + z;
-		}
-	}
-	running_sums.push_back(runningsum);
-	return timer.elapsed_time_milliseconds / (float)times;
-}
-
-template <typename morton, typename coord>
 static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times) {
 	stringstream os;
 	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3) << testDecode_3D_Linear_Perf<morton, coord>(function, times) << " ms "
