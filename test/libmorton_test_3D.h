@@ -1,6 +1,15 @@
 #pragma once
 #include "libmorton_test.h"
 
+using namespace std;
+
+// Config variables (defined elsewhere)
+extern size_t RAND_POOL_SIZE;
+extern size_t total;
+extern size_t MAX;
+extern unsigned int times;
+extern vector<uint_fast64_t> running_sums;
+
 // Check a 3D Encode/Decode function for correct encode-decode process
 template<typename morton, typename coord>
 inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, decode_f_3D_wrapper<morton, coord> &decode, unsigned int times) {
