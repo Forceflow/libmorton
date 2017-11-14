@@ -41,50 +41,6 @@ void printRunningSums(){
 	cout << t << endl;
 }
 
-// Check a 3D Encode Function for correctness
-template <typename morton, typename coord>
-static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &function){
-	bool everything_okay = true;
-	morton computed_code, correct_code = 0;
-	for (coord i = 0; i < 16; i++) {
-		for (coord j = 0; j < 16; j++) {
-			for (coord k = 0; k < 16; k++) {
-				correct_code = control_3D_Encode[k + (j * 16) + (i * 16 * 16)];
-				computed_code = function.encode(i, j, k);
-				if (computed_code != correct_code) {
-					everything_okay = false;
-					cout << endl << "    Incorrect encoding of (" << i << ", " << j << ", " << k << ") in method " << function.description.c_str() << ": " << computed_code <<
-						" != " << correct_code << endl;
-				}
-			}
-		}
-	}
-	return everything_okay;
-}
-
-// Check a 3D Decode Function for correctness
-template <typename morton, typename coord>
-static bool check3D_DecodeFunction(const decode_f_3D_wrapper<morton, coord> &function) {
-	bool everything_okay = true;
-	coord x, y, z;
-	// check first items
-	for (morton i = 0; i < 4096; i++) {
-		function.decode(i, x, y, z);
-		if (x != control_3D_Decode[i][0] || y != control_3D_Decode[i][1] || z != control_3D_Decode[i][2]) {
-			printIncorrectDecoding3D<morton, coord>(function.description, i, x, y, z, control_3D_Decode[i][0], control_3D_Decode[i][1], control_3D_Decode[i][2]);
-			everything_okay = false;
-		}
-	}
-	if (sizeof(morton) > 4) { // Let's do some more tests
-		function.decode(0x7fffffffffffffff, x, y, z);
-		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff) {
-			printIncorrectDecoding3D<morton, coord>(function.description, 0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
-			everything_okay = false;
-		}
-	}
-	return everything_okay;
-}
-
 template <typename morton, typename coord>
 static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
 	Timer timer = Timer();
