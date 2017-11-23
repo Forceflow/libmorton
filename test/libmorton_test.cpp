@@ -42,23 +42,6 @@ void printRunningSums(){
 }
 
 template <typename morton, typename coord>
-static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
-	Timer timer = Timer();
-	morton runningsum = 0;
-	for (size_t t = 0; t < times; t++) {
-		for (coord i = 0; i < MAX; i++) {
-			for (coord j = 0; j < MAX; j++) {
-					timer.start();
-					runningsum += function(i, j);
-					timer.stop();
-			}
-		}
-	}
-	running_sums.push_back(runningsum);
-	return timer.elapsed_time_milliseconds / (float)times;
-}
-
-template <typename morton, typename coord>
 static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), size_t times){
 	Timer timer = Timer();
 	morton runningsum = 0;

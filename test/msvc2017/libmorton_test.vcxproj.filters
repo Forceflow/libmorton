@@ -33,6 +33,7 @@
     </ClInclude>
     <ClInclude Include="..\libmorton_test_3D.h" />
     <ClInclude Include="..\libmorton_test_controlvalues.h" />
+    <ClInclude Include="..\libmorton_test_2D.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\todo.txt" />
