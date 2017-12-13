@@ -1,3 +1,6 @@
+- Better testing method: specify number of coordinates to test
+Random method seems fine now, but for linear, need to pick linear set within domain (middle?)
+
 - Simpler naming scheme for functions
 - BMI2
 -- Check for AVX on MSVC

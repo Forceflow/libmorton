@@ -115,6 +115,7 @@ inline void check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, co
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
 }
 
+// Test performance of encoding a linearly increasing set of coordinates
 template <typename morton, typename coord>
 static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), size_t times) {
 	Timer timer = Timer();

@@ -43,32 +43,6 @@ void printRunningSums(){
 }
 
 template <typename morton, typename coord>
-static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t times) {
-	Timer timer = Timer();
-	coord maximum = ~0;
-	morton runningsum = 0;
-	coord x, y, z;
-
-	for (size_t t = 0; t < times; t++) {
-		// Create a pool of random numbers
-		vector<coord> randnumbers;
-		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
-			randnumbers.push_back(rand() % maximum);
-		}
-		// Do the performance test
-		for (size_t i = 0; i < total; i++) {
-			x = randnumbers[i % RAND_POOL_SIZE];
-			y = randnumbers[(i + 1) % RAND_POOL_SIZE];
-			timer.start();
-			runningsum += function(x, y);
-			timer.stop();
-		}
-	}
-	running_sums.push_back(runningsum);
-	return timer.elapsed_time_milliseconds / (float)times;
-}
-
-template <typename morton, typename coord>
 static std::string testEncode_3D_Perf(morton(*function)(coord, coord, coord), size_t times) {
 	stringstream os;
 	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3) << testEncode_3D_Linear_Perf<morton, coord>(function, times) << " ms " 
@@ -86,20 +60,20 @@ static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coor
 
 static void Encode_3D_Perf() {
 	cout << "++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
-	for (std::vector<encode_3D_64_wrapper>::iterator it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
+	for (auto it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
 		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 64-bit " << (*it).description << endl;
 	}
-	for (std::vector<encode_3D_32_wrapper>::iterator it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
+	for (auto it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
 		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 32-bit " << (*it).description << endl;
 	}
 }
 
 inline static void Decode_3D_Perf() {
 	cout << "++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
-	for (std::vector<decode_3D_64_wrapper>::iterator it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
+	for (auto it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
 		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 64-bit " << (*it).description << endl;
 	}
-	for (std::vector<decode_3D_32_wrapper>::iterator it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
+	for (auto it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
 		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 32-bit " << (*it).description << endl;
 	}
 }
