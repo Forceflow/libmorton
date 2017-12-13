@@ -87,7 +87,7 @@ template <typename morton, typename coord>
 inline void check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, coord>> encoders) {
 	printf("++ Checking correctness of 3D encoders (%lu bit) methods ... ", sizeof(morton) * 8);
 	bool ok = true;
-	for (typename auto it = encoders.begin(); it != encoders.end(); it++) {
+	for (auto it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check3D_EncodeFunction(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
@@ -97,7 +97,7 @@ template <typename morton, typename coord>
 inline void check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, coord>> decoders) {
 	printf("++ Checking correctness of 3D decoding (%lu bit) methods ... ", sizeof(morton) * 8);
 	bool ok = true;
-	for (typename auto it = decoders.begin(); it != decoders.end(); it++) {
+	for (auto it = decoders.begin(); it != decoders.end(); it++) {
 		ok &= check3D_DecodeFunction(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
@@ -107,8 +107,8 @@ template <typename morton, typename coord>
 inline void check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, coord>> encoders, std::vector<decode_f_3D_wrapper<morton, coord>> decoders, unsigned int times) {
 	printf("++ Checking 3D methods (%lu bit) encode/decode match ... ", sizeof(morton) * 8);
 	bool ok = true;
-	for (typename auto et = encoders.begin(); et != encoders.end(); et++) {
-		for (typename auto dt = decoders.begin(); dt != decoders.end(); dt++) {
+	for (auto et = encoders.begin(); et != encoders.end(); et++) {
+		for (auto dt = decoders.begin(); dt != decoders.end(); dt++) {
 			ok &= check3D_Match(*et, *dt, times);
 		}
 	}
