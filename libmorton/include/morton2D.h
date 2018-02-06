@@ -3,6 +3,7 @@
 // Libmorton - Methods to encode/decode 64-bit morton codes from/to 32-bit (x,y) coordinates
 // Warning: morton.h will always point to the functions that use the fastest available method.
 
+#include <algorithm>
 #include <stdint.h>
 #include <math.h>
 #include "morton2D_LUTs.h"
