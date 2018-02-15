@@ -27,6 +27,16 @@ If you want to take advantage of the BMI2 instruction set (only available on Int
 ## Testing
 The *test* folder contains tools I use to test correctness and performance of the libmorton implementation. This section is under heavy re-writing, but might contain some useful code for advanced usage.
 
+## Citation
+If you use libmorton in your paper or work, please reference it, for example as follows:
+<pre>
+@Misc{libmorton18,
+author = "Jeroen Baert",
+title = "Libmorton: C++ Morton Encoding/Decoding Library",
+howpublished = "\url{https://github.com/Forceflow/libmorton}",
+year = "2018"}
+</pre>
+
 ## Thanks
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
  * Everyone making comments and suggestions on the [original blogpost](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/)
