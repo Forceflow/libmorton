@@ -45,9 +45,9 @@ static bool check3D_DecodeFunction(const decode_f_3D_wrapper<morton, coord> &fun
 		}
 	}
 	if (sizeof(morton) > 4) { // Let's do some more tests
-		function.decode(0x7fffffffffffffff, x, y, z);
+		function.decode((morton)0x7fffffffffffffff, x, y, z);
 		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff) {
-			printIncorrectDecoding3D<morton, coord>(function.description, 0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
+			printIncorrectDecoding3D<morton, coord>(function.description, (morton)0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
 			everything_okay = false;
 		}
 	}
@@ -67,7 +67,7 @@ inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, deco
 		coord x_result, y_result, z_result;
 		morton mortonresult = encode.encode(x, y, z);
 		decode.decode(mortonresult, x_result, y_result, z_result);
-		if (x != x_result | y != y_result | z != z_result) {
+		if ((x != x_result) | (y != y_result) | (z != z_result)) {
 			cout << endl << "x: " << getBitString<coord>(x) << " (" << x << ")" << endl;
 			cout << "y: " << getBitString<coord>(y) << " (" << y << ")" << endl;
 			cout << "z: " << getBitString<coord>(z) << " (" << z << ")" << endl;
