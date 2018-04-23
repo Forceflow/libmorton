@@ -14,7 +14,7 @@ void printTable(const element* table, size_t howmany, unsigned int splitat){
 }
 
 void generate2D_EncodeLUT(size_t how_many_bits, uint_fast16_t*& x_table, uint_fast16_t*& y_table, bool print_tables){
-	size_t total = 1 << how_many_bits;
+	size_t total = (size_t)1 << how_many_bits;
 	x_table = (uint_fast16_t*)malloc(total * sizeof(uint_fast16_t));
 	y_table = (uint_fast16_t*)malloc(total * sizeof(uint_fast16_t));
 
@@ -32,7 +32,7 @@ void generate2D_EncodeLUT(size_t how_many_bits, uint_fast16_t*& x_table, uint_fa
 }
 
 void generate2D_DecodeLUT(size_t how_many_bits, uint_fast8_t*& x_table, uint_fast8_t*& y_table, bool print_tables){
-	size_t total = 1 << how_many_bits;
+	size_t total = (size_t)1 << how_many_bits;
 	x_table = (uint_fast8_t*)malloc(total * sizeof(uint_fast8_t));
 	y_table = (uint_fast8_t*)malloc(total * sizeof(uint_fast8_t));
 
@@ -51,7 +51,7 @@ void generate2D_DecodeLUT(size_t how_many_bits, uint_fast8_t*& x_table, uint_fas
 
 void generate3D_EncodeLUT(size_t how_many_bits, uint_fast32_t*& x_table, uint_fast32_t*& y_table, uint_fast32_t*& z_table, bool print_tables){
 	// how many items
-	size_t total = 1 << how_many_bits;
+	size_t total = (size_t)1 << how_many_bits;
 	x_table = (uint_fast32_t*)malloc(total * sizeof(uint_fast32_t));
 	y_table = (uint_fast32_t*)malloc(total * sizeof(uint_fast32_t));
 	z_table = (uint_fast32_t*)malloc(total * sizeof(uint_fast32_t));
@@ -75,7 +75,7 @@ void generate3D_EncodeLUT(size_t how_many_bits, uint_fast32_t*& x_table, uint_fa
 // Generate a decode tables for 3D morton code
 // how_many_bits should be a multiple of three, to ensure you can shift results together
 void generate3D_DecodeLUT(size_t how_many_bits, uint_fast8_t*& x_table, uint_fast8_t*& y_table, uint_fast8_t*& z_table, bool print_tables){
-	size_t total = 1 << how_many_bits;
+	size_t total = (size_t)1 << how_many_bits;
 	x_table = (uint_fast8_t*) malloc(total * sizeof(uint_fast8_t));
 	y_table = (uint_fast8_t*) malloc(total * sizeof(uint_fast8_t));
 	z_table = (uint_fast8_t*) malloc(total * sizeof(uint_fast8_t));
