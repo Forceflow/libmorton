@@ -2,10 +2,7 @@
 
 #include <stdint.h>
 
-// Magicbits masks
-static uint_fast32_t magicbit2D_masks32[6] = { 0xFFFFFFFF, 0x0000FFFF, 0x00FF00FF, 0x0F0F0F0F, 0x33333333, 0x55555555 };
-static uint_fast64_t magicbit2D_masks64[6] = { 0x00000000FFFFFFFF, 0x0000FFFF0000FFFF, 0x00FF00FF00FF00FF, 0x0F0F0F0F0F0F0F0F, 0x3333333333333333, 0x5555555555555555 };
-
+// LUT for Morton2D encode X
 static const uint_fast16_t Morton2D_encode_x_256[256] =
 {
 0, 1, 4, 5, 16, 17, 20, 21,
@@ -42,6 +39,7 @@ static const uint_fast16_t Morton2D_encode_x_256[256] =
 21824, 21825, 21828, 21829, 21840, 21841, 21844, 21845
 };
 
+// LUT for Morton2D encode Y
 static const uint_fast16_t Morton2D_encode_y_256[256] =
 {
 0, 2, 8, 10, 32, 34, 40, 42,
@@ -78,6 +76,7 @@ static const uint_fast16_t Morton2D_encode_y_256[256] =
 43648, 43650, 43656, 43658, 43680, 43682, 43688, 43690
 };
 
+// LUT for Morton2D decode X
 static const uint_fast8_t Morton2D_decode_x_256[256] = {
 0,1,0,1,2,3,2,3,0,1,0,1,2,3,2,3,
 4,5,4,5,6,7,6,7,4,5,4,5,6,7,6,7,
@@ -97,6 +96,7 @@ static const uint_fast8_t Morton2D_decode_x_256[256] = {
 12,13,12,13,14,15,14,15,12,13,12,13,14,15,14,15
 };
 
+// LUT for Morton2D decode Y
 static const uint_fast8_t Morton2D_decode_y_256[256] = {
 0,0,1,1,0,0,1,1,2,2,3,3,2,2,3,3,
 0,0,1,1,0,0,1,1,2,2,3,3,2,2,3,3,
