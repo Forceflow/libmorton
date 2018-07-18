@@ -40,6 +40,7 @@ year = "2018"}
 ## Thanks
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
  * Everyone making comments and suggestions on the [original blogpost](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/)
+ * Fabian Giesen's [post](https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/) on Morton Codes
 
 ## TODO
  * Write better test suite (with L1/L2 trashing, better tests, ...)
