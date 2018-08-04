@@ -121,9 +121,9 @@ namespace libmorton {
 	inline morton m2D_e_for(const coord x, const coord y) {
 		morton answer = 0;
 		unsigned int checkbits = (unsigned int)floor(sizeof(morton) * 4.0f);
-		for (unsigned int i = 0; i <= checkbits; ++i) {
+		for (unsigned int i = 0; i < checkbits; ++i) {
 			morton mshifted = static_cast<morton>(0x1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
-			unsigned int shift = 2 * i;
+			unsigned int shift = i;
 			answer |=
 				((x & mshifted) << shift)
 				| ((y & mshifted) << (shift + 1));
@@ -140,9 +140,9 @@ namespace libmorton {
 		findFirstSetBit<morton>(x, &x_max);
 		findFirstSetBit<morton>(y, &y_max);
 		checkbits = min(static_cast<unsigned long>(checkbits), max(x_max, y_max) + 1ul);
-		for (unsigned int i = 0; i <= checkbits; ++i) {
+		for (unsigned int i = 0; i < checkbits; ++i) {
 			morton m_shifted = static_cast<morton>(0x1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
-			unsigned int shift = 2 * i;
+			unsigned int shift = i;
 			answer |= ((x & m_shifted) << shift)
 				| ((y & m_shifted) << (shift + 1));
 		}
