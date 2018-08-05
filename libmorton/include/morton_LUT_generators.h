@@ -27,9 +27,9 @@ namespace libmorton {
 
 		if (print_tables) {
 			cout << "X Table " << endl;
-			printTable<uint_fast32_t>(x_table, total, 8);
+			printTable<uint_fast16_t>(x_table, total, 8);
 			cout << "Y Table " << endl;
-			printTable<uint_fast32_t>(y_table, total, 8);
+			printTable<uint_fast16_t>(y_table, total, 8);
 		}
 	}
 
