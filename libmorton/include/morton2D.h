@@ -123,7 +123,7 @@ namespace libmorton {
 		unsigned int checkbits = (unsigned int)floor(sizeof(morton) * 4.0f);
 		for (unsigned int i = 0; i < checkbits; ++i) {
 			morton mshifted = static_cast<morton>(0x1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
-			unsigned int shift = i;
+			unsigned int shift = i; // because you have to shift back i and forth 2*i
 			answer |=
 				((x & mshifted) << shift)
 				| ((y & mshifted) << (shift + 1));
