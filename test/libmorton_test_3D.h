@@ -18,7 +18,7 @@ static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &fun
 	for (coord i = 0; i < 16; i++) {
 		for (coord j = 0; j < 16; j++) {
 			for (coord k = 0; k < 16; k++) {
-				correct_code = control_3D_Encode[k + (j * 16) + (i * 16 * 16)];
+				correct_code = control_encode(i, j, k);
 				computed_code = function.encode(i, j, k);
 				if (computed_code != correct_code) {
 					everything_okay = false;
