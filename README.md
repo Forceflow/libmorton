@@ -37,12 +37,12 @@ howpublished = "\url{https://github.com/Forceflow/libmorton}",
 year = "2018"}
 </pre>
 
-## Thanks
+## Thanks / See ALso
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
+ * [@kevinhartman] made a C++14 library that supports N-dimensional morton codes [morton-nd](https://github.com/kevinhartman/morton-nd)
  * Everyone making comments and suggestions on the [original blogpost](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/)
  * Fabian Giesen's [post](https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/) on Morton Codes
 
 ## TODO
  * Write better test suite (with L1/L2 trashing, better tests, ...)
-
  * A better naming system for the functions, because m3D_e_sLUT_shifted? That escalated quickly.
