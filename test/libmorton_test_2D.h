@@ -10,6 +10,35 @@ extern size_t MAX;
 extern unsigned int times;
 extern vector<uint_fast64_t> running_sums;
 
+// Check a 2D Encode Function for correctness
+template <typename morton, typename coord>
+static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &function) {
+	bool everything_okay = true;
+	morton computed_code, correct_code = 0;
+	for (coord i = 0; i < 16; i++) {
+		for (coord j = 0; j < 16; j++) {
+			correct_code = control_encode(i, j);
+			computed_code = function.encode(i, j);
+			if (computed_code != correct_code) {
+				everything_okay = false;
+				cout << endl << "    Incorrect encoding of (" << i << ", " << j << ") in method " << function.description.c_str() << ": " << computed_code <<
+					 " != " << correct_code << endl;
+			}
+		}
+	}
+	return everything_okay;
+}
+
+template <typename morton, typename coord>
+inline void check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, coord>> encoders) {
+	printf("++ Checking correctness of 2D encoders (%lu bit) methods ... ", sizeof(morton) * 8);
+	bool ok = true;
+	for (auto it = encoders.begin(); it != encoders.end(); it++) {
+		ok &= check2D_EncodeFunction(*it);
+	}
+	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+}
+
 template <typename morton, typename coord>
 static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
 	Timer timer = Timer();
