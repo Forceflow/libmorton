@@ -68,7 +68,7 @@ namespace libmorton {
 		morton answer = 0;
 		unsigned int i = 0;
 		while (maxbit >= i) {
-			answer |= (LUT[(c >> i) & EIGHTBITMASK]) << i * 2;
+			answer |= ((morton)LUT[(c >> i) & EIGHTBITMASK]) << i * 2;
 			i += 8;
 		}
 		return answer;
