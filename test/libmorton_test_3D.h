@@ -15,15 +15,29 @@ template <typename morton, typename coord>
 static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &function) {
 	bool everything_okay = true;
 	morton computed_code, correct_code = 0;
-	for (coord i = 0; i < 16; i++) {
-		for (coord j = 0; j < 16; j++) {
-			for (coord k = 0; k < 16; k++) {
-				correct_code = control_encode(i, j, k);
-				computed_code = function.encode(i, j, k);
-				if (computed_code != correct_code) {
-					everything_okay = false;
-					cout << endl << "    Incorrect encoding of (" << i << ", " << j << ", " << k << ") in method " << function.description.c_str() << ": " << computed_code <<
-						" != " << correct_code << endl;
+
+	// Number of bits which can be encoded for each field given width of 'morton'
+	static const size_t bitCount = std::numeric_limits<morton>::digits / 3;
+
+	static_assert(bitCount >= 4, "At least 4 bits from each field must fit into 'morton'");
+	static_assert(std::numeric_limits<coord>::digits >= bitCount, "'coord' must support field width");
+
+	// For every set of 4 contiguous bits, test all possible values (0-15), with all other bits cleared
+	for (size_t offset = 0; offset <= bitCount - 4; offset++) {
+		for (coord i = 0; i < 16; i++) {
+			for (coord j = 0; j < 16; j++) {
+				for (coord k = 0; k < 16; k++) {
+					coord x = i << offset;
+					coord y = j << offset;
+					coord z = k << offset;
+
+					correct_code = control_encode(x, y, z);
+					computed_code = function.encode(x, y, z);
+					if (computed_code != correct_code) {
+						everything_okay = false;
+						cout << endl << "    Incorrect encoding of (" << x << ", " << y << ", " << z << ") in method " << function.description.c_str() << ": " << computed_code <<
+							" != " << correct_code << endl;
+					}
 				}
 			}
 		}
