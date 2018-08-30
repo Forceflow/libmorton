@@ -13,17 +13,21 @@ extern vector<uint_fast64_t> running_sums;
 // Check a 3D Encode Function for correctness
 template <typename morton, typename coord, size_t bits>
 static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &function) {
+
+	// Number of bits which can be encoded for each field
+	static const size_t fieldbits = bits / 3;
+
+	static_assert(bits <= std::numeric_limits<uint64_t>::digits, "Control encoder cannot support > 64 bits.");
+	static_assert(fieldbits >= 4, "At least 4 bits from each field must fit into 'morton'");
+	static_assert(std::numeric_limits<morton>::digits >= 3 * fieldbits, "'morton' must support encoding width");
+	static_assert(std::numeric_limits<coord>::digits >= fieldbits, "'coord' must support field width");
+	
 	bool everything_okay = true;
-	morton computed_code, correct_code = 0;
-
-	// Number of bits which can be encoded for each field given width of 'morton'
-	static const size_t bitCount = bits / 3;
-
-	static_assert(bitCount >= 4, "At least 4 bits from each field must fit into 'morton'");
-	static_assert(std::numeric_limits<coord>::digits >= bitCount, "'coord' must support field width");
-
+	morton computed_code;
+	uint64_t correct_code = 0;
+	
 	// For every set of 4 contiguous bits, test all possible values (0-15), with all other bits cleared
-	for (size_t offset = 0; offset <= bitCount - 4; offset++) {
+	for (size_t offset = 0; offset <= fieldbits - 4; offset++) {
 		for (coord i = 0; i < 16; i++) {
 			for (coord j = 0; j < 16; j++) {
 				for (coord k = 0; k < 16; k++) {
@@ -33,10 +37,10 @@ static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &fun
 
 					correct_code = control_encode(x, y, z);
 					computed_code = function.encode(x, y, z);
-					if (computed_code != correct_code) {
+					if (computed_code != (morton)correct_code) {
 						everything_okay = false;
 						cout << endl << "    Incorrect encoding of (" << x << ", " << y << ", " << z << ") in method " << function.description.c_str() << ": " << computed_code <<
-							" != " << correct_code << endl;
+							" != " << (morton)correct_code << endl;
 					}
 				}
 			}
