@@ -11,13 +11,13 @@ extern unsigned int times;
 extern vector<uint_fast64_t> running_sums;
 
 // Check a 2D Encode Function for correctness
-template <typename morton, typename coord>
+template <typename morton, typename coord, size_t bits>
 static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &function) {
 	bool everything_okay = true;
 	morton computed_code, correct_code = 0;
 
 	// Number of bits which can be encoded for each field given width of 'morton'
-	static const size_t bitCount = std::numeric_limits<morton>::digits / 2;
+	static const size_t bitCount = bits / 2;
 
 	static_assert(bitCount >= 4, "At least 4 bits from each field must fit into 'morton'");
 	static_assert(std::numeric_limits<coord>::digits >= bitCount, "'coord' must support field width");
@@ -42,12 +42,12 @@ static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &fun
 	return everything_okay;
 }
 
-template <typename morton, typename coord>
+template <typename morton, typename coord, size_t bits>
 inline void check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, coord>> encoders) {
 	printf("++ Checking correctness of 2D encoders (%lu bit) methods ... ", sizeof(morton) * 8);
 	bool ok = true;
 	for (auto it = encoders.begin(); it != encoders.end(); it++) {
-		ok &= check2D_EncodeFunction(*it);
+		ok &= check2D_EncodeFunction<morton, coord, bits>(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
 }

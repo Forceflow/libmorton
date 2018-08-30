@@ -68,7 +68,7 @@ typedef decode_f_3D_wrapper<uint_fast32_t, uint_fast16_t> decode_3D_32_wrapper;
 
 template<std::size_t FieldCount>
 uint64_t split_by_n(uint64_t input, size_t bitsRemaining) {
-	return (bitsRemaining == 0) ? input : (split_by_n<FieldCount>(input >> 1, bitsRemaining - 1) << FieldCount) | (input & 1);
+	return (bitsRemaining == 0) ? input : (split_by_n<FieldCount>(input >> 1, bitsRemaining - 1) << FieldCount) | (input & (uint64_t)1);
 }
 
 template<std::size_t FieldCount>
