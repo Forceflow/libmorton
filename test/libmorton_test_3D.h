@@ -50,19 +50,44 @@ static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &fun
 }
 
 // Check a 3D Decode Function for correctness
-template <typename morton, typename coord>
+template <typename morton, typename coord, size_t bits>
 static bool check3D_DecodeFunction(const decode_f_3D_wrapper<morton, coord> &function) {
+
+	// Number of bits usable by the encoding
+	static const size_t encodingbits = (bits / 3) * 3;
+
+	static_assert(bits <= std::numeric_limits<uint64_t>::digits, "Control decoder cannot support > 64 bits.");
+	static_assert(encodingbits >= 12, "'morton' must support at least 12 bit encodings");
+	static_assert(std::numeric_limits<morton>::digits >= encodingbits, "'morton' must support encoding width");
+	static_assert(std::numeric_limits<coord>::digits >= encodingbits / 3, "'coord' must support field width");
+
 	bool everything_okay = true;
+	uint64_t xctrl, yctrl, zctrl;
 	coord x, y, z;
-	// check first items
-	for (morton i = 0; i < 4096; i++) {
-		function.decode(i, x, y, z);
-		if (x != control_3D_Decode[i][0] || y != control_3D_Decode[i][1] || z != control_3D_Decode[i][2]) {
-			printIncorrectDecoding3D<morton, coord>(function.description, i, x, y, z, control_3D_Decode[i][0], control_3D_Decode[i][1], control_3D_Decode[i][2]);
+
+	for (size_t offset = 0; offset <= encodingbits - 12; offset++) {
+		for (morton i = 0; i < 4096; i++) {
+			morton encoding = i << offset;
+			control_decode(encoding, xctrl, yctrl, zctrl);
+			function.decode(encoding, x, y, z);
+			if (x != (coord)xctrl || y != (coord)yctrl || z != (coord)zctrl) {
+				printIncorrectDecoding3D<morton, coord>(function.description, encoding, x, y, z, (coord)xctrl, (coord)yctrl, (coord)zctrl);
+				everything_okay = false;
+			}
+		}
+	}
+
+	if (encodingbits >= 30) {
+		// Test max encoding which fits in uint32_t
+		function.decode((morton)0x3fffffff, x, y, z);
+		if (x != 0x3ff || y != 0x3ff || z != 0x3ff) {
+			printIncorrectDecoding3D<morton, coord>(function.description, (morton)0x7fffffffffffffff, x, y, z, 0x3ff, 0x3ff, 0x3ff);
 			everything_okay = false;
 		}
 	}
-	if (sizeof(morton) > 4) { // Let's do some more tests
+
+	if (encodingbits >= 63) {
+		// Test max encoding which fits in uint64_t
 		function.decode((morton)0x7fffffffffffffff, x, y, z);
 		if (x != 0x1fffff || y != 0x1fffff || z != 0x1fffff) {
 			printIncorrectDecoding3D<morton, coord>(function.description, (morton)0x7fffffffffffffff, x, y, z, 0x1fffff, 0x1fffff, 0x1fffff);
@@ -111,12 +136,12 @@ inline void check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, co
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
 }
 
-template <typename morton, typename coord>
+template <typename morton, typename coord, size_t bits>
 inline void check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, coord>> decoders) {
-	printf("++ Checking correctness of 3D decoding (%lu bit) methods ... ", sizeof(morton) * 8);
+	printf("++ Checking correctness of 3D decoding (%lu bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = decoders.begin(); it != decoders.end(); it++) {
-		ok &= check3D_DecodeFunction(*it);
+		ok &= check3D_DecodeFunction<morton, coord, bits>(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
 }
