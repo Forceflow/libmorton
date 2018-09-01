@@ -9,7 +9,7 @@
 
 namespace libmorton {
 	template<typename morton>
-	inline bool findFirstSetBit(const morton x, unsigned long* firstbit_location) {
+	inline bool findFirstSetBitZeroIdx(const morton x, unsigned long* firstbit_location) {
 #if _MSC_VER && !_WIN64
 		// 32 BIT on 32 BIT
 		if (sizeof(morton) <= 4) {
@@ -32,9 +32,18 @@ namespace libmorton {
 			return false;
 		}
 		else {
-			*firstbit_location = static_cast<unsigned long>((sizeof(morton) * 8) - __builtin_clzll(x));
+			*firstbit_location = static_cast<unsigned long>((sizeof(morton) * 8) - __builtin_clzll(x) - 1);
 			return true;
 		}
 #endif
+	}
+
+	template<typename morton>
+	inline bool findFirstSetBit(const morton x, unsigned long* firstbit_location) {
+		if (findFirstSetBitZeroIdx(x, firstbit_location)) {
+			*firstbit_location += 1;
+			return true;
+		}
+		return false;
 	}
 }
