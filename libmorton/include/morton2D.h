@@ -155,7 +155,7 @@ namespace libmorton {
 		morton a = 0;
 		unsigned int loops = sizeof(morton);
 		for (unsigned int i = 0; i < loops; ++i) {
-			a |= (LUT[(m >> ((i * 8) + startshift)) & EIGHTBITMASK] << (4 * i));
+			a |= ((morton)LUT[(m >> ((i * 8) + startshift)) & EIGHTBITMASK] << (4 * i));
 		}
 		return static_cast<coord>(a);
 	}
