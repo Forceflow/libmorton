@@ -182,10 +182,10 @@ namespace libmorton {
 		if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
 		unsigned int i = 0;
 		unsigned int shiftback = 0;
-		while (firstbit_location >= i) {
+		while (firstbit_location > i) {
 			morton m_shifted = (m >> i) & EIGHTBITMASK;
-			x |= Morton2D_decode_x_256[m_shifted] << shiftback;
-			y |= Morton2D_decode_y_256[m_shifted] << shiftback;
+			x |= (coord)Morton2D_decode_x_256[m_shifted] << shiftback;
+			y |= (coord)Morton2D_decode_y_256[m_shifted] << shiftback;
 			shiftback += 4;
 			i += 8;
 		}
@@ -199,10 +199,9 @@ namespace libmorton {
 		if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
 		unsigned int i = 0;
 		unsigned int shiftback = 0;
-		while (firstbit_location >= i) {
-			morton m_shifted = (m >> i) & EIGHTBITMASK;
-			x |= Morton2D_decode_x_256[(m >> i) & EIGHTBITMASK] << shiftback;
-			y |= Morton2D_decode_x_256[(m >> (i + 1)) & EIGHTBITMASK] << shiftback;
+		while (firstbit_location > i) {
+			x |= (coord)Morton2D_decode_x_256[(m >> i) & EIGHTBITMASK] << shiftback;
+			y |= (coord)Morton2D_decode_x_256[(m >> (i + 1)) & EIGHTBITMASK] << shiftback;
 			shiftback += 4;
 			i += 8;
 		}
