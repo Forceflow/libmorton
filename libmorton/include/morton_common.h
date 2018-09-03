@@ -19,7 +19,7 @@ namespace libmorton {
 		else {
 			*firstbit_location = 0;
 			if (_BitScanReverse(firstbit_location, (x >> 32))) { // check first part
-				firstbit_location += 32;
+				*firstbit_location += 32;
 				return true;
 			}
 			return _BitScanReverse(firstbit_location, (x & 0xFFFFFFFF)) != 0;
