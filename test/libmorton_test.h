@@ -17,7 +17,6 @@
 // Load utils
 #include "util.h"
 #include "timer.h"
-#include "libmorton_test_controlvalues.h"
 
 // Load libraries we're going to test
 #include "../libmorton/include/morton_LUT_generators.h"
@@ -134,6 +133,13 @@ inline string getSpacedBitString(valtype val, unsigned int frequency, unsigned i
 		base = (i % frequency == 0) ? base + spacestring + bitstring[i] : base + bitstring[i];
 	}
 	return base;
+}
+
+template <typename morton, typename coord>
+void printIncorrectDecoding2D(string method_tested, morton m, coord x, coord y, coord correct_x, coord correct_y) {
+	cout << endl << "    Incorrect decoding of " << getBitString<morton>(m) << " in method " << method_tested.c_str() << ": ("
+		<< getBitString<coord>(x) << ", " << getBitString<coord>(y)
+		<< ") != (" << getBitString<coord>(correct_x) << ", " << getBitString<coord>(correct_y) << ")" << endl;
 }
 
 template <typename morton, typename coord>
