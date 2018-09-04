@@ -98,11 +98,11 @@ static bool check3D_DecodeFunction(const decode_f_3D_wrapper<morton, coord> &fun
 }
 
 // Check a 3D Encode/Decode function for correct encode-decode process
-template<typename morton, typename coord>
+template<typename morton, typename coord, size_t bits>
 inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, decode_f_3D_wrapper<morton, coord> &decode, unsigned int times) {
 	bool everythingokay = true;
 	for (unsigned int i = 0; i < times; ++i) {
-		coord maximum = pow(2, floor((sizeof(morton) * 8) / 3.0f)) - 1;
+		coord maximum = pow(2, floor(bits / 3.0f)) - 1;
 		// generate random coordinates
 		coord x = rand() % maximum;
 		coord y = rand() % maximum;
@@ -118,7 +118,7 @@ inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, deco
 			cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")" << endl;
 			cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")" << endl;
 			cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")" << endl;
-			cout << sizeof(morton)*8 << "-bit ";
+			cout << bits << "-bit ";
 			cout << "using methods encode " << encode.description << " and decode " << decode.description << endl;
 			everythingokay = false;
 		}
@@ -146,13 +146,13 @@ inline void check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, co
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
 }
 
-template <typename morton, typename coord>
+template <typename morton, typename coord, size_t bits>
 inline void check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, coord>> encoders, std::vector<decode_f_3D_wrapper<morton, coord>> decoders, unsigned int times) {
-	printf("++ Checking 3D methods (%lu bit) encode/decode match ... ", sizeof(morton) * 8);
+	printf("++ Checking 3D methods (%lu bit) encode/decode match ... ", bits);
 	bool ok = true;
 	for (auto et = encoders.begin(); et != encoders.end(); et++) {
 		for (auto dt = decoders.begin(); dt != decoders.end(); dt++) {
-			ok &= check3D_Match(*et, *dt, times);
+			ok &= check3D_Match<morton, coord, bits>(*et, *dt, times);
 		}
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
