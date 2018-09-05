@@ -167,7 +167,7 @@ namespace libmorton {
 		morton a = 0;
 		unsigned int loops = (sizeof(morton) <= 4) ? 4 : 7; // ceil for 32bit, floor for 64bit
 		for (unsigned int i = 0; i < loops; ++i) {
-			a |= (LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i));
+			a |= (morton)(LUT[(m >> ((i * 9) + startshift)) & NINEBITMASK] << (3 * i));
 		}
 		return static_cast<coord>(a);
 	}
@@ -196,11 +196,11 @@ namespace libmorton {
 		if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
 		unsigned int i = 0;
 		unsigned int shiftback = 0;
-		while (firstbit_location >= i) {
+		while (firstbit_location > i) {
 			morton m_shifted = (m >> i) & NINEBITMASK;
-			x |= Morton3D_decode_x_512[m_shifted] << shiftback;
-			y |= Morton3D_decode_y_512[m_shifted] << shiftback;
-			z |= Morton3D_decode_z_512[m_shifted] << shiftback;
+			x |= (coord)Morton3D_decode_x_512[m_shifted] << shiftback;
+			y |= (coord)Morton3D_decode_y_512[m_shifted] << shiftback;
+			z |= (coord)Morton3D_decode_z_512[m_shifted] << shiftback;
 			shiftback += 3;
 			i += 9;
 		}
@@ -212,13 +212,13 @@ namespace libmorton {
 	inline void m3D_d_LUT_ET(const morton m, coord& x, coord& y, coord& z) {
 		x = 0; y = 0; z = 0;
 		unsigned long firstbit_location = 0;
-		if (!findFirstSetBit<uint_fast64_t>(m, &firstbit_location)) { return; }
+		if (!findFirstSetBit<morton>(m, &firstbit_location)) { return; }
 		unsigned int i = 0;
 		unsigned int shiftback = 0;
-		while (i <= firstbit_location) {
-			x = x | Morton3D_decode_x_512[(m >> i) & NINEBITMASK] << shiftback;
-			y = y | Morton3D_decode_x_512[(m >> (i + 1)) & NINEBITMASK] << shiftback;
-			z = z | Morton3D_decode_x_512[(m >> (i + 2)) & NINEBITMASK] << shiftback;
+		while (i < firstbit_location) {
+			x = x | (coord)Morton3D_decode_x_512[(m >> i) & NINEBITMASK] << shiftback;
+			y = y | (coord)Morton3D_decode_x_512[(m >> (i + 1)) & NINEBITMASK] << shiftback;
+			z = z | (coord)Morton3D_decode_x_512[(m >> (i + 2)) & NINEBITMASK] << shiftback;
 			i += 9;
 			shiftback += 3;
 		}

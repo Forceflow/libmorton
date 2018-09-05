@@ -12,11 +12,11 @@
 #include <iomanip>
 #include <limits>
 #include <valarray>
+#include <functional>
 
 // Load utils
 #include "util.h"
 #include "timer.h"
-#include "libmorton_test_controlvalues.h"
 
 // Load libraries we're going to test
 #include "../libmorton/include/morton_LUT_generators.h"
@@ -68,7 +68,12 @@ typedef decode_f_3D_wrapper<uint_fast32_t, uint_fast16_t> decode_3D_32_wrapper;
 
 template<std::size_t FieldCount>
 uint64_t split_by_n(uint64_t input, size_t bitsRemaining) {
-	return (bitsRemaining == 0) ? input : (split_by_n<FieldCount>(input >> 1, bitsRemaining - 1) << FieldCount) | (input & 1);
+	return (bitsRemaining == 0) ? input : (split_by_n<FieldCount>(input >> 1, bitsRemaining - 1) << FieldCount) | (input & (uint64_t)1);
+}
+
+template<std::size_t FieldCount>
+uint64_t join_by_n(uint64_t input, size_t bitsRemaining) {
+	return (bitsRemaining == 0) ? 0 : (join_by_n<FieldCount>(input >> FieldCount, bitsRemaining - 1) << 1) | (input & (uint64_t)1);
 }
 
 template<std::size_t FieldCount>
@@ -92,6 +97,23 @@ uint64_t control_encode(T... fields) {
 	return control_encode_impl<sizeof...(fields)>(std::numeric_limits<uint64_t>::digits / sizeof...(fields), { fields... });
 }
 
+template<std::size_t FieldCount>
+void control_decode_impl(uint64_t encoding, std::size_t bitCount, const std::valarray<std::reference_wrapper<uint64_t>>& fields) {
+	if (fields.size() == 1) {
+		fields[std::slice(0, 1, 1)][0].get() = join_by_n<FieldCount>(encoding, bitCount);
+		return;
+	}
+
+	fields[std::slice(0, 1, 1)][0].get() = join_by_n<FieldCount>(encoding, bitCount);
+	control_decode_impl<FieldCount>(encoding >> 1, bitCount, fields[std::slice(1, fields.size() - 1, 1)]);
+}
+
+template<typename...T>
+void control_decode(uint64_t encoding, T&... fields) {
+	const std::valarray<std::reference_wrapper<uint64_t>> list = { fields... };
+	return control_decode_impl<sizeof...(fields)>(encoding, std::numeric_limits<uint64_t>::digits / sizeof...(fields), list);
+}
+
 template <typename valtype>
 inline string getBitString(valtype val) {
 	// bitset needs size to be known at runtime, and introducing boost dependency
@@ -111,6 +133,13 @@ inline string getSpacedBitString(valtype val, unsigned int frequency, unsigned i
 		base = (i % frequency == 0) ? base + spacestring + bitstring[i] : base + bitstring[i];
 	}
 	return base;
+}
+
+template <typename morton, typename coord>
+void printIncorrectDecoding2D(string method_tested, morton m, coord x, coord y, coord correct_x, coord correct_y) {
+	cout << endl << "    Incorrect decoding of " << getBitString<morton>(m) << " in method " << method_tested.c_str() << ": ("
+		<< getBitString<coord>(x) << ", " << getBitString<coord>(y)
+		<< ") != (" << getBitString<coord>(correct_x) << ", " << getBitString<coord>(correct_y) << ")" << endl;
 }
 
 template <typename morton, typename coord>
