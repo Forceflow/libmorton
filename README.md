@@ -39,7 +39,7 @@ year = "2018"}
 
 ## Thanks / See ALso
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
- * [@kevinhartman](https://github.com/kevinhartman) made a C++14 library that supports N-dimensional morton codes [morton-nd](https://github.com/kevinhartman/morton-nd)
+ * [@kevinhartman](https://github.com/kevinhartman) made a C++14 library that supports N-dimensional morton codes [morton-nd](https://github.com/kevinhartman/morton-nd). He upstreamed a lot of fixes back to libmorton - thanks!
  * Everyone making comments and suggestions on the [original blogpost](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/)
  * Fabian Giesen's [post](https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/) on Morton Codes
 
