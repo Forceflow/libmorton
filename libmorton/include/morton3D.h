@@ -56,8 +56,8 @@ namespace libmorton {
 			unsigned int shift = (i - 1) * 8;
 			answer =
 				answer << 24 |
-				(Morton3D_encode_x_256[(z >> shift) & EIGHTBITMASK] << 2) |
-				(Morton3D_encode_x_256[(y >> shift) & EIGHTBITMASK] << 1) |
+				(Morton3D_encode_x_256[(z >> shift) & EIGHTBITMASK] << (morton) 2) |
+				(Morton3D_encode_x_256[(y >> shift) & EIGHTBITMASK] << (morton) 1) |
 				Morton3D_encode_x_256[(x >> shift) & EIGHTBITMASK];
 		}
 		return answer;
