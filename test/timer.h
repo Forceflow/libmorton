@@ -13,10 +13,11 @@
 using namespace std;
 
 #if _MSC_VER
-struct Timer { // High performance Win64 timer using QPC events
+struct Timer { 
 	double pc_frequency = 0.0;
 	double elapsed_time_milliseconds = 0.0;
-	LARGE_INTEGER start_time, end_time;
+	LARGE_INTEGER start_time = { 0 };
+	LARGE_INTEGER end_time = { 0 };
 
 	inline Timer() {
 		LARGE_INTEGER li;
@@ -38,10 +39,7 @@ struct Timer { // High performance Win64 timer using QPC events
 	}
 };
 #else
-
-#define MILLION 1000000.0f
-
-struct Timer { // High performance timer using standard c++11 chrono
+struct Timer {
 	double elapsed_time_milliseconds = 0;
 	timespec t1;
 	timespec t2;
@@ -56,7 +54,7 @@ struct Timer { // High performance timer using standard c++11 chrono
 	inline void stop() {
 		clock_gettime(CLOCK_REALTIME, &t2);
 		elapsed_time_milliseconds += (t2.tv_sec - t1.tv_sec) * 1000.0f;
-		elapsed_time_milliseconds += ((float)(t2.tv_nsec - t1.tv_nsec)) / MILLION;
+		elapsed_time_milliseconds += ((float)(t2.tv_nsec - t1.tv_nsec)) / 1000000.0f;
 	}
 };
 #endif
