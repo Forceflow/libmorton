@@ -17,12 +17,12 @@ namespace libmorton {
 
 	void generate2D_EncodeLUT(size_t how_many_bits, uint_fast16_t*& x_table, uint_fast16_t*& y_table, bool print_tables) {
 		size_t total = (size_t)1 << how_many_bits;
-		x_table = (uint_fast16_t*)malloc(total * sizeof(uint_fast16_t));
-		y_table = (uint_fast16_t*)malloc(total * sizeof(uint_fast16_t));
+		x_table = (uint_fast16_t*) malloc(total * sizeof(uint_fast16_t));
+		y_table = (uint_fast16_t*) malloc(total * sizeof(uint_fast16_t));
 
 		for (uint_fast32_t i = 0; i < total; i++) {
-			x_table[i] = (uint_fast16_t)m2D_e_magicbits<uint_fast32_t, uint_fast16_t>(i, 0);
-			y_table[i] = (uint_fast16_t)m2D_e_magicbits<uint_fast32_t, uint_fast16_t>(0, i);
+			x_table[i] = (uint_fast16_t) m2D_e_magicbits<uint_fast32_t, uint_fast16_t>(i, 0);
+			y_table[i] = (uint_fast16_t) m2D_e_magicbits<uint_fast32_t, uint_fast16_t>(0, i);
 		}
 
 		if (print_tables) {
