@@ -128,7 +128,7 @@ inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, deco
 
 template <typename morton, typename coord, size_t bits>
 inline void check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, coord>> encoders) {
-	printf("++ Checking correctness of 3D encoders (%lu bit) methods ... ", bits);
+	printf("++ Checking correctness of 3D encoders (%zd bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check3D_EncodeFunction<morton, coord, bits>(*it);
@@ -138,7 +138,7 @@ inline void check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, co
 
 template <typename morton, typename coord, size_t bits>
 inline void check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, coord>> decoders) {
-	printf("++ Checking correctness of 3D decoding (%lu bit) methods ... ", bits);
+	printf("++ Checking correctness of 3D decoding (%zd bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = decoders.begin(); it != decoders.end(); it++) {
 		ok &= check3D_DecodeFunction<morton, coord, bits>(*it);
@@ -148,7 +148,7 @@ inline void check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, co
 
 template <typename morton, typename coord, size_t bits>
 inline void check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, coord>> encoders, std::vector<decode_f_3D_wrapper<morton, coord>> decoders, unsigned int times) {
-	printf("++ Checking 3D methods (%lu bit) encode/decode match ... ", bits);
+	printf("++ Checking 3D methods (%zd bit) encode/decode match ... ", bits);
 	bool ok = true;
 	for (auto et = encoders.begin(); et != encoders.end(); et++) {
 		for (auto dt = decoders.begin(); dt != decoders.end(); dt++) {
@@ -229,7 +229,7 @@ template <typename morton, typename coord>
 static double testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times) {
 	Timer timer = Timer();
 	coord x, y, z;
-	morton runningsum = 0;
+	coord runningsum = 0;
 	for (size_t t = 0; t < times; t++) {
 		for (morton i = 0; i < total; i += 8) {
 			timer.start();
