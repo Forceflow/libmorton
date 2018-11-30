@@ -37,7 +37,7 @@ vector<decode_2D_32_wrapper> f2D_32_decode; // 2D 32_bit decode functions
 // This is an elaborate way to ensure no function call gets optimized away
 void printRunningSums(){
 	uint_fast64_t t = 0;
-	cout << "Running sums check: ";
+	cout << "    Running sums check: ";
 	for(int i = 0; i < running_sums.size(); i++) {
 		t+= running_sums[i];
 	}
@@ -47,24 +47,28 @@ void printRunningSums(){
 template <typename morton, typename coord>
 static std::string testEncode_3D_Perf(morton(*function)(coord, coord, coord), size_t times) {
 	stringstream os;
-	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3) << testEncode_3D_Linear_Perf<morton, coord>(function, times) << " ms " 
-		<< testEncode_3D_Random_Perf<morton, coord>(function, times) << " ms";
+	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
+	os << testEncode_3D_Linear_Perf<morton, coord>(function, times) << " ms ";
+	os << testEncode_3D_Random_Perf<morton, coord>(function, times) << " ms";
 	return os.str();
 }
 
 template <typename morton, typename coord>
 static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times) {
 	stringstream os;
-	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3) << testDecode_3D_Linear_Perf<morton, coord>(function, times) << " ms "
-		<< testDecode_3D_Random_Perf<morton, coord>(function, times) << " ms";
+	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
+	os << testDecode_3D_Linear_Perf<morton, coord>(function, times) << " ms ";
+	os << testDecode_3D_Random_Perf<morton, coord>(function, times) << " ms";
 	return os.str();
 }
 
 static void Encode_3D_Perf() {
 	cout << "++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "+++ Encoding 64-bit sized morton codes" << endl;
 	for (auto it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
 		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 64-bit " << (*it).description << endl;
 	}
+	cout << "+++ Encoding 32-bit sized morton codes" << endl;
 	for (auto it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
 		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 32-bit " << (*it).description << endl;
 	}
@@ -72,9 +76,11 @@ static void Encode_3D_Perf() {
 
 inline static void Decode_3D_Perf() {
 	cout << "++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "+++ Encoding 64-bit sized morton codes" << endl;
 	for (auto it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
 		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 64-bit " << (*it).description << endl;
 	}
+	cout << "+++ Encoding 32-bit sized morton codes" << endl;
 	for (auto it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
 		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 32-bit " << (*it).description << endl;
 	}
