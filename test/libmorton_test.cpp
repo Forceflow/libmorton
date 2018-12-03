@@ -44,45 +44,41 @@ void printRunningSums(){
 	cout << t << endl;
 }
 
-template <typename morton, typename coord>
-static std::string testEncode_3D_Perf(morton(*function)(coord, coord, coord), size_t times) {
-	stringstream os;
-	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
-	os << testEncode_3D_Linear_Perf<morton, coord>(function, times) << " ms ";
-	os << testEncode_3D_Random_Perf<morton, coord>(function, times) << " ms";
-	return os.str();
-}
-
-template <typename morton, typename coord>
-static std::string testDecode_3D_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times) {
-	stringstream os;
-	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
-	os << testDecode_3D_Linear_Perf<morton, coord>(function, times) << " ms ";
-	os << testDecode_3D_Random_Perf<morton, coord>(function, times) << " ms";
-	return os.str();
-}
-
-static void Encode_3D_Perf() {
+static void test_3D_performance(vector<encode_3D_64_wrapper>* funcs64_encode, vector<encode_3D_32_wrapper>* funcs32_encode,
+	vector<decode_3D_64_wrapper>* funcs64_decode, vector<decode_3D_32_wrapper>* funcs32_decode) {
 	cout << "++ Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
 	cout << "+++ Encoding 64-bit sized morton codes" << endl;
-	for (auto it = f3D_64_encode.begin(); it != f3D_64_encode.end(); it++) {
-		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 64-bit " << (*it).description << endl;
+	stringstream os;
+	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
+	for (auto it = (*funcs64_encode).begin(); it != f3D_64_encode.end(); it++) {
+		os.str("");
+		os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
+		os << testEncode_3D_Linear_Perf((*it).encode, times) << " ms ";
+		os << testEncode_3D_Random_Perf((*it).encode, times) << " ms";
+		cout << "    " << os.str() << " : 64-bit " << (*it).description << endl;
 	}
 	cout << "+++ Encoding 32-bit sized morton codes" << endl;
-	for (auto it = f3D_32_encode.begin(); it != f3D_32_encode.end(); it++) {
-		cout << "    " << testEncode_3D_Perf((*it).encode, times) << " : 32-bit " << (*it).description << endl;
+	for (auto it = (*funcs32_encode).begin(); it != f3D_32_encode.end(); it++) {
+		os.str(""); 
+		os << testEncode_3D_Linear_Perf((*it).encode, times) << " ms ";
+		os << testEncode_3D_Random_Perf((*it).encode, times) << " ms";
+		cout << "    " << os.str() << " : 32-bit " << (*it).description << endl;
 	}
-}
-
-inline static void Decode_3D_Perf() {
 	cout << "++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
-	cout << "+++ Encoding 64-bit sized morton codes" << endl;
-	for (auto it = f3D_64_decode.begin(); it != f3D_64_decode.end(); it++) {
-		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 64-bit " << (*it).description << endl;
+	cout << "+++ Decoding 64-bit sized morton codes" << endl;
+	for (auto it = (*funcs64_decode).begin(); it != f3D_64_decode.end(); it++) {
+		os.str("");
+		os << testDecode_3D_Linear_Perf((*it).decode, times) << " ms ";
+		os << testDecode_3D_Random_Perf((*it).decode, times) << " ms";
+		cout << "    " << os.str() << " : 64-bit " << (*it).description << endl;
 	}
-	cout << "+++ Encoding 32-bit sized morton codes" << endl;
-	for (auto it = f3D_32_decode.begin(); it != f3D_32_decode.end(); it++) {
-		cout << "    " << testDecode_3D_Perf((*it).decode, times) << " : 32-bit " << (*it).description << endl;
+	cout << "+++ Decoding 32-bit sized morton codes" << endl;
+	for (auto it = (*funcs32_decode).begin(); it != f3D_32_decode.end(); it++) {
+		os.str("");
+		os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
+		os << testDecode_3D_Linear_Perf((*it).decode, times) << " ms ";
+		os << testDecode_3D_Random_Perf((*it).decode, times) << " ms";
+		cout << "    " << os.str() << " : 32-bit " << (*it).description << endl;
 	}
 }
 
@@ -113,14 +109,14 @@ void registerFunctions() {
 	f3D_64_encode.push_back(encode_3D_64_wrapper("For", &m3D_e_for<uint_fast64_t, uint_fast32_t>));
 
 	// Register 3D 32-bit encode functions
-	f3D_32_encode.push_back(encode_3D_32_wrapper("For", &m3D_e_for<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32_wrapper("For ET", &m3D_e_for_ET<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32_wrapper("Magicbits", &m3D_e_magicbits<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT", &m3D_e_LUT<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT ET", &m3D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
-	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT Shifted", &m3D_e_sLUT<uint_fast32_t, uint_fast16_t>));
 	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT Shifted ET", &m3D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
-
+	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT Shifted", &m3D_e_sLUT<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT ET", &m3D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("LUT", &m3D_e_LUT<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("Magicbits", &m3D_e_magicbits<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("For ET", &m3D_e_for_ET<uint_fast32_t, uint_fast16_t>));
+	f3D_32_encode.push_back(encode_3D_32_wrapper("For", &m3D_e_for<uint_fast32_t, uint_fast16_t>));
+	
 	// Register 3D 64-bit decode functions
 	f3D_64_decode.push_back(decode_3D_64_wrapper("LUT Shifted ET", &m3D_d_sLUT_ET<uint_fast64_t, uint_fast32_t>));
 	f3D_64_decode.push_back(decode_3D_64_wrapper("LUT Shifted", &m3D_d_sLUT<uint_fast64_t, uint_fast32_t>));
@@ -209,8 +205,7 @@ int main(int argc, char *argv[]) {
 	for (int i = 128; i <= 512; i = i * 2){
 		MAX = i;
 		total = MAX*MAX*MAX;
-		Encode_3D_Perf();
-		Decode_3D_Perf();
+		test_3D_performance(&f3D_64_encode, &f3D_32_encode, &f3D_64_decode, &f3D_32_decode);
 		printRunningSums();
 	}
 }
