@@ -91,7 +91,7 @@ void printHeader(){
 	cout << "++ 32-bit version" << endl;
 #endif
 #if _MSC_VER
-	cout << "++ Compiled using MSVC" << endl;
+	cout << "++ Compiled using MSVC " << _MSC_VER << endl;
 #elif __GNUC__
     cout << "++ Compiled using GCC" << endl;
 #endif
