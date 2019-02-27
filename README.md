@@ -28,7 +28,7 @@ If you want to take advantage of the BMI2 instruction set (only available on Int
 The *test* folder contains tools I use to test correctness and performance of the libmorton implementation. This section is under heavy re-writing, but might contain some useful code for advanced usage.
 
 ## Citation
-If you use libmorton in your paper or work, please reference it, for example as follows:
+If you use libmorton in your published paper or work, please reference it, for example as follows:
 <pre>
 @Misc{libmorton18,
 author = "Jeroen Baert",
@@ -36,16 +36,18 @@ title = "Libmorton: C++ Morton Encoding/Decoding Library",
 howpublished = "\url{https://github.com/Forceflow/libmorton}",
 year = "2018"}
 </pre>
-
-## Thanks / See ALso
+ 
+ ## Publications / products that use libmorton
+ I'm always curious what libmorton ends up on. If you end up using it, send me an e-mail!
+  * Sylvain Rousseau and Tamy Boubekeur. 2017. _Fast lossy compression of 3D unit vector sets_ [PDF](https://perso.telecom-paristech.fr/boubek/papers/UVC/UVC.pdf)
+  * [Esri](https://www.esri.com/en-us/home): GIS Mapping softwere 
+  * [Cesium Ion](https://cesium.com/ion/opensource)
+  
+  ## Thanks / See ALso
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
  * [@kevinhartman](https://github.com/kevinhartman) made a C++14 library that supports N-dimensional morton codes [morton-nd](https://github.com/kevinhartman/morton-nd). He upstreamed a lot of fixes back to libmorton - thanks!
  * Everyone making comments and suggestions on the [original blogpost](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/)
  * Fabian Giesen's [post](https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/) on Morton Codes
- 
- ## Publications / products that use libmorton
-  * Sylvain Rousseau and Tamy Boubekeur. 2017. Fast lossy compression of 3D unit vector sets. [PDF](https://perso.telecom-paristech.fr/boubek/papers/UVC/UVC.pdf)
-  * Esri: GIS Mapping softwere [Website](https://www.esri.com/en-us/home)
 
 ## TODO
  * Write better test suite (with L1/L2 trashing, better tests, ...)
