@@ -40,7 +40,7 @@ year = "2018"}
  ## Publications / products that use libmorton
  I'm always curious what libmorton ends up on. If you end up using it, send me an e-mail!
   * Sylvain Rousseau and Tamy Boubekeur. 2017. _Fast lossy compression of 3D unit vector sets_ [PDF](https://perso.telecom-paristech.fr/boubek/papers/UVC/UVC.pdf)
-  * [Esri](https://www.esri.com/en-us/home): GIS Mapping softwere 
+  * [Esri](https://www.esri.com/en-us/home)
   * [Cesium Ion](https://cesium.com/ion/opensource)
   
   ## Thanks / See ALso
