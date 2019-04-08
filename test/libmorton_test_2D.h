@@ -96,7 +96,7 @@ static bool check2D_DecodeFunction(const decode_f_2D_wrapper<morton, coord> &fun
 
 template <typename morton, typename coord, size_t bits>
 inline void check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, coord>> encoders) {
-	printf("++ Checking correctness of 2D encoders (%lu bit) methods ... ", bits);
+	printf("++ Checking correctness of 2D encoders (%zu bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check2D_EncodeFunction<morton, coord, bits>(*it);
@@ -106,7 +106,7 @@ inline void check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, co
 
 template <typename morton, typename coord, size_t bits>
 inline void check2D_DecodeCorrectness(std::vector<decode_f_2D_wrapper<morton, coord>> decoders) {
-	printf("++ Checking correctness of 2D decoding (%lu bit) methods ... ", bits);
+	printf("++ Checking correctness of 2D decoding (%zu bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = decoders.begin(); it != decoders.end(); it++) {
 		ok &= check2D_DecodeFunction<morton, coord, bits>(*it);

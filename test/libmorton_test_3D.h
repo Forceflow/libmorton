@@ -102,7 +102,7 @@ template<typename morton, typename coord, size_t bits>
 inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, decode_f_3D_wrapper<morton, coord> &decode, unsigned int times) {
 	bool everythingokay = true;
 	for (unsigned int i = 0; i < times; ++i) {
-		coord maximum = pow(2, floor(bits / 3.0f)) - 1;
+		coord maximum = (coord) (pow(2, floor(bits / 3.0f)) - 1.0f);
 		// generate random coordinates
 		coord x = rand() % maximum;
 		coord y = rand() % maximum;
