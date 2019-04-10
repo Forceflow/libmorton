@@ -148,7 +148,6 @@
     <ClInclude Include="..\..\libmorton\include\morton.h" />
     <ClInclude Include="..\..\libmorton\include\morton2D_LUTs.h" />
     <ClInclude Include="..\..\libmorton\include\morton_BMI.h" />
-    <ClInclude Include="..\..\libmorton\include\morton_LUT_generators.h" />
     <ClInclude Include="..\..\libmorton\include\morton2D.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D.h" />
     <ClInclude Include="..\..\libmorton\include\morton3D_LUTs.h" />
@@ -156,6 +155,7 @@
     <ClInclude Include="..\libmorton_test.h" />
     <ClInclude Include="..\libmorton_test_2D.h" />
     <ClInclude Include="..\libmorton_test_3D.h" />
+	<ClInclude Include="..\morton_LUT_generators.h" />
     <ClInclude Include="..\timer.h" />
     <ClInclude Include="..\util.h" />
   </ItemGroup>
