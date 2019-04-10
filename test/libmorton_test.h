@@ -19,7 +19,7 @@
 #include "timer.h"
 
 // Load libraries we're going to test
-#include "../libmorton/include/morton_LUT_generators.h"
+#include "morton_LUT_generators.h"
 #include "../libmorton/include/morton2D.h"
 #include "../libmorton/include/morton3D.h"
 #include "../libmorton/include/morton.h"
