@@ -28,7 +28,7 @@ template <typename morton, typename coord>
 struct encode_f_2D_wrapper {
 	string description;
 	morton(*encode)(coord, coord);
-	encode_f_2D_wrapper(const string description, morton(*encode)(coord, coord)) : description(description), encode(encode) {}
+	encode_f_2D_wrapper(const string &description, morton(*encode)(coord, coord)) : description(description), encode(encode) {}
 	encode_f_2D_wrapper() : description(""), encode(0) {}
 };
 
@@ -36,7 +36,7 @@ template <typename morton, typename coord>
 struct decode_f_2D_wrapper {
 	string description;
 	void(*decode)(morton, coord&, coord&);
-	decode_f_2D_wrapper(const string description, void(*decode)(morton, coord&, coord&)) : description(description), decode(decode) {}
+	decode_f_2D_wrapper(const string &description, void(*decode)(morton, coord&, coord&)) : description(description), decode(decode) {}
 	decode_f_2D_wrapper() : description(	""), decode(0) {}
 };
 
@@ -49,7 +49,7 @@ template <typename morton, typename coord>
 struct encode_f_3D_wrapper {
 	string description;
 	morton (*encode)(coord, coord, coord);
-	encode_f_3D_wrapper(const string description, morton(*encode)(coord, coord, coord)) : description(description), encode(encode){}
+	encode_f_3D_wrapper(const string &description, morton(*encode)(coord, coord, coord)) : description(description), encode(encode){}
 	encode_f_3D_wrapper() : description(""), encode(0) {}
 };
 
@@ -57,7 +57,7 @@ template <typename morton, typename coord>
 struct decode_f_3D_wrapper {
 	string description;
 	void (*decode)(morton, coord&, coord&, coord&);
-	decode_f_3D_wrapper(const string description, void(*decode)(morton, coord&, coord&, coord&)) : description(description), decode(decode) {}
+	decode_f_3D_wrapper(const string &description, void(*decode)(morton, coord&, coord&, coord&)) : description(description), decode(decode) {}
 	decode_f_3D_wrapper() : description(""), decode(0) {}
 };
 
