@@ -67,7 +67,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)\..\..\libmorton\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)\..\..\libmorton\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)\..\..\libmorton\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)\..\..\libmorton\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -153,7 +164,7 @@
     <ClInclude Include="..\..\libmorton\include\morton3D_LUTs.h" />
     <ClInclude Include="..\..\libmorton\include\morton_common.h" />
     <ClInclude Include="..\libmorton_test.h" />
-	<ClInclude Include="..\morton_LUT_generators.h" />
+    <ClInclude Include="..\morton_LUT_generators.h" />
     <ClInclude Include="..\libmorton_test_2D.h" />
     <ClInclude Include="..\libmorton_test_3D.h" />
     <ClInclude Include="..\timer.h" />
