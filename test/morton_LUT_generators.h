@@ -9,10 +9,10 @@ namespace libmorton {
 	template <typename element>
 	void printTable(const element* table, size_t howmany, unsigned int splitat) {
 		for (size_t i = 0; i < howmany; i++) {
-			if (i % splitat == 0) { cout << endl; }
+			if (i % splitat == 0) { std::cout << "\n"; }
 			printf("%u ,", static_cast<unsigned int>(table[i]));
 		}
-		cout << endl;
+		std::cout << "\n";
 	}
 
 	void generate2D_EncodeLUT(size_t how_many_bits, uint_fast16_t*& x_table, uint_fast16_t*& y_table, bool print_tables) {
@@ -26,9 +26,9 @@ namespace libmorton {
 		}
 
 		if (print_tables) {
-			cout << "X Table " << endl;
+			std::cout << "X Table \n";
 			printTable<uint_fast16_t>(x_table, total, 8);
-			cout << "Y Table " << endl;
+			std::cout << "Y Table \n";
 			printTable<uint_fast16_t>(y_table, total, 8);
 		}
 	}
@@ -44,9 +44,9 @@ namespace libmorton {
 		}
 
 		if (print_tables) {
-			cout << "X Table " << endl;
+			std::cout << "X Table \n";
 			printTable<uint_fast8_t>(x_table, total, 16);
-			cout << "Y Table " << endl;
+			std::cout << "Y Table \n";
 			printTable<uint_fast8_t>(y_table, total, 16);
 		}
 	}
@@ -65,11 +65,11 @@ namespace libmorton {
 		}
 
 		if (print_tables) {
-			cout << "X Table " << endl;
+			std::cout << "X Table \n";
 			printTable<uint_fast32_t>(x_table, total, 8);
-			cout << "Y Table " << endl;
+			std::cout << "Y Table \n";
 			printTable<uint_fast32_t>(y_table, total, 8);
-			cout << "Z Table " << endl;
+			std::cout << "Z Table \n";
 			printTable<uint_fast32_t>(z_table, total, 8);
 		}
 	}
@@ -90,11 +90,11 @@ namespace libmorton {
 		}
 
 		if (print_tables) {
-			cout << "X Table " << endl;
+			std::cout << "X Table \n";
 			printTable<uint_fast8_t>(x_table, total, 16);
-			cout << "Y Table " << endl;
+			std::cout << "Y Table \n";
 			printTable<uint_fast8_t>(y_table, total, 16);
-			cout << "Z Table " << endl;
+			std::cout << "Z Table \n";
 			printTable<uint_fast8_t>(z_table, total, 16);
 		}
 	}

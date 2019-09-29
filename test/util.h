@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-using namespace std;
 
 static uint32_t x[4096];
 static uint32_t c = 362;

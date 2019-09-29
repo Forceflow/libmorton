@@ -12,7 +12,6 @@
 #define EIGHTBITMASK (morton) 0x000000FF
 #define NINEBITMASK (morton) 0x000001FF
 
-using namespace std;
 
 namespace libmorton {
 	// AVAILABLE METHODS FOR ENCODING
@@ -148,7 +147,7 @@ namespace libmorton {
 		findFirstSetBit<morton>(x, &x_max);
 		findFirstSetBit<morton>(y, &y_max);
 		findFirstSetBit<morton>(z, &z_max);
-		checkbits = min((unsigned long)checkbits, max(z_max, max(x_max, y_max)) + (unsigned long)1);
+		checkbits = std::min((unsigned long)checkbits, std::max(z_max, std::max(x_max, y_max)) + (unsigned long)1);
 		for (unsigned int i = 0; i < checkbits; ++i) {
 			morton m_shifted = static_cast<morton>(1) << i; // Here we need to cast 0x1 to 64bits, otherwise there is a bug when morton code is larger than 32 bits
 			unsigned int shift = 2 * i;
@@ -273,7 +272,7 @@ namespace libmorton {
 		unsigned long firstbit_location = 0;
 		if (!findFirstSetBit<morton>(m, &firstbit_location)) return;
 		float defaultbits = floor((sizeof(morton) * 8.0f / 3.0f));
-		unsigned int checkbits = static_cast<unsigned int>(min(defaultbits, firstbit_location / 3.0f));
+		unsigned int checkbits = static_cast<unsigned int>(std::min(defaultbits, firstbit_location / 3.0f));
 		for (unsigned int i = 0; i <= checkbits; ++i) {
 			morton selector = 1;
 			unsigned int shift_selector = 3 * i;
