@@ -1,14 +1,13 @@
 #pragma once
 #include "libmorton_test.h"
 
-using namespace std;
 
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
 extern size_t total;
 extern size_t MAX;
 extern unsigned int times;
-extern vector<uint_fast64_t> running_sums;
+extern std::vector<uint_fast64_t> running_sums;
 
 // Check a 2D Encode Function for correctness
 template <typename morton, typename coord, size_t bits>
@@ -37,8 +36,8 @@ static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &fun
 				computed_code = function.encode(x, y);
 				if (computed_code != (morton)correct_code) {
 					everything_okay = false;
-					cout << endl << "    Incorrect encoding of (" << x << ", " << y << ") in method " << function.description.c_str() << ": " << computed_code <<
-						" != " << (morton)correct_code << endl;
+					std::cout << "\n    Incorrect encoding of (" << x << ", " << y << ") in method " << function.description.c_str() << ": " << computed_code <<
+						" != " << (morton)correct_code << "\n";
 				}
 			}
 		}
@@ -140,7 +139,7 @@ static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t 
 
 	for (size_t t = 0; t < times; t++) {
 		// Create a pool of random numbers
-		vector<coord> randnumbers;
+		std::vector<coord> randnumbers;
 		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
 			randnumbers.push_back(rand() % maximum);
 		}

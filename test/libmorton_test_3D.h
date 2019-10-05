@@ -1,14 +1,13 @@
 #pragma once
 #include "libmorton_test.h"
 
-using namespace std;
 
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
 extern size_t total;
 extern size_t MAX;
 extern unsigned int times;
-extern vector<uint_fast64_t> running_sums;
+extern std::vector<uint_fast64_t> running_sums;
 
 // Check a 3D Encode Function for correctness
 template <typename morton, typename coord, size_t bits>
@@ -39,8 +38,8 @@ static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &fun
 					computed_code = function.encode(x, y, z);
 					if (computed_code != (morton)correct_code) {
 						everything_okay = false;
-						cout << endl << "    Incorrect encoding of (" << x << ", " << y << ", " << z << ") in method " << function.description.c_str() << ": " << computed_code <<
-							" != " << (morton)correct_code << endl;
+						std::cout << "\n    Incorrect encoding of (" << x << ", " << y << ", " << z << ") in method " << function.description.c_str() << ": " << computed_code <<
+							" != " << (morton)correct_code << "\n";
 					}
 				}
 			}
@@ -111,15 +110,15 @@ inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, deco
 		morton mortonresult = encode.encode(x, y, z);
 		decode.decode(mortonresult, x_result, y_result, z_result);
 		if ((x != x_result) | (y != y_result) | (z != z_result)) {
-			cout << endl << "x: " << getBitString<coord>(x) << " (" << x << ")" << endl;
-			cout << "y: " << getBitString<coord>(y) << " (" << y << ")" << endl;
-			cout << "z: " << getBitString<coord>(z) << " (" << z << ")" << endl;
-			cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")" << endl;
-			cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")" << endl;
-			cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")" << endl;
-			cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")" << endl;
-			cout << bits << "-bit ";
-			cout << "using methods encode " << encode.description << " and decode " << decode.description << endl;
+			std::cout << "\n" << "x: " << getBitString<coord>(x) << " (" << x << ")\n";
+			std::cout << "y: " << getBitString<coord>(y) << " (" << y << ")\n";
+			std::cout << "z: " << getBitString<coord>(z) << " (" << z << ")\n";
+			std::cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")\n";
+			std::cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")\n";
+			std::cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")\n";
+			std::cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")\n";
+			std::cout << bits << "-bit ";
+			std::cout << "using methods encode " << encode.description << " and decode " << decode.description << "\n";
 			everythingokay = false;
 		}
 	}
@@ -197,7 +196,7 @@ static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), 
 
 	for (size_t t = 0; t < times; t++) {
 		// Create a pool of random numbers
-		vector<coord> randnumbers;
+      std::vector<coord> randnumbers;
 		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
 			randnumbers.push_back(rand() % maximum);
 		}
@@ -265,7 +264,7 @@ static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, co
 	morton m;
 
 	// Create a pool of randum numbers
-	vector<morton> randnumbers;
+   std::vector<morton> randnumbers;
 	for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
 		randnumbers.push_back((rand() + rand()) % maximum);
 	}
