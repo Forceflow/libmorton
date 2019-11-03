@@ -41,6 +41,8 @@ year = "2018"}
  
  ## Publications / products that use libmorton
  I'm always curious what libmorton ends up on. If you end up using it, send me an e-mail!
+  * Thomas Bläsius, Tobias Friedrich et al, 2019. _Efficiently Generating Geometric Inhomogeneous and Hyperbolic Random Graphs_ ([link](https://arxiv.org/abs/1905.06706))
+  * Alexander Dieckmann, Reinhard Klein, 2018. _Hierarchical additive poisson disk sampling_ ([link](https://dl.acm.org/citation.cfm?id=3307667))
   * Sylvain Rousseau and Tamy Boubekeur, 2017. _Fast lossy compression of 3D unit vector sets_ ([PDF](https://perso.telecom-paristech.fr/boubek/papers/UVC/UVC.pdf))
   * Jan Watter, 2018. _Generation of complex numerical meshes using space-filling curves_ ([PDF](http://www.cie.bgu.tum.de/publications/bachelorthesis/2018_Watter.pdf))
   * [Esri](https://www.esri.com/en-us/home)
