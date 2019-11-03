@@ -45,6 +45,7 @@ year = "2018"}
   * Jan Watter, 2018. _Generation of complex numerical meshes using space-filling curves_ ([PDF](http://www.cie.bgu.tum.de/publications/bachelorthesis/2018_Watter.pdf))
   * [Esri](https://www.esri.com/en-us/home)
   * [Cesium Ion](https://cesium.com/ion/opensource)
+  * [CLAIRE](https://github.com/andreasmang/claire#clairedoc)
   
   ## Thanks / See ALso
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
