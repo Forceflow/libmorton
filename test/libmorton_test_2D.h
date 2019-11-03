@@ -23,7 +23,7 @@ static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &fun
 
 	bool everything_okay = true;
 	morton computed_code;
-	uint64_t correct_code = 0;
+	uint64_t correct_code;
 
 	// For every set of 4 contiguous bits, test all possible values (0-15), with all other bits cleared
 	for (size_t offset = 0; offset <= fieldbits - 4; offset++) {
