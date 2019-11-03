@@ -52,7 +52,7 @@ namespace libmorton {
 			unsigned int shift = (i - 1) * 8;
 			answer =
 				answer << 16 |
-				(Morton2D_encode_x_256[(y >> shift) & EIGHTBITMASK] << 1) |
+				(Morton2D_encode_x_256[(y >> shift) & EIGHTBITMASK] << morton(1)) |
 				(Morton2D_encode_x_256[(x >> shift) & EIGHTBITMASK]);
 		}
 		return answer;

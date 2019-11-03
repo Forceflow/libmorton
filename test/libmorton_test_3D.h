@@ -266,7 +266,7 @@ static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, co
 	// Create a pool of randum numbers
    std::vector<morton> randnumbers;
 	for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
-		randnumbers.push_back((rand() + rand()) % maximum);
+		randnumbers.push_back((morton(rand()) + morton(rand())) % maximum);
 	}
 
 	// Start performance test
