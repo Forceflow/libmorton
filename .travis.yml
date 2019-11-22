@@ -2,5 +2,6 @@ dist: bionic
 language: cpp
 compiler: gcc
 script: 
-  - make --directory=test test
-  - cd test && timeout 60 test
+  - cd test
+  - make
+  - timeout 60 test
