@@ -4,4 +4,5 @@ compiler: gcc
 script: 
   - cd test
   - make
-  - timeout 60 ./libmorton_test
+# This really should finish in less than 2 minutes - otherwise something's wrong
+  - timeout 120 ./libmorton_test 128
