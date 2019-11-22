@@ -3,4 +3,4 @@ language: cpp
 compiler: gcc
 script: 
   - make --directory=test test
-  - timeout 60 test
+  - cd test && timeout 60 test
