@@ -4,4 +4,4 @@ compiler: gcc
 script: 
   - cd test
   - make
-  - timeout 60 test
+  - timeout 60 ./libmorton_test
