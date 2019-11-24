@@ -197,20 +197,27 @@ int main(int argc, char *argv[]) {
 	// register functions
 	registerFunctions();
 
+	// CORRECTNESS TESTS
+	bool correct = true;
 	cout << "++ Checking 3D methods for correctness" << endl;
-	check3D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode, f3D_64_decode, times);
-	check3D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode, f3D_32_decode, times);
-	check3D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode);
-	check3D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode);
-	check3D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_decode);
-	check3D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_decode);
+	correct = correct && check3D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode, f3D_64_decode, times);
+	correct = correct && check3D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode, f3D_32_decode, times);
+	correct = correct && check3D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode);
+	correct = correct && check3D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode);
+	correct = correct && check3D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_decode);
+	correct = correct && check3D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_decode);
 
 	cout << "++ Checking 2D methods for correctness" << endl;
-	check2D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_encode);
-	check2D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_encode);
-	check2D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_decode);
-	check2D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_decode);
+	correct = correct && check2D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_encode);
+	correct = correct && check2D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_encode);
+	correct = correct && check2D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_decode);
+	correct = correct && check2D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_decode);
+	if (!correct) {
+		cout << "++ ERROR: One of the correctness tests failed." << endl;
+		exit(1);
+	}
 	
+	// PERFORMANCE TESTS
 	cout << "++ Running each performance test " << times << " times and averaging results" << endl;
 	for (int i = 64; i <= MAXRUNSIZE; i = i * 2){
 		MAX = i;

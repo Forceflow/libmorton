@@ -126,27 +126,29 @@ inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, deco
 }
 
 template <typename morton, typename coord, size_t bits>
-inline void check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, coord>> encoders) {
+inline bool check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, coord>> encoders) {
 	printf("++ Checking correctness of 3D encoders (%zd bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check3D_EncodeFunction<morton, coord, bits>(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	return ok;
 }
 
 template <typename morton, typename coord, size_t bits>
-inline void check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, coord>> decoders) {
+inline bool check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, coord>> decoders) {
 	printf("++ Checking correctness of 3D decoding (%zd bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = decoders.begin(); it != decoders.end(); it++) {
 		ok &= check3D_DecodeFunction<morton, coord, bits>(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	return ok;
 }
 
 template <typename morton, typename coord, size_t bits>
-inline void check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, coord>> encoders, std::vector<decode_f_3D_wrapper<morton, coord>> decoders, unsigned int times) {
+inline bool check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, coord>> encoders, std::vector<decode_f_3D_wrapper<morton, coord>> decoders, unsigned int times) {
 	printf("++ Checking 3D methods (%zd bit) encode/decode match ... ", bits);
 	bool ok = true;
 	for (auto et = encoders.begin(); et != encoders.end(); et++) {
@@ -155,6 +157,7 @@ inline void check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, co
 		}
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	return ok;
 }
 
 // Test performance of encoding a linearly increasing set of coordinates
