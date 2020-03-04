@@ -5,7 +5,6 @@
 
 #include <algorithm>
 #include <stdint.h>
-#include <math.h>
 #include "morton2D_LUTs.h"
 #include "morton_common.h"
 
