@@ -8,7 +8,9 @@
 
 #include "morton2D.h"
 #include "morton3D.h"
+#if defined(__BMI2__) || __AVX2__
 #include "morton_BMI.h"
+#endif
 
 namespace libmorton {
 	// Functions under this are stubs which will always point to fastest implementation at the moment
