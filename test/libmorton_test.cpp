@@ -145,7 +145,7 @@ void registerFunctions() {
 	f3D_32_decode.push_back(decode_3D_32_wrapper("LUT Shifted ET", &m3D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>));
 
 	// Register 3D BMI intrinsics if available
-#if defined(__BMI2__) || __AVX2__
+#if defined(__BMI2__)
 	f3D_64_encode.push_back(encode_3D_64_wrapper("BMI2 instruction set", &m3D_e_BMI<uint_fast64_t, uint_fast32_t>));
 	f3D_32_encode.push_back(encode_3D_32_wrapper("BMI2 instruction set", &m3D_e_BMI<uint_fast32_t, uint_fast16_t>));
 	f3D_64_decode.push_back(decode_3D_64_wrapper("BMI2 Instruction set", &m3D_d_BMI<uint_fast64_t, uint_fast32_t>));
@@ -153,7 +153,7 @@ void registerFunctions() {
 #endif
 
 	// Register 3D AVX512 intrinsics if available
-#if defined(__AVX512BITALG__) || __AVX2__
+#if defined(__AVX512BITALG__)
 	f3D_64_encode.push_back(encode_3D_64_wrapper("AVX512 instruction set", &m3D_e_BITALG<uint_fast64_t, uint_fast32_t>));
 	f3D_32_encode.push_back(encode_3D_32_wrapper("AVX512 instruction set", &m3D_e_BITALG<uint_fast32_t, uint_fast16_t>));
 	f3D_64_decode.push_back(decode_3D_64_wrapper("AVX512 Instruction set", &m3D_d_BITALG<uint_fast64_t, uint_fast32_t>));
