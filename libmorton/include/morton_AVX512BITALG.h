@@ -8,30 +8,29 @@ namespace libmorton {
 		// "Zip" and interleave an m-vector of n-bit integers into a
 		// new n*m-bit integer
 		// 2D MORTONS
-		// inline uint16_t bitzip2D(uint16_t a, uint16_t b) noexcept {
-		// 	// Put both 16-bit integers into each 32-bit lane
-		// 	const __m256i CoordVec = _mm256_set1_epi32(
-		// 		(static_cast<uint32_t>(b) << 16u) | a
-		// 	);
-		// 	// Interleave bits from 32-bit X and Y coordinate
-		// 	const __mmask32 Interleave = _mm256_bitshuffle_epi64_mask(
-		// 		CoordVec,
-		// 		_mm256_set_epi16(
-		// 			0x1000 + 0x0101 * 15, 0x1000 + 0x0101 * 14,
-		// 			0x1000 + 0x0101 * 13, 0x1000 + 0x0101 * 12,
-		// 			0x1000 + 0x0101 * 11, 0x1000 + 0x0101 * 10,
-		// 			0x1000 + 0x0101 *  9, 0x1000 + 0x0101 *  8,
-		// 			0x1000 + 0x0101 *  7, 0x1000 + 0x0101 *  6,
-		// 			0x1000 + 0x0101 *  5, 0x1000 + 0x0101 *  4,
-		// 			0x1000 + 0x0101 *  3, 0x1000 + 0x0101 *  2,
-		// 			0x1000 + 0x0101 *  1, 0x1000 + 0x0101 *  0
-		// 		)
-		// 	);
-		// 	return _cvtmask32_u32(Interleave);
-		// }
+		inline uint32_t bitzip2D(uint32_t a, uint32_t b) noexcept {
+			// Put both 32-bit integer into each 64-bit lane
+			const __m256i CoordVec = _mm256_set1_epi64x(
+				(static_cast<uint64_t>(b) << 32u) | a
+			);
+			// Interleave bits from 32-bit X and Y coordinate
+			const __mmask32 Interleave = _mm256_bitshuffle_epi64_mask(
+				CoordVec,
+				_mm256_set_epi16(
+					0x1000 + 0x0101 * 15, 0x1000 + 0x0101 * 14,
+					0x1000 + 0x0101 * 13, 0x1000 + 0x0101 * 12,
+					0x1000 + 0x0101 * 11, 0x1000 + 0x0101 * 10,
+					0x1000 + 0x0101 *  9, 0x1000 + 0x0101 *  8,
+					0x1000 + 0x0101 *  7, 0x1000 + 0x0101 *  6,
+					0x1000 + 0x0101 *  5, 0x1000 + 0x0101 *  4,
+					0x1000 + 0x0101 *  3, 0x1000 + 0x0101 *  2,
+					0x1000 + 0x0101 *  1, 0x1000 + 0x0101 *  0
+				)
+			);
+			return _cvtmask32_u32(Interleave);
+		}
 
 		inline uint64_t bitzip2D(uint64_t a, uint64_t b) noexcept {
-			// Put both 32-bit integers into each 64-bit lane
 			const __m512i CoordVec = _mm512_set1_epi64(
 				(static_cast<uint64_t>(b) << 32u) | a
 			);
@@ -59,32 +58,31 @@ namespace libmorton {
 			);
 			return _cvtmask64_u64(Interleave);
 		}
-		inline uint32_t bitzip2D(uint32_t a, uint32_t b) noexcept {
-			return bitzip2D(
-				static_cast<uint64_t>(a),
-				static_cast<uint64_t>(b)
-			);
-		}
 		// 3D MORTONS
-		// inline uint16_t bitzip3D(uint16_t a, uint16_t b, uint16_t c) noexcept {
-		// 	// Put both 32-bit integers into each 64-bit lane
-		// 	const __m256i CoordVec = _mm256_set1_epi64x(
-		// 		static_cast<std::uint64_t>(a)
-		// 		| (static_cast<std::uint64_t>(b) << 16)
-		// 		| (static_cast<std::uint64_t>(c) << 32)
-		// 	);
-		// 	// Interleave bits from 16-bit X and Y and Z coordinate
-		// 	const __mmask32 Interleave = _mm256_bitshuffle_epi64_mask(
-		// 		CoordVec,
-		// 		_mm256_set_epi64x(
-		// 			0x1A0A291909281808, // Byte 3
-		// 			0x2717072616062515, // Byte 2
-		// 			0x0524140423130322, // Byte 1
-		// 			0x1202211101201000  // Byte 0
-		// 		)
-		// 	);
-		// 	return _cvtmask32_u32(Interleave);
-		// }
+		inline uint32_t bitzip3D(uint32_t a, uint32_t b, uint32_t c) noexcept {
+			const __m256i CoordVec = _mm256_broadcastsi128_si256(
+				_mm_set_epi32(0, c, b, a)
+			);
+			const __m256i ShuffleVec = _mm256_permutexvar_epi8(
+				_mm256_set_epi64x(
+					0xFFFFFFFFFF100800ul + 0x010101 * 1, // Lane 3 | ...000 | z[1] | y[1] | x[1]
+					0xFFFFFFFFFF100800ul + 0x010101 * 0, // Lane 2 | ...000 | z[0] | y[0] | x[0]
+					0xFFFFFFFFFF100800ul + 0x010101 * 0, // Lane 1 | ...000 | z[0] | y[0] | x[0]
+					0xFFFFFFFFFF100800ul + 0x010101 * 0  // Lane 0 | ...000 | z[0] | y[0] | x[0]
+				),
+				CoordVec
+			);
+			const __mmask32 Interleave = _mm256_bitshuffle_epi64_mask(
+				ShuffleVec,
+				_mm256_set_epi64x(
+					0x0202010101000000 + 0x0100020100020100 * 8,
+					0x0707070606060505 + 0x0201000201000201 * 8,
+					0x0504040403030302 + 0x0002010002010002 * 8,
+					0x0202010101000000 + 0x0100020100020100 * 8 
+				)
+			);
+			return _cvtmask32_u32(Interleave);
+		}
 		inline uint64_t bitzip3D(uint64_t a, uint64_t b, uint64_t c) noexcept {
 			// Put both 32-bit integers into each 64-bit lane
 			// Todo: _mm512_shuffle_epi8 version, 128-bit lane woes
@@ -104,29 +102,21 @@ namespace libmorton {
 				),
 				CoordVec
 			);
-			const __m512i BitIndex =
-			_mm512_set_epi64(
-				0x0504040403030302 + 0x0002010002010002 * 8,
-				0x0202010101000000 + 0x0100020100020100 * 8,
-				0x0707070606060505 + 0x0201000201000201 * 8,
-				0x0504040403030302 + 0x0002010002010002 * 8,
-				0x0202010101000000 + 0x0100020100020100 * 8,
-				0x0707070606060505 + 0x0201000201000201 * 8,
-				0x0504040403030302 + 0x0002010002010002 * 8,
-				0x0202010101000000 + 0x0100020100020100 * 8 
-			);
 			// Interleave bits from 32-bit X and Y and Z coordinate
 			const __mmask64 Interleave = _mm512_bitshuffle_epi64_mask(
-				ShuffleVec, BitIndex
+				ShuffleVec,
+				_mm512_set_epi64(
+					0x0504040403030302 + 0x0002010002010002 * 8,
+					0x0202010101000000 + 0x0100020100020100 * 8,
+					0x0707070606060505 + 0x0201000201000201 * 8,
+					0x0504040403030302 + 0x0002010002010002 * 8,
+					0x0202010101000000 + 0x0100020100020100 * 8,
+					0x0707070606060505 + 0x0201000201000201 * 8,
+					0x0504040403030302 + 0x0002010002010002 * 8,
+					0x0202010101000000 + 0x0100020100020100 * 8 
+				)
 			);
 			return _cvtmask64_u64(Interleave);
-		}
-		inline uint32_t bitzip3D(uint32_t a, uint32_t b, uint32_t c) noexcept {
-			return bitzip3D(
-				static_cast<uint64_t>(a),
-				static_cast<uint64_t>(b),
-				static_cast<uint64_t>(c)
-			);
 		}
 	}  // namespace bitalg_detail
 
