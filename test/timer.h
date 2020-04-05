@@ -10,8 +10,6 @@
 #include "time.h"
 #endif
 
-using namespace std;
-
 #if _MSC_VER
 struct Timer { 
 	double pc_frequency = 0.0;

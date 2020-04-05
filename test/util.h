@@ -4,18 +4,17 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-using namespace std;
 
-static uint32_t x[4096];
-static uint32_t c = 362;
-static uint32_t a = 18705;
+static uint32_t cmwc_x[4096];
+static uint32_t cmwc_c = 362;
+static uint32_t cmwc_a = 18705;
 
 void init_randcmwc(uint32_t seed)
 {
 	int i;
 	srand(seed);
 	for (i = 0; i < 4096; i++)
-		x[i] = rand();
+		cmwc_x[i] = rand();
 }
 
 uint32_t rand_cmwc(void)
@@ -24,9 +23,9 @@ uint32_t rand_cmwc(void)
 	uint64_t t;
 
 	i = (i + 1) & 4095;
-	t = a * x[i];
-	c = (t + c) >> 32;
-	x[i] = 0xffffffff - static_cast<uint32_t>(t);
+	t = cmwc_a * cmwc_x[i];
+	cmwc_c = (t + cmwc_c) >> 32;
+	cmwc_x[i] = 0xffffffff - static_cast<uint32_t>(t);
 
-	return x[i];
+	return cmwc_x[i];
 }

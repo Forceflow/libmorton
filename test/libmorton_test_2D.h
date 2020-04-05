@@ -1,14 +1,13 @@
 #pragma once
 #include "libmorton_test.h"
 
-using namespace std;
 
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
 extern size_t total;
 extern size_t MAX;
 extern unsigned int times;
-extern vector<uint_fast64_t> running_sums;
+extern std::vector<uint_fast64_t> running_sums;
 
 // Check a 2D Encode Function for correctness
 template <typename morton, typename coord, size_t bits>
@@ -24,7 +23,7 @@ static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &fun
 
 	bool everything_okay = true;
 	morton computed_code;
-	uint64_t correct_code = 0;
+	uint64_t correct_code;
 
 	// For every set of 4 contiguous bits, test all possible values (0-15), with all other bits cleared
 	for (size_t offset = 0; offset <= fieldbits - 4; offset++) {
@@ -37,8 +36,8 @@ static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &fun
 				computed_code = function.encode(x, y);
 				if (computed_code != (morton)correct_code) {
 					everything_okay = false;
-					cout << endl << "    Incorrect encoding of (" << x << ", " << y << ") in method " << function.description.c_str() << ": " << computed_code <<
-						" != " << (morton)correct_code << endl;
+					std::cout << "\n    Incorrect encoding of (" << x << ", " << y << ") in method " << function.description.c_str() << ": " << computed_code <<
+						" != " << (morton)correct_code << "\n";
 				}
 			}
 		}
@@ -95,23 +94,25 @@ static bool check2D_DecodeFunction(const decode_f_2D_wrapper<morton, coord> &fun
 }
 
 template <typename morton, typename coord, size_t bits>
-inline void check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, coord>> encoders) {
+inline bool check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, coord>> encoders) {
 	printf("++ Checking correctness of 2D encoders (%zu bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check2D_EncodeFunction<morton, coord, bits>(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	return ok;
 }
 
 template <typename morton, typename coord, size_t bits>
-inline void check2D_DecodeCorrectness(std::vector<decode_f_2D_wrapper<morton, coord>> decoders) {
+inline bool check2D_DecodeCorrectness(std::vector<decode_f_2D_wrapper<morton, coord>> decoders) {
 	printf("++ Checking correctness of 2D decoding (%zu bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = decoders.begin(); it != decoders.end(); it++) {
 		ok &= check2D_DecodeFunction<morton, coord, bits>(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	return ok;
 }
 
 template <typename morton, typename coord>
@@ -140,7 +141,7 @@ static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t 
 
 	for (size_t t = 0; t < times; t++) {
 		// Create a pool of random numbers
-		vector<coord> randnumbers;
+		std::vector<coord> randnumbers;
 		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
 			randnumbers.push_back(rand() % maximum);
 		}

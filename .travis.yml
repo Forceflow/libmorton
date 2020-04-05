@@ -1,4 +1,8 @@
-dist: trusty
+dist: bionic
 language: cpp
 compiler: gcc
-script: make --directory=test test
+script: 
+  - cd test
+  - make
+# This really should finish in less than 2 minutes - otherwise something's wrong
+  - timeout 120 ./libmorton_test 128

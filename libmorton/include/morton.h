@@ -8,8 +8,14 @@
 
 #include "morton2D.h"
 #include "morton3D.h"
+
+#if defined(__BMI2__) || defined(__AVX2__)
 #include "morton_BMI.h"
+#endif
+
+#if defined(__AVX512BITALG__)
 #include "morton_AVX512BITALG.h"
+#endif
 
 namespace libmorton {
 	// Functions under this are stubs which will always point to fastest implementation at the moment
@@ -29,7 +35,7 @@ namespace libmorton {
 	inline uint_fast64_t morton3D_64_encode(const uint_fast32_t x, const uint_fast32_t y, const uint_fast32_t z) {
 		return m3D_e_BITALG<uint_fast64_t, uint_fast32_t>(x, y, z);
 	}
-#elif defined(__BMI2__) || __AVX2__
+#elif defined(__BMI2__) || defined(__AVX2__)
 	inline uint_fast32_t morton2D_32_encode(const uint_fast16_t x, const uint_fast16_t y) {
 		return m2D_e_BMI<uint_fast32_t, uint_fast16_t>(x, y);
 	}

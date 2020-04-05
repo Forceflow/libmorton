@@ -2,7 +2,6 @@
 
 // Standard headers
 #include <cstdlib>
-#include <math.h>
 #include <iostream>
 #include <sstream>
 #include <chrono>
@@ -23,6 +22,8 @@
 #include "../libmorton/include/morton2D.h"
 #include "../libmorton/include/morton3D.h"
 #include "../libmorton/include/morton.h"
+
+using std::string;
 
 template <typename morton, typename coord>
 struct encode_f_2D_wrapper {
@@ -137,16 +138,16 @@ inline string getSpacedBitString(valtype val, unsigned int frequency, unsigned i
 
 template <typename morton, typename coord>
 void printIncorrectDecoding2D(string method_tested, morton m, coord x, coord y, coord correct_x, coord correct_y) {
-	cout << endl << "    Incorrect decoding of " << getBitString<morton>(m) << " in method " << method_tested.c_str() << ": ("
+	std::cout << "\n    Incorrect decoding of " << getBitString<morton>(m) << " in method " << method_tested.c_str() << ": ("
 		<< getBitString<coord>(x) << ", " << getBitString<coord>(y)
-		<< ") != (" << getBitString<coord>(correct_x) << ", " << getBitString<coord>(correct_y) << ")" << endl;
+		<< ") != (" << getBitString<coord>(correct_x) << ", " << getBitString<coord>(correct_y) << ")\n";
 }
 
 template <typename morton, typename coord>
 void printIncorrectDecoding3D(string method_tested, morton m, coord x, coord y, coord z, coord correct_x, coord correct_y, coord correct_z) {
-	cout << endl << "    Incorrect decoding of " << getBitString<morton>(m) << " in method " << method_tested.c_str() << ": ("
+   std::cout << "\n    Incorrect decoding of " << getBitString<morton>(m) << " in method " << method_tested.c_str() << ": ("
 		<< getBitString<coord>(x) << ", " << getBitString<coord>(y) << ", " << getBitString<coord>(z)
 		<< ") != (" << getBitString<coord>(correct_x) << ", " << getBitString<coord>(correct_y) << ", "
-		<< getBitString<coord>(correct_z) << ")" << endl;
+		<< getBitString<coord>(correct_z) << ")\n";
 }
 

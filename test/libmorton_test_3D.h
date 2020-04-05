@@ -1,14 +1,13 @@
 #pragma once
 #include "libmorton_test.h"
 
-using namespace std;
 
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
 extern size_t total;
 extern size_t MAX;
 extern unsigned int times;
-extern vector<uint_fast64_t> running_sums;
+extern std::vector<uint_fast64_t> running_sums;
 
 // Check a 3D Encode Function for correctness
 template <typename morton, typename coord, size_t bits>
@@ -24,7 +23,7 @@ static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &fun
 	
 	bool everything_okay = true;
 	morton computed_code;
-	uint64_t correct_code = 0;
+	uint64_t correct_code;
 	
 	// For every set of 4 contiguous bits, test all possible values (0-15), with all other bits cleared
 	for (size_t offset = 0; offset <= fieldbits - 4; offset++) {
@@ -39,8 +38,8 @@ static bool check3D_EncodeFunction(const encode_f_3D_wrapper<morton, coord> &fun
 					computed_code = function.encode(x, y, z);
 					if (computed_code != (morton)correct_code) {
 						everything_okay = false;
-						cout << endl << "    Incorrect encoding of (" << x << ", " << y << ", " << z << ") in method " << function.description.c_str() << ": " << computed_code <<
-							" != " << (morton)correct_code << endl;
+						std::cout << "\n    Incorrect encoding of (" << x << ", " << y << ", " << z << ") in method " << function.description.c_str() << ": " << computed_code <<
+							" != " << (morton)correct_code << "\n";
 					}
 				}
 			}
@@ -111,15 +110,15 @@ inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, deco
 		morton mortonresult = encode.encode(x, y, z);
 		decode.decode(mortonresult, x_result, y_result, z_result);
 		if ((x != x_result) | (y != y_result) | (z != z_result)) {
-			cout << endl << "x: " << getBitString<coord>(x) << " (" << x << ")" << endl;
-			cout << "y: " << getBitString<coord>(y) << " (" << y << ")" << endl;
-			cout << "z: " << getBitString<coord>(z) << " (" << z << ")" << endl;
-			cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")" << endl;
-			cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")" << endl;
-			cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")" << endl;
-			cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")" << endl;
-			cout << bits << "-bit ";
-			cout << "using methods encode " << encode.description << " and decode " << decode.description << endl;
+			std::cout << "\n" << "x: " << getBitString<coord>(x) << " (" << x << ")\n";
+			std::cout << "y: " << getBitString<coord>(y) << " (" << y << ")\n";
+			std::cout << "z: " << getBitString<coord>(z) << " (" << z << ")\n";
+			std::cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")\n";
+			std::cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")\n";
+			std::cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")\n";
+			std::cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")\n";
+			std::cout << bits << "-bit ";
+			std::cout << "using methods encode " << encode.description << " and decode " << decode.description << "\n";
 			everythingokay = false;
 		}
 	}
@@ -127,27 +126,29 @@ inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord> &encode, deco
 }
 
 template <typename morton, typename coord, size_t bits>
-inline void check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, coord>> encoders) {
+inline bool check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, coord>> encoders) {
 	printf("++ Checking correctness of 3D encoders (%zd bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check3D_EncodeFunction<morton, coord, bits>(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	return ok;
 }
 
 template <typename morton, typename coord, size_t bits>
-inline void check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, coord>> decoders) {
+inline bool check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, coord>> decoders) {
 	printf("++ Checking correctness of 3D decoding (%zd bit) methods ... ", bits);
 	bool ok = true;
 	for (auto it = decoders.begin(); it != decoders.end(); it++) {
 		ok &= check3D_DecodeFunction<morton, coord, bits>(*it);
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	return ok;
 }
 
 template <typename morton, typename coord, size_t bits>
-inline void check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, coord>> encoders, std::vector<decode_f_3D_wrapper<morton, coord>> decoders, unsigned int times) {
+inline bool check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, coord>> encoders, std::vector<decode_f_3D_wrapper<morton, coord>> decoders, unsigned int times) {
 	printf("++ Checking 3D methods (%zd bit) encode/decode match ... ", bits);
 	bool ok = true;
 	for (auto et = encoders.begin(); et != encoders.end(); et++) {
@@ -156,6 +157,7 @@ inline void check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, co
 		}
 	}
 	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	return ok;
 }
 
 // Test performance of encoding a linearly increasing set of coordinates
@@ -197,7 +199,7 @@ static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), 
 
 	for (size_t t = 0; t < times; t++) {
 		// Create a pool of random numbers
-		vector<coord> randnumbers;
+      std::vector<coord> randnumbers;
 		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
 			randnumbers.push_back(rand() % maximum);
 		}
@@ -265,9 +267,9 @@ static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, co
 	morton m;
 
 	// Create a pool of randum numbers
-	vector<morton> randnumbers;
+   std::vector<morton> randnumbers;
 	for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
-		randnumbers.push_back((rand() + rand()) % maximum);
+		randnumbers.push_back((morton(rand()) + morton(rand())) % maximum);
 	}
 
 	// Start performance test

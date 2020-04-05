@@ -13,6 +13,8 @@ using namespace std::chrono;
 using namespace libmorton;
 
 /// GLOBALS
+// Program params
+int MAXRUNSIZE = 256;
 // Configuration
 size_t MAX;
 unsigned int times;
@@ -82,6 +84,12 @@ static void test_3D_performance(vector<encode_3D_64_wrapper>* funcs64_encode, ve
 	}
 }
 
+void parseProgramParameters(int argc, char* argv[]) {
+	if (argc > 1) {
+		MAXRUNSIZE = atoi(argv[1]);
+	}
+}
+
 void printHeader(){
 	cout << "LIBMORTON TEST SUITE" << endl;
 	cout << "--------------------" << endl;
@@ -95,6 +103,7 @@ void printHeader(){
 #elif __GNUC__
     cout << "++ Compiled using GCC" << endl;
 #endif
+	cout << "++ Running tests until we've reached " << MAXRUNSIZE << "^3 codes" << endl;
 }
 
 // Register all the functions we want to be tested here!
@@ -190,30 +199,40 @@ void registerFunctions() {
 
 int main(int argc, char *argv[]) {
 	times = 1;
+	parseProgramParameters(argc, argv);
 	printHeader();
 
 	// register functions
 	registerFunctions();
 
+	// CORRECTNESS TESTS
+	bool correct = true;
 	cout << "++ Checking 3D methods for correctness" << endl;
-	check3D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode, f3D_64_decode, times);
-	check3D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode, f3D_32_decode, times);
-	check3D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode);
-	check3D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode);
-	check3D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_decode);
-	check3D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_decode);
+	correct = correct && check3D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode, f3D_64_decode, times);
+	correct = correct && check3D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode, f3D_32_decode, times);
+	correct = correct && check3D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode);
+	correct = correct && check3D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode);
+	correct = correct && check3D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_decode);
+	correct = correct && check3D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_decode);
 
 	cout << "++ Checking 2D methods for correctness" << endl;
-	check2D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_encode);
-	check2D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_encode);
-	check2D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_decode);
-	check2D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_decode);
+	correct = correct && check2D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_encode);
+	correct = correct && check2D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_encode);
+	correct = correct && check2D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_decode);
+	correct = correct && check2D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_decode);
+	if (!correct) {
+		cout << "++ ERROR: One of the correctness tests failed." << endl;
+		exit(1);
+	}
 	
+	// PERFORMANCE TESTS
 	cout << "++ Running each performance test " << times << " times and averaging results" << endl;
-	for (int i = 128; i <= 512; i = i * 2){
+	for (int i = 64; i <= MAXRUNSIZE; i = i * 2){
 		MAX = i;
 		total = MAX*MAX*MAX;
 		test_3D_performance(&f3D_64_encode, &f3D_32_encode, &f3D_64_decode, &f3D_32_decode);
 		printRunningSums();
 	}
+
+	cout << "++ Stopped because we were instructed only to run tests until we hit " << MAXRUNSIZE << "^3 codes" << endl;
 }

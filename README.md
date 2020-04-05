@@ -1,5 +1,5 @@
-# Libmorton v0.2
-[![Build Status](https://travis-ci.org/Forceflow/libmorton.svg?branch=master)](https://travis-ci.org/Forceflow/libmorton) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=4JAUNWWYUVRN4&currency_code=EUR&source=url)
+# Libmorton v0.2.2
+[![Build Status](https://travis-ci.org/Forceflow/libmorton.svg?branch=master)](https://travis-ci.org/Forceflow/libmorton) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/forceflow)
 
  * Libmorton is a **C++11 header-only library** with methods to efficiently encode/decode 64, 32 and 16-bit Morton codes and coordinates, in 2D and 3D. *Morton order* is also known as *Z-order* or *[the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)*.
  * Libmorton is a **lightweight and portable** library - the only dependencies are standard C++ headers. Architecture-specific optimizations are available.
@@ -41,10 +41,13 @@ year = "2018"}
  
  ## Publications / products that use libmorton
  I'm always curious what libmorton ends up on. If you end up using it, send me an e-mail!
+  * Thomas Bläsius, Tobias Friedrich et al, 2019. _Efficiently Generating Geometric Inhomogeneous and Hyperbolic Random Graphs_ ([link](https://arxiv.org/abs/1905.06706))
+  * Alexander Dieckmann, Reinhard Klein, 2018. _Hierarchical additive poisson disk sampling_ ([link](https://dl.acm.org/citation.cfm?id=3307667))
   * Sylvain Rousseau and Tamy Boubekeur, 2017. _Fast lossy compression of 3D unit vector sets_ ([PDF](https://perso.telecom-paristech.fr/boubek/papers/UVC/UVC.pdf))
   * Jan Watter, 2018. _Generation of complex numerical meshes using space-filling curves_ ([PDF](http://www.cie.bgu.tum.de/publications/bachelorthesis/2018_Watter.pdf))
   * [Esri](https://www.esri.com/en-us/home)
   * [Cesium Ion](https://cesium.com/ion/opensource)
+  * [CLAIRE](https://github.com/andreasmang/claire#clairedoc)
   
   ## Thanks / See ALso
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
