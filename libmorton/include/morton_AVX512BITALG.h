@@ -8,10 +8,52 @@ namespace libmorton {
 		// "Zip" and interleave an m-vector of n-bit integers into a
 		// new n*m-bit integer
 		// 2D MORTONS
-		inline uint32_t bitzip2D(uint32_t a, uint32_t b) noexcept {
+		inline void bitunzip2D(const uint32_t morton, uint32_t& x, uint32_t& y) noexcept {
+			// Unpack bits into upper and lower half of 32-bit integer in parallel
+			// into 16-bit components
+			const uint32_t Unzipped = _cvtmask32_u32(
+				_mm256_bitshuffle_epi64_mask(
+					_mm256_set1_epi32(morton),
+					_mm256_set_epi8(
+						// Every odd bit
+						31, 29, 27, 25, 23, 21, 19, 17, 
+						15, 13, 11,  9,  7,  5,  3,  1, 
+						// Every even bit
+						30, 28, 26, 24, 22, 20, 18, 16, 
+						14, 12, 10,  8,  6,  4,  2,  0
+					)
+				)
+			);
+			x = static_cast<uint16_t>(Unzipped >>  0);
+			y = static_cast<uint16_t>(Unzipped >> 16);
+		}
+		inline void bitunzip2D(const uint64_t morton, uint64_t& x, uint64_t& y) noexcept {
+			// Unpack bits into upper and lower half of 64-bit integer in parallel
+			// into 32-bit components
+			const uint64_t Unzipped = _cvtmask64_u64(
+				_mm512_bitshuffle_epi64_mask(
+					_mm512_set1_epi64(morton),
+					_mm512_set_epi8(
+						// Every odd bit
+						63, 61, 59, 57, 55, 53, 51, 49, 
+						47, 45, 43, 41, 39, 37, 35, 33, 
+						31, 29, 27, 25, 23, 21, 19, 17, 
+						15, 13, 11,  9,  7,  5,  3,  1, 
+						// Every even bit
+						62, 60, 58, 56, 54, 52, 50, 48, 
+						46, 44, 42, 40, 38, 36, 34, 32, 
+						30, 28, 26, 24, 22, 20, 18, 16, 
+						14, 12, 10,  8,  6,  4,  2,  0
+					)
+				)
+			);
+			x = static_cast<uint32_t>(Unzipped >>  0);
+			y = static_cast<uint32_t>(Unzipped >> 32);
+		}
+		inline uint32_t bitzip2D(uint32_t x, uint32_t y) noexcept {
 			// Put both 32-bit integer into each 64-bit lane
 			const __m256i CoordVec = _mm256_set1_epi64x(
-				(static_cast<uint64_t>(b) << 32u) | a
+				(static_cast<uint64_t>(y) << 32u) | x
 			);
 			// Interleave bits from 32-bit X and Y coordinate
 			const __mmask32 Interleave = _mm256_bitshuffle_epi64_mask(
@@ -30,9 +72,9 @@ namespace libmorton {
 			return _cvtmask32_u32(Interleave);
 		}
 
-		inline uint64_t bitzip2D(uint64_t a, uint64_t b) noexcept {
+		inline uint64_t bitzip2D(uint64_t x, uint64_t y) noexcept {
 			const __m512i CoordVec = _mm512_set1_epi64(
-				(static_cast<uint64_t>(b) << 32u) | a
+				(static_cast<uint64_t>(y) << 32u) | x
 			);
 			// Interleave bits from 32-bit X and Y coordinate
 			const __mmask64 Interleave = _mm512_bitshuffle_epi64_mask(
@@ -59,9 +101,42 @@ namespace libmorton {
 			return _cvtmask64_u64(Interleave);
 		}
 		// 3D MORTONS
-		inline uint32_t bitzip3D(uint32_t a, uint32_t b, uint32_t c) noexcept {
+		inline void bitunzip3D(const uint32_t morton, uint32_t& x, uint32_t& y, uint32_t& z) noexcept {
+			// Unpack 32-bit integer in parallel into 10-bit components, within 16-bit lanes
+			const uint64_t Unzipped = _cvtmask64_u64(
+				_mm512_bitshuffle_epi64_mask(
+					_mm512_set1_epi64(morton),
+					_mm512_set_epi8(
+						~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, 
+						~0, ~0, ~0, ~0, ~0, ~0, 29, 26, 23, 20, 17, 14, 11,  8,  5,  2,
+						~0, ~0, ~0, ~0, ~0, 31, 28, 25, 22, 19, 16, 13, 10,  7,  4,  1,
+						~0, ~0, ~0, ~0, ~0, 30, 27, 24, 21, 18, 15, 12,  9,  6,  3,  0
+					)
+				)
+			);
+			x = static_cast<uint16_t>(Unzipped >>  0);
+			y = static_cast<uint16_t>(Unzipped >> 16);
+			z = static_cast<uint16_t>(Unzipped >> 32);
+		}
+		inline void bitunzip3D(const uint64_t morton, uint64_t& x, uint64_t& y, uint64_t& z) noexcept {
+			// Unpack 64-bit integer in parallel into 21-bit components
+			const uint64_t Unzipped = _cvtmask64_u64(
+				_mm512_bitshuffle_epi64_mask(
+					_mm512_set1_epi64(morton),
+					_mm512_set_epi8(
+						~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, 61, 58, 55, 52, 49, 46, 43, 40, 37, 34, 31, 28, 25, 22, 19, 16, 13, 10, 7, 4, 1,
+						~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, 63, 60, 57, 54, 51, 48, 45, 42, 39, 36, 33, 30, 27, 24, 21, 18, 15, 12, 9, 6, 3, 0
+					)
+				)
+			);
+			x = static_cast<uint32_t>(Unzipped >>  0);
+			y = static_cast<uint32_t>(Unzipped >> 32);
+			z = bmi2_detail::pext(morton, 0x4924924924924924);
+			//z = static_cast<uint32_t>(Unzipped >> 64);
+		}
+		inline uint32_t bitzip3D(uint32_t x, uint32_t y, uint32_t z) noexcept {
 			const __m256i CoordVec = _mm256_broadcastsi128_si256(
-				_mm_set_epi32(0, c, b, a)
+				_mm_set_epi32(0, z, y, x)
 			);
 			const __m256i ShuffleVec = _mm256_permutexvar_epi8(
 				_mm256_set_epi64x(
@@ -83,11 +158,11 @@ namespace libmorton {
 			);
 			return _cvtmask32_u32(Interleave);
 		}
-		inline uint64_t bitzip3D(uint64_t a, uint64_t b, uint64_t c) noexcept {
+		inline uint64_t bitzip3D(uint64_t x, uint64_t y, uint64_t z) noexcept {
 			// Put both 32-bit integers into each 64-bit lane
 			// Todo: _mm512_shuffle_epi8 version, 128-bit lane woes
 			const __m512i CoordVec = _mm512_set_epi64(
-				0, 0, 0, 0, 0, c, b, a
+				0, 0, 0, 0, 0, z, y, x
 			);
 			const __m512i ShuffleVec = _mm512_permutexvar_epi8(
 				_mm512_set_epi64(
@@ -129,11 +204,7 @@ namespace libmorton {
 
 	template<typename morton, typename coord>
 	inline void m2D_d_BITALG(const morton m, coord& x, coord& y) {
-		// Placeholder BMI implementation for verification
-		#define BMI_2D_X_MASK 0x5555555555555555
-		#define BMI_2D_Y_MASK 0xAAAAAAAAAAAAAAAA
-		x = static_cast<coord>(bmi2_detail::pext(m, static_cast<morton>(BMI_3D_X_MASK)));
-		y = static_cast<coord>(bmi2_detail::pext(m, static_cast<morton>(BMI_3D_Y_MASK)));
+		bitalg_detail::bitunzip2D(m, x, y);
 	}
 
 	template<typename morton, typename coord>
@@ -145,12 +216,6 @@ namespace libmorton {
 
 	template<typename morton, typename coord>
 	inline void m3D_d_BITALG(const morton m, coord& x, coord& y, coord& z) {
-		// Placeholder BMI implementation for verification
-		#define BMI_3D_X_MASK 0x9249249249249249
-		#define BMI_3D_Y_MASK 0x2492492492492492
-		#define BMI_3D_Z_MASK 0x4924924924924924
-		x = static_cast<coord>(bmi2_detail::pext(m, static_cast<morton>(BMI_3D_X_MASK)));
-		y = static_cast<coord>(bmi2_detail::pext(m, static_cast<morton>(BMI_3D_Y_MASK)));
-		z = static_cast<coord>(bmi2_detail::pext(m, static_cast<morton>(BMI_3D_Z_MASK)));
+		bitalg_detail::bitunzip3D(m, x, y, z);
 	}
 }
