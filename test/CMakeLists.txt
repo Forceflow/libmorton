@@ -1,0 +1,11 @@
+add_executable(libmorton_test
+  libmorton_test.cpp
+  )
+target_link_libraries(libmorton_test
+  PRIVATE
+    libmorton::libmorton
+  )
+target_include_directories(libmorton_test
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+  )
