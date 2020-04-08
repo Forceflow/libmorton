@@ -59,7 +59,7 @@ namespace libmorton {
 
 	// HELPER METHOD for Early Termination LUT Encode
 	template<typename morton, typename coord>
-	inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
+	inline morton compute2D_ET_LUT_encode(const coord c, const uint_fast16_t *LUT) {
 		unsigned long maxbit = 0;
 		if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
 		morton answer = 0;

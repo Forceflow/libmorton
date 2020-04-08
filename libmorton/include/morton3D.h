@@ -63,7 +63,7 @@ namespace libmorton {
 
 	// HELPER METHOD for ET LUT encode
 	template<typename morton, typename coord>
-	inline morton compute3D_ET_LUT_encode(const coord c, const coord *LUT) {
+	inline morton compute3D_ET_LUT_encode(const coord c, const uint_fast32_t *LUT) {
 		unsigned long maxbit = 0;
 		if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
 		morton answer = 0;
