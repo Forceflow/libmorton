@@ -4,6 +4,7 @@
 // Warning: morton.h will always point to the functions that use the fastest available method.
 
 #include <algorithm>
+#include <cmath>
 #include <stdint.h>
 #include "morton2D_LUTs.h"
 #include "morton_common.h"
