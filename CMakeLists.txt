@@ -1,4 +1,4 @@
-# CMake version > 3.8.2
+# CMake version >= 3.8.2
 # This requirement is for the "cxx_std_11" variable in target_compile_features().
 cmake_minimum_required(VERSION 3.8.2)
 project(libmorton CXX)
@@ -12,11 +12,16 @@ target_compile_features(libmorton
   )
 target_compile_options(libmorton
   INTERFACE
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+    # gcc and clang 
+    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wpedantic>
+    # Intel compiler
+    $<$<CXX_COMPILER_ID:Intel>:$<IF:$<PLATFORM_ID:Windows>,/W3,-w3>>
+    # MSVC
     $<$<CXX_COMPILER_ID:MSVC>:/W3>
   )
 target_compile_definitions(libmorton
   INTERFACE
+    # MSVC
     # To avoid errors related to std::min/std::max
     $<$<CXX_COMPILER_ID:MSVC>:NOMINMAX>
   )
