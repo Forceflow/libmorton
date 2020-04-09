@@ -20,6 +20,7 @@ target_include_directories(libmorton
   INTERFACE
     libmorton/include
   )
+add_subdirectory(libmorton)
 add_library(libmorton::libmorton ALIAS libmorton)
 
 if (LIBMORTON_BUILD_TESTS)
