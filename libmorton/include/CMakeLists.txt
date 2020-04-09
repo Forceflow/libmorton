@@ -6,4 +6,5 @@ target_sources(libmorton
     ${CMAKE_CURRENT_SOURCE_DIR}/morton2D.h
     ${CMAKE_CURRENT_SOURCE_DIR}/morton3D_LUTs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/morton3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/morton.h
   )
