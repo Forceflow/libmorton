@@ -12,9 +12,13 @@ target_compile_features(libmorton
   )
 target_compile_options(libmorton
   INTERFACE
-    -Wall
-    -Wextra
-    -Wpedantic
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+    $<$<CXX_COMPILER_ID:MSVC>:/W3>
+  )
+target_compile_definitions(libmorton
+  INTERFACE
+    # To avoid errors related to std::min/std::max
+    $<$<CXX_COMPILER_ID:MSVC>:NOMINMAX>
   )
 target_include_directories(libmorton
   INTERFACE
