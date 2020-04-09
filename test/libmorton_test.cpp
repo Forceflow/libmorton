@@ -40,7 +40,7 @@ vector<decode_2D_32_wrapper> f2D_32_decode; // 2D 32_bit decode functions
 void printRunningSums(){
 	uint_fast64_t t = 0;
 	cout << "    Running sums check: ";
-	for(size_t i = 0; i < running_sums.size(); i++) {
+	for(int i = 0; i < running_sums.size(); i++) {
 		t+= running_sums[i];
 	}
 	cout << t << endl;

@@ -273,7 +273,7 @@ static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, co
 	}
 
 	// Start performance test
-	for (size_t t = 0; t < times; t++) {
+	for (int t = 0; t < times; t++) {
 		for (size_t i = 0; i < total; i++) {
 			m = randnumbers[i % RAND_POOL_SIZE];
 			timer.start();

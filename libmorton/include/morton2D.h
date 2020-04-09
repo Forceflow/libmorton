@@ -4,7 +4,6 @@
 // Warning: morton.h will always point to the functions that use the fastest available method.
 
 #include <algorithm>
-#include <cmath>
 #include <stdint.h>
 #include "morton2D_LUTs.h"
 #include "morton_common.h"
@@ -60,7 +59,7 @@ namespace libmorton {
 
 	// HELPER METHOD for Early Termination LUT Encode
 	template<typename morton, typename coord>
-	inline morton compute2D_ET_LUT_encode(const coord c, const uint_fast16_t *LUT) {
+	inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
 		unsigned long maxbit = 0;
 		if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
 		morton answer = 0;
