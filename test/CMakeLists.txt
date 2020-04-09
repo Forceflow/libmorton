@@ -9,3 +9,12 @@ target_include_directories(libmorton_test
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
   )
+target_sources(libmorton_test
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/timer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/util.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/morton_LUT_generators.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton_test_2D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton_test_3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton_test.h
+  )
