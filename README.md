@@ -27,7 +27,12 @@ If you want to take advantage of the BMI2 instruction set (only available on Int
 No installation is required (just download the headers and include them), but I was informed libmorton is packaged for [Microsoft's VCPKG system](https://github.com/Microsoft/vcpkg) as well, if you want a more controlled environment to install C++ packages in.
 
 ## Testing
-The *test* folder contains tools I use to test correctness and performance of the libmorton implementation. This section is under heavy re-writing, but might contain some useful code for advanced usage. You can build the test suite with the provided Visual Studio project, makefile or cmake.
+The `test` folder contains tools I use to test correctness and performance of the libmorton implementation. You can regard them as unit tests. This section is under heavy re-writing, but might contain some useful code for advanced usage. 
+
+You can build the test suite:
+ * With the included Visual Studio projects (2017 / 2019)
+ * Using make: `test\makefile`
+ * Using Cmake (thanks @shohirose)
 
 ## Citation
 If you use libmorton in your published paper or work, please reference it, for example as follows:
