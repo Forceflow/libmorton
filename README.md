@@ -30,9 +30,9 @@ No installation is required (just download the headers and include them), but I 
 The `test` folder contains tools I use to test correctness and performance of the libmorton implementation. You can regard them as unit tests. This section is under heavy re-writing, but might contain some useful code for advanced usage. 
 
 You can build the test suite:
- * With the included Visual Studio projects (2017 / 2019)
+ * With the included [Visual Studio](https://visualstudio.microsoft.com/) projects (2017 / 2019) in `test\msvc*`
  * Using make: `test\makefile`
- * Using Cmake (thanks @shohirose)
+ * Using Cmake (thanks [@shohirose](https://github.com/shohirose)
 
 ## Citation
 If you use libmorton in your published paper or work, please reference it, for example as follows:
