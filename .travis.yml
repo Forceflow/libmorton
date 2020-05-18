@@ -1,8 +1,13 @@
 dist: bionic
 language: cpp
 compiler: gcc
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y install gcc-8
 script: 
   - cd test
-  - make
+  - make CXX=g++8 bmi2
+  - make CXX=g++8 avx512
+  - make CXX=g++8 test
 # This really should finish in less than 2 minutes - otherwise something's wrong
   - timeout 120 ./libmorton_test 128
