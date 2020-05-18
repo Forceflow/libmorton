@@ -30,7 +30,10 @@
     </ClInclude>
     <ClInclude Include="..\libmorton_test_3D.h" />
     <ClInclude Include="..\libmorton_test_2D.h" />
-	<ClInclude Include="..\morton_LUT_generators.h" />
+    <ClInclude Include="..\morton_LUT_generators.h" />
+    <ClInclude Include="..\..\libmorton\include\morton_AVX512BITALG.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\todo.txt" />
