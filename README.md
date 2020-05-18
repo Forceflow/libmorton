@@ -1,4 +1,4 @@
-# Libmorton v0.2.2
+# Libmorton v0.2.3
 [![Build Status](https://travis-ci.org/Forceflow/libmorton.svg?branch=master)](https://travis-ci.org/Forceflow/libmorton) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/forceflow)
 
  * Libmorton is a **C++11 header-only library** with methods to efficiently encode/decode 64, 32 and 16-bit Morton codes and coordinates, in 2D and 3D. *Morton order* is also known as *Z-order* or *[the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)*.
@@ -21,7 +21,10 @@ inline void morton3D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uin
 inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uint_fast32_t& y, uint_fast32_t& z);
 </pre>
 
-If you want to take advantage of the BMI2 instruction set (only available on Intel Haswell processors and newer), make sure `__BMI2__` is defined before you include `morton.h`. This is definitely the fastest method, but limited to certain newer CPU's.
+## Instruction sets
+In the standard case, libmorton only uses operations that are supported on pretty much any CPU you can throw it at. If you know you're compiling for a specific architecture, you might gain a speed boost in encoding/decoding operations by enabling implementations for a specific instruction set. Libmorton ships with support for:
+ * **BMI2 instruction set**: Intel Haswell CPU's and newer. Define `__BMI2__` before including `morton.h`. This is definitely a faster method when compared to the standard case.
+ * **AVX512 instruction set (experimental)**: Intel Ice Lake CPU's and newer. Uses `_mm512_bitshuffle_epi64_mask`. Define `__AVX512BITALG__` before including `morton.h`. For more info on performance, see [this PR](https://github.com/Forceflow/libmorton/pull/40).
 
 ## Installation
 No installation is required (just download the headers and include them), but I was informed libmorton is packaged for [Microsoft's VCPKG system](https://github.com/Microsoft/vcpkg) as well, if you want a more controlled environment to install C++ packages in.
@@ -32,7 +35,7 @@ The `test` folder contains tools I use to test correctness and performance of th
 You can build the test suite:
  * With the included [Visual Studio](https://visualstudio.microsoft.com/) projects (2017 / 2019) in `test\msvc*`
  * Using make: `test\makefile`
- * Using Cmake (thanks [@shohirose](https://github.com/shohirose)
+ * Using Cmake (thanks [@shohirose](https://github.com/shohirose))
 
 ## Citation
 If you use libmorton in your published paper or work, please reference it, for example as follows:
@@ -58,6 +61,7 @@ year = "2018"}
  * To [@gnzlbg](https://github.com/gnzlbg) and his Rust implementation [bitwise](https://github.com/gnzlbg) for finding bugs in the Magicbits code 
  * [@kevinhartman](https://github.com/kevinhartman) made a C++14 library that supports N-dimensional morton codes [morton-nd](https://github.com/kevinhartman/morton-nd). He upstreamed a lot of fixes back to libmorton - thanks!
  * Everyone making comments and suggestions on the [original blogpost](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/)
+ * [@Wunkulo](https://github.com/Wunkolo) for AVX512 implementation
  * Fabian Giesen's [post](https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/) on Morton Codes
 
 ## TODO
