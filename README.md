@@ -63,7 +63,12 @@ year = "2018"}
  * Everyone making comments and suggestions on the [original blogpost](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/)
  * [@Wunkulo](https://github.com/Wunkolo) for AVX512 implementation
  * Fabian Giesen's [post](https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/) on Morton Codes
+ 
+ ## Contributing
+ 
+ See [Contributing.md](https://github.com/Forceflow/libmorton/blob/master/CONTRIBUTING.md)
 
 ## TODO
+ * Add morton operations like described [here](https://en.wikipedia.org/wiki/Z-order_curve#Coordinate_values)
  * Write better test suite (with L1/L2 trashing, better tests, ...)
  * A better naming system for the functions, because m3D_e_sLUT_shifted? That escalated quickly.
