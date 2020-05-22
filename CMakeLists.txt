@@ -6,10 +6,6 @@ project(libmorton CXX)
 option(LIBMORTON_BUILD_TESTS "Build unit tests for libmorton" ON)
 
 add_library(libmorton INTERFACE)
-target_compile_features(libmorton
-  INTERFACE
-    cxx_std_11
-  )
 target_compile_options(libmorton
   INTERFACE
     # gcc and clang 
