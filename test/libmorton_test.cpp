@@ -93,14 +93,14 @@ void parseProgramParameters(int argc, char* argv[]) {
 void printHeader(){
 	cout << "LIBMORTON TEST SUITE" << endl;
 	cout << "--------------------" << endl;
-#if _WIN64 || __x86_64__  
+#if defined(_WIN64) || defined(__x86_64__)
 	cout << "++ 64-bit version" << endl;
 #else
 	cout << "++ 32-bit version" << endl;
 #endif
-#if _MSC_VER
+#if defined(_MSC_VER)
 	cout << "++ Compiled using MSVC " << _MSC_VER << endl;
-#elif __GNUC__
+#elif defined(__GNUC__)
     cout << "++ Compiled using GCC" << endl;
 #endif
 	cout << "++ Running tests until we've reached " << MAXRUNSIZE << "^3 codes" << endl;
