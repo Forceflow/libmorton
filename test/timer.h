@@ -4,13 +4,13 @@
 
 #pragma once
 
-#if _MSC_VER
+#if defined(_MSC_VER)
 #include <Windows.h>
-#elif __GNUC__
+#elif defined(__GNUC__)
 #include "time.h"
 #endif
 
-#if _MSC_VER
+#if defined(_MSC_VER)
 struct Timer { 
 	double pc_frequency = 0.0;
 	double elapsed_time_milliseconds = 0.0;
