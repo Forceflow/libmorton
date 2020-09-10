@@ -2,6 +2,7 @@
 
 // Standard headers
 #include <cstdlib>
+#include <math.h>
 #include <iostream>
 #include <sstream>
 #include <chrono>
