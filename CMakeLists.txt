@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.8.2)
 project(libmorton VERSION 0.2.6)
 
-option(LIBMORTON_BUILD_TESTS "Build unit tests for libmorton" ON)
+option(BUILD_TESTING "Build unit tests for libmorton" ON)
 
 set(libmorton_INCLUDE_DIR "${libmorton_SOURCE_DIR}")
 
@@ -36,7 +36,7 @@ target_include_directories(libmorton
 
 add_library(libmorton::libmorton ALIAS libmorton)
 
-if(LIBMORTON_BUILD_TESTS)
+if(BUILD_TESTING)
   enable_testing()
 
   add_subdirectory(test)
