@@ -1,0 +1,10 @@
+prefix=@libmorton_INSTALL_PREFIX@
+exec_prefix=${prefix}
+includedir=${prefix}/@libmorton_INSTALL_INCLUDE_DIR@
+
+Name: libmorton
+Description: C++ header-only library to efficiently encode/decode Morton codes in/from 2D/3D coordinates
+URL: https://github.com/Forceflow/libmorton
+Version: @PROJECT_VERSION@
+Cflags: -I${includedir}
+

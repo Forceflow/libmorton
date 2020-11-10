@@ -5,6 +5,7 @@
 #pragma once
 
 #if defined(_MSC_VER)
+#define NOMINMAX
 #include <Windows.h>
 #elif defined(__GNUC__)
 #include "time.h"
