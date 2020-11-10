@@ -9,7 +9,7 @@
 #include "morton2D.h"
 #include "morton3D.h"
 
-#if defined(__BMI2__) || defined(__AVX2__)
+#if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
 #include "morton_BMI.h"
 #endif
 
