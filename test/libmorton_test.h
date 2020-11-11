@@ -24,7 +24,8 @@
 #include "../libmorton/include/morton3D.h"
 #if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
 #include "morton_BMI.h"
-#elif defined(__AVX512BITALG__)
+#endif
+#if defined(__AVX512BITALG__)
 #include "morton_AVX512BITALG.h"
 #endif
 
