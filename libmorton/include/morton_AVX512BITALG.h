@@ -1,4 +1,5 @@
 #pragma once
+#if defined(__AVX512BITALG__)
 #include <immintrin.h>
 #include <stdint.h>
 
@@ -219,3 +220,4 @@ namespace libmorton {
 		bitalg_detail::bitunzip3D(m, x, y, z);
 	}
 }
+#endif
