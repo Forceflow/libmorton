@@ -14,3 +14,6 @@ avx512:
 
 clean:
 	rm -f libmorton_test libmorton_test_bmi2 libmorton_test_avx512
+
+zen2:
+	$(CXX) $(CFLAGS) -march=znver2 libmorton_test.cpp -o libmorton_test_zen2
