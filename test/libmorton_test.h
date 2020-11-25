@@ -18,19 +18,20 @@
 #include "util.h"
 #include "timer.h"
 
-// Load libraries we're going to test
 #include "morton_LUT_generators.h"
-#include "../libmorton/include/morton2D.h"
-#include "../libmorton/include/morton3D.h"
+
+// Load libraries we're going to test
+#include <libmorton/morton2D.h>
+#include <libmorton/morton3D.h>
 #if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
-#include "morton_BMI.h"
+#include <libmorton/morton_BMI.h>
 #endif
 #if defined(__AVX512BITALG__)
-#include "morton_AVX512BITALG.h"
+#include <libmorton/morton_AVX512BITALG.h>
 #endif
 
 // Load main morton include file (should be unnecessary)
-#include "../libmorton/include/morton.h"
+#include <libmorton/morton.h>
 
 using std::string;
 
@@ -127,7 +128,7 @@ void control_decode(uint64_t encoding, T&... fields) {
 template <typename valtype>
 inline string getBitString(valtype val) {
 	// bitset needs size to be known at runtime, and introducing boost dependency
-	// for dynamic bitsets is undesirable, so we get crazy and cut the relevant bits. 
+	// for dynamic bitsets is undesirable, so we get crazy and cut the relevant bits.
 	// NASTY STUFF Don't try this at home kids
 	std::bitset<128> bs(val); // we make the bitset a max of 128
 	std::string s = bs.to_string(); // stringify it

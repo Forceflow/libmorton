@@ -6,9 +6,20 @@ project(libmorton CXX)
 option(LIBMORTON_BUILD_TESTS "Build unit tests for libmorton" ON)
 
 add_library(libmorton INTERFACE)
+target_sources(libmorton
+  INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton/morton_common.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton/morton_AVX512BITALG.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton/morton_BMI.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton/morton2D_LUTs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton/morton2D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton/morton3D_LUTs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton/morton3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmorton/morton.h
+  )
 target_compile_options(libmorton
   INTERFACE
-    # gcc and clang 
+    # gcc and clang
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra -Wpedantic>
     # Intel compiler
     $<$<CXX_COMPILER_ID:Intel>:$<IF:$<PLATFORM_ID:Windows>,/W3,-w3>>
@@ -23,9 +34,8 @@ target_compile_definitions(libmorton
   )
 target_include_directories(libmorton
   INTERFACE
-    libmorton/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
   )
-add_subdirectory(libmorton)
 add_library(libmorton::libmorton ALIAS libmorton)
 
 if (LIBMORTON_BUILD_TESTS)
