@@ -1,16 +1,14 @@
-dist: bionic
+dist: focal
 language: cpp
 compiler: gcc
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
+      - cmake
       - gcc-9 g++-9
+      - ninja-build
 script: 
-  - cd test
-  - make CXX=g++-9 bmi2
-  - make CXX=g++-9 avx512
-  - make CXX=g++-9 test
+  - cmake -S . -B build/ -G Ninja -D CMAKE_BUILD_TYPE:STRING=Release -D CMAKE_INSTALL_PREFIX:PATH=../install
+  - ninja -C build/ install
 # This really should finish in less than 2 minutes - otherwise something's wrong
-  - timeout 120 ./libmorton_test 128
+  - timeout 120 ninja -C build/ test
