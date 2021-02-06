@@ -21,8 +21,8 @@
 #include "morton_LUT_generators.h"
 
 // Load libraries we're going to test
-#include <libmorton/morton2D.h>
-#include <libmorton/morton3D.h>
+#include <morton2D.h>
+#include <morton3D.h>
 #if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
 #include <libmorton/morton_BMI.h>
 #endif
@@ -31,7 +31,7 @@
 #endif
 
 // Load main morton include file (should be unnecessary)
-#include <libmorton/morton.h>
+#include <morton.h>
 
 using std::string;
 
