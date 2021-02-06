@@ -1,7 +1,7 @@
 #pragma once
 
-#include <morton2D.h>
-#include <morton3D.h>
+#include <libmorton/morton2D.h>
+#include <libmorton/morton3D.h>
 
 #include <iostream>
 
