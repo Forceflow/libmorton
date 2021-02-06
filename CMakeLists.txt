@@ -1,7 +1,7 @@
 # CMake version >= 3.8.2
 # This requirement is for the "cxx_std_11" variable in target_compile_features().
 cmake_minimum_required(VERSION 3.8.2)
-project(libmorton VERSION 0.2.6)
+project(libmorton VERSION 0.2.7)
 
 option(BUILD_TESTING "Build unit tests for libmorton" ON)
 
