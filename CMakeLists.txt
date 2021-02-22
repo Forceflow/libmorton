@@ -3,6 +3,10 @@
 cmake_minimum_required(VERSION 3.8.2)
 project(libmorton VERSION 0.2.7)
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX=1")
+endif()
+
 option(BUILD_TESTING "Build unit tests for libmorton" ON)
 
 set(libmorton_INCLUDE_DIR "${libmorton_SOURCE_DIR}/include")
