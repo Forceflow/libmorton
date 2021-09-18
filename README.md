@@ -6,7 +6,7 @@
  * More info and some benchmarks in these blogposts: [*Morton encoding*](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/), [*Libmorton*](http://www.forceflow.be/2016/01/18/libmorton-a-library-for-morton-order-encoding-decoding/) and [*BMI2 instruction set*](http://www.forceflow.be/2016/11/25/using-the-bmi2-instruction-set-to-encode-decode-morton-codes/)
 
 ## Usage
-No compilation required, just include the header `include/libmorton/morton.h`. This will always have stub functions that point to the most efficient way to encode/decode Morton codes. If you want to test out alternative (and possibly slower) methods, you can find them in `include/libmorton/morton2D.h` and `include/libmorton/morton3D.h`. **All libmorton functionality is in the `libmorton` namespace to avoid conflicts**.
+Just include the header `include/libmorton/morton.h`. This will always have stub functions that point to the most efficient way to encode/decode Morton codes. If you want to test out alternative (and possibly slower) methods, you can find them in `include/libmorton/morton2D.h` and `include/libmorton/morton3D.h`. **All libmorton functionality is in the `libmorton` namespace to avoid conflicts**.
 
 <pre>
 // ENCODING 2D / 3D morton codes, of length 32 and 64 bits
@@ -22,7 +22,7 @@ inline void morton3D_64_decode(const uint_fast64_t morton, uint_fast32_t& x, uin
 </pre>
 
 ## Installation
-No installation is required (just download the headers and include them), but I was informed libmorton is packaged for [Microsoft's VCPKG system](https://github.com/Microsoft/vcpkg) as well, if you want a more controlled environment to install C++ packages in.
+No compilation / installation is required (just download the headers and include them), but I was informed libmorton is packaged for [Microsoft's VCPKG system](https://github.com/Microsoft/vcpkg) as well, if you want a more controlled environment to install C++ packages in.
 
 ## Instruction sets
 In the standard case, libmorton only uses operations that are supported on pretty much any CPU you can throw it at. If you know you're compiling for a specific architecture, you might gain a speed boost in encoding/decoding operations by enabling implementations for a specific instruction set. Libmorton ships with support for:
