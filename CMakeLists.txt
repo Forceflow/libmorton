@@ -1,6 +1,5 @@
-# CMake version >= 3.8.2
-# This requirement is for the "cxx_std_11" variable in target_compile_features().
-cmake_minimum_required(VERSION 3.8.2)
+# CMake version >= 3.15.0 because of https://github.com/Forceflow/libmorton/issues/62
+cmake_minimum_required(VERSION 3.15.0)
 project(libmorton VERSION 0.2.7)
 
 if(MSVC)
