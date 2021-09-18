@@ -6,7 +6,7 @@
  * More info and some benchmarks in these blogposts: [*Morton encoding*](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/), [*Libmorton*](http://www.forceflow.be/2016/01/18/libmorton-a-library-for-morton-order-encoding-decoding/) and [*BMI2 instruction set*](http://www.forceflow.be/2016/11/25/using-the-bmi2-instruction-set-to-encode-decode-morton-codes/)
 
 ## Usage
-Include `libmorton/morton.h`. This will always have stub functions that point to the most efficient way to encode/decode Morton codes. If you want to test out alternative (and possibly slower) methods, you can find them in `libmorton/morton2D.h` and `libmorton/morton3D.h`. **All libmorton functionality is in the `libmorton` namespace to avoid conflicts**.
+Include the header `include/libmorton/morton.h`. This will always have stub functions that point to the most efficient way to encode/decode Morton codes. If you want to test out alternative (and possibly slower) methods, you can find them in `include/libmorton/morton2D.h` and `include/libmorton/morton3D.h`. **All libmorton functionality is in the `libmorton` namespace to avoid conflicts**.
 
 <pre>
 // ENCODING 2D / 3D morton codes, of length 32 and 64 bits
