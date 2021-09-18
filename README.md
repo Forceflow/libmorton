@@ -6,7 +6,7 @@
  * More info and some benchmarks in these blogposts: [*Morton encoding*](http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/), [*Libmorton*](http://www.forceflow.be/2016/01/18/libmorton-a-library-for-morton-order-encoding-decoding/) and [*BMI2 instruction set*](http://www.forceflow.be/2016/11/25/using-the-bmi2-instruction-set-to-encode-decode-morton-codes/)
 
 ## Usage
-Include the header `include/libmorton/morton.h`. This will always have stub functions that point to the most efficient way to encode/decode Morton codes. If you want to test out alternative (and possibly slower) methods, you can find them in `include/libmorton/morton2D.h` and `include/libmorton/morton3D.h`. **All libmorton functionality is in the `libmorton` namespace to avoid conflicts**.
+No compilation required, just include the header `include/libmorton/morton.h`. This will always have stub functions that point to the most efficient way to encode/decode Morton codes. If you want to test out alternative (and possibly slower) methods, you can find them in `include/libmorton/morton2D.h` and `include/libmorton/morton3D.h`. **All libmorton functionality is in the `libmorton` namespace to avoid conflicts**.
 
 <pre>
 // ENCODING 2D / 3D morton codes, of length 32 and 64 bits
@@ -32,7 +32,7 @@ In the standard case, libmorton only uses operations that are supported on prett
 When using MSVC, these options can be found under _Project Properties -> Code Generation -> Enable Enhanced Instruction set_.
 When using GCC (version 9.0 or higher), you can use `-march=haswell` (or `-march=znver2`) for BMI2 support and `-march=icelake-client` for AVX512 support.
 
-## Testing
+## Compiling the test suite
 The `test` folder contains tools I use to test correctness and performance of the libmorton implementation. You can regard them as unit tests. This section is under heavy re-writing, but might contain some useful code for advanced usage. 
 
 You can build the test suite:
