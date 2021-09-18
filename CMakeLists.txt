@@ -3,9 +3,13 @@
 cmake_minimum_required(VERSION 3.8.2)
 project(libmorton VERSION 0.2.7)
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX=1")
+endif()
+
 option(BUILD_TESTING "Build unit tests for libmorton" ON)
 
-set(libmorton_INCLUDE_DIR "${libmorton_SOURCE_DIR}")
+set(libmorton_INCLUDE_DIR "${libmorton_SOURCE_DIR}/include")
 
 include(GNUInstallDirs)
 set(libmorton_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
@@ -18,14 +22,14 @@ add_library(libmorton INTERFACE)
 set_property(TARGET libmorton
   PROPERTY
     PUBLIC_HEADER
-      "${libmorton_SOURCE_DIR}/libmorton/morton_common.h"
-      "${libmorton_SOURCE_DIR}/libmorton/morton_AVX512BITALG.h"
-      "${libmorton_SOURCE_DIR}/libmorton/morton_BMI.h"
-      "${libmorton_SOURCE_DIR}/libmorton/morton2D_LUTs.h"
-      "${libmorton_SOURCE_DIR}/libmorton/morton2D.h"
-      "${libmorton_SOURCE_DIR}/libmorton/morton3D_LUTs.h"
-      "${libmorton_SOURCE_DIR}/libmorton/morton3D.h"
-      "${libmorton_SOURCE_DIR}/libmorton/morton.h"
+      "${libmorton_SOURCE_DIR}/include/libmorton/morton_common.h"
+      "${libmorton_SOURCE_DIR}/include/libmorton/morton_AVX512BITALG.h"
+      "${libmorton_SOURCE_DIR}/include/libmorton/morton_BMI.h"
+      "${libmorton_SOURCE_DIR}/include/libmorton/morton2D_LUTs.h"
+      "${libmorton_SOURCE_DIR}/include/libmorton/morton2D.h"
+      "${libmorton_SOURCE_DIR}/include/libmorton/morton3D_LUTs.h"
+      "${libmorton_SOURCE_DIR}/include/libmorton/morton3D.h"
+      "${libmorton_SOURCE_DIR}/include/libmorton/morton.h"
   )
 
 target_include_directories(libmorton
