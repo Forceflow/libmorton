@@ -267,7 +267,7 @@ int main(int argc, char *argv[]) {
 	for (int i = 64; i <= MAXRUNSIZE; i = i * 2){
 		MAX = i;
 		total = MAX*MAX*MAX;
-		test_2D_performance(&f2D_64_encode, &f2D_32_encode, &f2D_64_decode, &f2D_32_decode);
+		//test_2D_performance(&f2D_64_encode, &f2D_32_encode, &f2D_64_decode, &f2D_32_decode);
 		test_3D_performance(&f3D_64_encode, &f3D_32_encode, &f3D_64_decode, &f3D_32_decode);
 		printRunningSums();
 	}
