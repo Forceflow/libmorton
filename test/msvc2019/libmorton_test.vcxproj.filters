@@ -6,32 +6,32 @@
   <ItemGroup>
     <ClInclude Include="..\libmorton_test.h" />
     <ClInclude Include="..\util.h" />
-    <ClInclude Include="..\..\libmorton\include\libmorton\morton_common.h">
+    <ClInclude Include="..\..\include\libmorton\morton_common.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libmorton\include\libmorton\morton3D_LUTs.h">
+    <ClInclude Include="..\..\include\libmorton\morton3D_LUTs.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libmorton\include\libmorton\morton2D_LUTs.h">
+    <ClInclude Include="..\..\include\libmorton\morton2D_LUTs.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
     <ClInclude Include="..\timer.h" />
-    <ClInclude Include="..\..\libmorton\include\libmorton\morton.h">
+    <ClInclude Include="..\..\include\libmorton\morton.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libmorton\include\libmorton\morton3D.h">
+    <ClInclude Include="..\..\include\libmorton\morton3D.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libmorton\include\libmorton\morton2D.h">
+    <ClInclude Include="..\..\include\libmorton\morton2D.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\libmorton\include\libmorton\morton_BMI.h">
+    <ClInclude Include="..\..\include\libmorton\morton_BMI.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
     <ClInclude Include="..\libmorton_test_3D.h" />
     <ClInclude Include="..\libmorton_test_2D.h" />
     <ClInclude Include="..\morton_LUT_generators.h" />
-    <ClInclude Include="..\..\libmorton\include\libmorton\morton_AVX512BITALG.h">
+    <ClInclude Include="..\..\include\libmorton\morton_AVX512BITALG.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
   </ItemGroup>
