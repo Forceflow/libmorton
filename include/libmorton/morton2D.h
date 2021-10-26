@@ -114,6 +114,16 @@ namespace libmorton {
 		return morton2D_SplitBy2Bits<morton, coord>(x) | (morton2D_SplitBy2Bits<morton, coord>(y) << 1);
 	}
 
+	// ENCODE 2D 32-bit morton code - alternative version by JarkkoPFC - https://gist.github.com/JarkkoPFC/0e4e599320b0cc7ea92df45fb416d79a
+	inline uint_fast32_t m2D_e_magicbits_combined(uint_fast16_t x, uint_fast16_t y) {
+		uint_fast64_t res = x | (uint64_t(y) << 32);
+		res = (res | (res << 8)) & magicbit2D_masks64[2];
+		res = (res | (res << 4)) & magicbit2D_masks64[3];
+		res = (res | (res << 2)) & magicbit2D_masks64[4];
+		res = (res | (res << 1)) & magicbit2D_masks64[5];
+		return uint_fast32_t(res | (res >> 31));
+	}
+
 	// ENCODE 2D Morton code : For Loop
 	template<typename morton, typename coord>
 	inline morton m2D_e_for(const coord x, const coord y) {
