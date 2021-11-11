@@ -122,7 +122,7 @@ namespace libmorton {
 		res = (res | (res << 2)) & magicbit2D_masks64[4];
 		res = (res | (res << 1)) & magicbit2D_masks64[5];
 		res = res | (res >> 31);
-		res = res & 0xFFFFFFFF; // hard cut off to 32 bits - some platforms will use a 64-bit type for uint_fast32_t, and we really don't want the upper 32 bits
+		res = res & 0x00000000FFFFFFFF; // hard cut off to 32 bits - some platforms will use a 64-bit type for uint_fast32_t, and we really don't want the upper 32 bits
 		return uint32_t(res | (res >> 31));
 	}
 
