@@ -115,15 +115,18 @@ namespace libmorton {
 	}
 
 	// ENCODE 2D 32-bit morton code - alternative version by JarkkoPFC - https://gist.github.com/JarkkoPFC/0e4e599320b0cc7ea92df45fb416d79a
+	// This uses the same technique as the magicbits method, but uses the upper part of a 64-bit type to split the y coordinate, 
+	// the lower part to split the x coordinate, then merges them back together.
 	inline uint_fast32_t m2D_e_magicbits_combined(uint_fast16_t x, uint_fast16_t y) {
-		uint_fast64_t res = x | (uint_fast64_t(y) << 32);
-		res = (res | (res << 8)) & magicbit2D_masks64[2];
-		res = (res | (res << 4)) & magicbit2D_masks64[3];
-		res = (res | (res << 2)) & magicbit2D_masks64[4];
-		res = (res | (res << 1)) & magicbit2D_masks64[5];
-		res = res | (res >> 31);
-		res = res & 0x00000000FFFFFFFF; // hard cut off to 32 bits - some platforms will use a 64-bit type for uint_fast32_t, and we really don't want the upper 32 bits
-		return uint32_t(res | (res >> 31));
+		uint_fast64_t m = x | (uint_fast64_t(y) << 32); // put Y in upper 32 bits, X in lower 32 bits
+		m = (m | (m << 8)) & magicbit2D_masks64[2];
+		m = (m | (m << 4)) & magicbit2D_masks64[3];
+		m = (m | (m << 2)) & magicbit2D_masks64[4];
+		m = (m | (m << 1)) & magicbit2D_masks64[5];
+		m = m | (m >> 31); // merge X and Y back together
+		// hard cut off to 32 bits, becaus on some systems uint_fast32_t will be a 64-bit type, and we don't want to retain split Y-version in the upper 32 bits.
+		m = m & 0x00000000FFFFFFFF; 
+		return uint_fast32_t(m);
 	}
 
 	// ENCODE 2D Morton code : For Loop
