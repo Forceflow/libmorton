@@ -1,7 +1,6 @@
 #pragma once
 #include "libmorton_test.h"
 
-
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
 extern size_t total;
@@ -9,7 +8,7 @@ extern size_t MAX;
 extern unsigned int times;
 extern std::vector<uint_fast64_t> running_sums;
 
-// Check a 2D Encode Function for correctness
+// Check a 2D encode function for correctness
 template <typename morton, typename coord, size_t bits>
 static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &function) {
 	
@@ -45,7 +44,7 @@ static bool check2D_EncodeFunction(const encode_f_2D_wrapper<morton, coord> &fun
 	return everything_okay;
 }
 
-// Check a 2D Decode Function for correctness
+// Check a 2D decode function for correctness
 template <typename morton, typename coord, size_t bits>
 static bool check2D_DecodeFunction(const decode_f_2D_wrapper<morton, coord> &function) {
 
@@ -93,6 +92,7 @@ static bool check2D_DecodeFunction(const decode_f_2D_wrapper<morton, coord> &fun
 	return everything_okay;
 }
 
+// Check vector of 2D encode functions for correctness
 template <typename morton, typename coord, size_t bits>
 inline bool check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, coord>> encoders) {
 	printf("++ Checking correctness of 2D encoders (%zu bit) methods ... ", bits);
@@ -104,6 +104,7 @@ inline bool check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, co
 	return ok;
 }
 
+// Check vector of 2D decode functions for correctness
 template <typename morton, typename coord, size_t bits>
 inline bool check2D_DecodeCorrectness(std::vector<decode_f_2D_wrapper<morton, coord>> decoders) {
 	printf("++ Checking correctness of 2D decoding (%zu bit) methods ... ", bits);
@@ -115,6 +116,7 @@ inline bool check2D_DecodeCorrectness(std::vector<decode_f_2D_wrapper<morton, co
 	return ok;
 }
 
+// Check 2D encode function performance (linear)
 template <typename morton, typename coord>
 static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
 	Timer timer = Timer();
@@ -132,6 +134,7 @@ static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t 
 	return timer.elapsed_time_milliseconds / (float)times;
 }
 
+// Check 2D encode function performance (random)
 template <typename morton, typename coord>
 static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t times) {
 	Timer timer = Timer();
@@ -156,4 +159,16 @@ static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t 
 	}
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
+}
+
+// TODO: Check 2D decode function performance (linear)
+template <typename morton, typename coord>
+static double testDecode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
+	// TODO
+}
+
+// TODO: Check 2D decode function performance (random)
+template <typename morton, typename coord>
+static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t times) {
+	// TODO
 }
