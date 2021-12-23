@@ -14,9 +14,9 @@ using namespace libmorton;
 
 /// GLOBALS
 // Program params
-int MAXRUNSIZE = 256;
+int MAXRUNSIZE = 256; // the max power of 2 we're going to run tests to (starting at 64)
+size_t CURRENT_TEST_MAX; // current test run max
 // Configuration
-size_t MAX;
 unsigned int times;
 size_t total;
 size_t RAND_POOL_SIZE = 10000;
@@ -48,7 +48,7 @@ void printRunningSums(){
 
 static void test_2D_performance(vector<encode_2D_64_wrapper>* funcs64_encode, vector<encode_2D_32_wrapper>* funcs32_encode,
 	vector<decode_2D_64_wrapper>* funcs64_decode, vector<decode_2D_32_wrapper>* funcs32_decode) {
-	cout << "++ (2D) Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "++ (2D) Encoding " << CURRENT_TEST_MAX << "^3 morton codes (" << total << " in total)" << endl;
 	cout << "+++ (2D) Encoding 64-bit sized morton codes" << endl;
 	stringstream os;
 	//os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
@@ -87,7 +87,7 @@ static void test_3D_performance(vector<encode_3D_64_wrapper>* funcs64_encode, ve
 	vector<decode_3D_64_wrapper>* funcs64_decode, vector<decode_3D_32_wrapper>* funcs32_decode) {
 	stringstream os;
 	//os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
-	cout << "++ (3D) Encoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "++ (3D) Encoding " << CURRENT_TEST_MAX << "^3 morton codes (" << total << " in total)" << endl;
 	cout << "+++ (3D) Encoding 64-bit sized morton codes" << endl;
 	// TODO: Indicate the fastest here
 	for (auto it = (*funcs64_encode).begin(); it != f3D_64_encode.end(); it++) {
@@ -103,7 +103,7 @@ static void test_3D_performance(vector<encode_3D_64_wrapper>* funcs64_encode, ve
 		os << testEncode_3D_Random_Perf((*it).encode, times) << " ms\t";
 		cout << os.str() << "32-bit " << (*it).description << endl;
 	}
-	cout << "++ (3D) Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "++ (3D) Decoding " << CURRENT_TEST_MAX << "^3 morton codes (" << total << " in total)" << endl;
 	cout << "+++ (3D) Decoding 64-bit sized morton codes" << endl;
 	for (auto it = (*funcs64_decode).begin(); it != f3D_64_decode.end(); it++) {
 		os.str("");
@@ -229,12 +229,17 @@ void registerFunctions() {
 	f2D_32_decode.push_back(decode_2D_32_wrapper("LUT Pre-shifted", &m2D_d_sLUT<uint_fast32_t, uint_fast16_t>));
 	f2D_32_decode.push_back(decode_2D_32_wrapper("LUT Early Termination", &m2D_d_LUT_ET<uint_fast32_t, uint_fast16_t>));
 	f2D_32_decode.push_back(decode_2D_32_wrapper("LUT", &m2D_d_LUT<uint_fast32_t, uint_fast16_t>));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("Magicbits Combined", &m2D_d_magicbits_combined));
+	f2D_32_decode.push_back(decode_2D_32_wrapper("Magicbits", &m2D_d_magicbits<uint_fast32_t, uint_fast16_t>));
 	f2D_32_decode.push_back(decode_2D_32_wrapper("For", &m2D_d_for<uint_fast32_t, uint_fast16_t>));
 	f2D_32_decode.push_back(decode_2D_32_wrapper("For ET", &m2D_d_for_ET<uint_fast32_t, uint_fast16_t>));
-	f2D_32_decode.push_back(decode_2D_32_wrapper("Magicbits", &m2D_d_magicbits<uint_fast32_t, uint_fast16_t>));
+	
 }
 
 int main(int argc, char *argv[]) {
+
+	// TODO: fix the mess that is the times, average runs, etc ... parameter settings
+
 	times = 1;
 	parseProgramParameters(argc, argv);
 	printHeader();
@@ -265,8 +270,8 @@ int main(int argc, char *argv[]) {
 	// PERFORMANCE TESTS
 	cout << "++ Running each performance test " << times << " times and averaging results" << endl;
 	for (int i = 64; i <= MAXRUNSIZE; i = i * 2){
-		MAX = i;
-		total = MAX*MAX*MAX;
+		CURRENT_TEST_MAX = i;
+		total = CURRENT_TEST_MAX*CURRENT_TEST_MAX*CURRENT_TEST_MAX;
 		test_2D_performance(&f2D_64_encode, &f2D_32_encode, &f2D_64_decode, &f2D_32_decode);
 		test_3D_performance(&f3D_64_encode, &f3D_32_encode, &f3D_64_decode, &f3D_32_decode);
 		printRunningSums();
