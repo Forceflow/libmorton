@@ -4,7 +4,7 @@
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
 extern size_t total;
-extern size_t MAX;
+extern size_t CURRENT_TEST_MAX;
 extern unsigned int times;
 extern std::vector<uint_fast64_t> running_sums;
 
@@ -116,14 +116,56 @@ inline bool check2D_DecodeCorrectness(std::vector<decode_f_2D_wrapper<morton, co
 	return ok;
 }
 
+//// Check a 2D Encode/Decode function for correct encode-decode process
+//template<typename morton, typename coord, size_t bits>
+//inline bool check2D_Match(const encode_f_2D_wrapper<morton, coord>& encode, decode_f_2D_wrapper<morton, coord>& decode, unsigned int times) {
+//	bool everythingokay = true;
+//	for (unsigned int i = 0; i < times; ++i) {
+//		coord maximum = (coord)(pow(2, floor(bits / 3.0f)) - 1.0f);
+//		// generate random coordinates
+//		coord x = rand() % maximum;
+//		coord y = rand() % maximum;
+//		coord z = rand() % maximum;
+//		coord x_result, y_result, z_result;
+//		morton mortonresult = encode.encode(x, y, z);
+//		decode.decode(mortonresult, x_result, y_result, z_result);
+//		if ((x != x_result) | (y != y_result) | (z != z_result)) {
+//			std::cout << "\n" << "x: " << getBitString<coord>(x) << " (" << x << ")\n";
+//			std::cout << "y: " << getBitString<coord>(y) << " (" << y << ")\n";
+//			std::cout << "z: " << getBitString<coord>(z) << " (" << z << ")\n";
+//			std::cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")\n";
+//			std::cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")\n";
+//			std::cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")\n";
+//			std::cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")\n";
+//			std::cout << bits << "-bit ";
+//			std::cout << "using methods encode " << encode.description << " and decode " << decode.description << "\n";
+//			everythingokay = false;
+//		}
+//	}
+//	return everythingokay;
+//}
+//
+//template <typename morton, typename coord, size_t bits>
+//inline bool check2D_EncodeDecodeMatch(std::vector<encode_f_2D_wrapper<morton, coord>> encoders, std::vector<decode_f_2D_wrapper<morton, coord>> decoders, unsigned int times) {
+//	printf("++ Checking 3D methods (%zd bit) encode/decode match ... ", bits);
+//	bool ok = true;
+//	for (auto et = encoders.begin(); et != encoders.end(); et++) {
+//		for (auto dt = decoders.begin(); dt != decoders.end(); dt++) {
+//			ok &= check2D_Match<morton, coord, bits>(*et, *dt, times);
+//		}
+//	}
+//	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+//	return ok;
+//}
+
 // Check 2D encode function performance (linear)
 template <typename morton, typename coord>
 static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
 	Timer timer = Timer();
 	morton runningsum = 0;
 	for (size_t t = 0; t < times; t++) {
-		for (coord i = 0; i < MAX; i++) {
-			for (coord j = 0; j < MAX; j++) {
+		for (coord i = 0; i < CURRENT_TEST_MAX; i++) {
+			for (coord j = 0; j < CURRENT_TEST_MAX; j++) {
 				timer.start();
 				runningsum += function(i, j);
 				timer.stop();
@@ -169,6 +211,6 @@ static double testDecode_2D_Linear_Perf(morton(*function)(coord, coord), size_t 
 
 // TODO: Check 2D decode function performance (random)
 template <typename morton, typename coord>
-static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t times) {
+static double testDecode_2D_Random_Perf(morton(*function)(coord, coord), size_t times) {
 	// TODO
 }

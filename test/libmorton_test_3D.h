@@ -5,7 +5,7 @@
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
 extern size_t total;
-extern size_t MAX;
+extern size_t CURRENT_TEST_MAX;
 extern unsigned int times;
 extern std::vector<uint_fast64_t> running_sums;
 
@@ -166,9 +166,9 @@ static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), 
 	Timer timer = Timer();
 	morton runningsum = 0;
 	for (size_t t = 0; t < times; t++) {
-		for (coord i = 0; i < MAX; i++) {
-			for (coord j = 0; j < MAX; j++) {
-				for (coord k = 0; k < MAX; k += 8) {
+		for (coord i = 0; i < CURRENT_TEST_MAX; i++) {
+			for (coord j = 0; j < CURRENT_TEST_MAX; j++) {
+				for (coord k = 0; k < CURRENT_TEST_MAX; k += 8) {
 					timer.start();
 					runningsum += function(i, j, k);
 					runningsum += function(i, j, k + 1);
