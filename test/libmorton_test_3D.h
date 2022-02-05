@@ -1,6 +1,7 @@
 #pragma once
 #include "libmorton_test.h"
 
+using namespace std;
 
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
@@ -284,4 +285,41 @@ static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, co
 	}
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
+}
+
+static void test_3D_performance(vector<encode_3D_64_wrapper>* funcs64_encode, vector<encode_3D_32_wrapper>* funcs32_encode,
+	vector<decode_3D_64_wrapper>* funcs64_decode, vector<decode_3D_32_wrapper>* funcs32_decode) {
+	stringstream os;
+	//os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
+	cout << "++ (3D) Encoding " << CURRENT_TEST_MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "+++ (3D) Encoding 64-bit sized morton codes" << endl;
+	// TODO: Indicate the fastest here
+	for (auto it = (*funcs64_encode).begin(); it != (*funcs64_encode).end(); it++) {
+		os.str("");
+		os << testEncode_3D_Linear_Perf((*it).encode, times) << " ms\t";
+		os << testEncode_3D_Random_Perf((*it).encode, times) << " ms\t";
+		cout << os.str() << "64-bit " << (*it).description << endl;
+	}
+	cout << "+++ (3D) Encoding 32-bit sized morton codes" << endl;
+	for (auto it = (*funcs32_encode).begin(); it != (*funcs32_encode).end(); it++) {
+		os.str("");
+		os << testEncode_3D_Linear_Perf((*it).encode, times) << " ms\t";
+		os << testEncode_3D_Random_Perf((*it).encode, times) << " ms\t";
+		cout << os.str() << "32-bit " << (*it).description << endl;
+	}
+	cout << "++ (3D) Decoding " << CURRENT_TEST_MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "+++ (3D) Decoding 64-bit sized morton codes" << endl;
+	for (auto it = (*funcs64_decode).begin(); it != (*funcs64_decode).end(); it++) {
+		os.str("");
+		os << testDecode_3D_Linear_Perf((*it).decode, times) << " ms\t";
+		os << testDecode_3D_Random_Perf((*it).decode, times) << " ms\t";
+		cout << os.str() << "64-bit " << (*it).description << endl;
+	}
+	cout << "+++ (3D) Decoding 32-bit sized morton codes" << endl;
+	for (auto it = (*funcs32_decode).begin(); it != (*funcs32_decode).end(); it++) {
+		os.str("");
+		os << testDecode_3D_Linear_Perf((*it).decode, times) << " ms\t";
+		os << testDecode_3D_Random_Perf((*it).decode, times) << " ms\t";
+		cout << os.str() << "32-bit " << (*it).description << endl;
+	}
 }

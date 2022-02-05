@@ -1,12 +1,16 @@
 #pragma once
 #include "libmorton_test.h"
 
+using namespace std;
+
 // Config variables (defined elsewhere)
 extern size_t RAND_POOL_SIZE;
 extern size_t total;
 extern size_t CURRENT_TEST_MAX;
 extern unsigned int times;
 extern std::vector<uint_fast64_t> running_sums;
+
+
 
 // Check a 2D encode function for correctness
 template <typename morton, typename coord, size_t bits>
@@ -213,4 +217,41 @@ static double testDecode_2D_Linear_Perf(morton(*function)(coord, coord), size_t 
 template <typename morton, typename coord>
 static double testDecode_2D_Random_Perf(morton(*function)(coord, coord), size_t times) {
 	// TODO
+}
+
+static void test_2D_performance(vector<encode_2D_64_wrapper>* funcs64_encode, vector<encode_2D_32_wrapper>* funcs32_encode,
+	vector<decode_2D_64_wrapper>* funcs64_decode, vector<decode_2D_32_wrapper>* funcs32_decode) {
+	cout << "++ (2D) Encoding " << CURRENT_TEST_MAX << "^3 morton codes (" << total << " in total)" << endl;
+	cout << "+++ (2D) Encoding 64-bit sized morton codes" << endl;
+	stringstream os;
+	//os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
+	for (auto it = (*funcs64_encode).begin(); it != (*funcs64_encode).end(); it++) {
+		os.str("");
+		os << testEncode_2D_Linear_Perf((*it).encode, times) << " ms\t";
+		os << testEncode_2D_Random_Perf((*it).encode, times) << " ms\t";
+		cout << os.str() << "64-bit " << (*it).description << endl;
+	}
+	cout << "+++ (2D) Encoding 32-bit sized morton codes" << endl;
+	for (auto it = (*funcs32_encode).begin(); it != (*funcs32_encode).end(); it++) {
+		os.str("");
+		os << testEncode_2D_Linear_Perf((*it).encode, times) << " ms\t";
+		os << testEncode_2D_Random_Perf((*it).encode, times) << " ms\t";
+		cout << os.str() << "32-bit " << (*it).description << endl;
+	}
+	// cout << "++ Decoding " << MAX << "^3 morton codes (" << total << " in total)" << endl;
+	// cout << "+++ Decoding 64-bit sized morton codes" << endl;
+	// for (auto it = (*funcs64_decode).begin(); it != f2D_64_decode.end(); it++) {
+	// 	os.str("");
+	// 	os << testDecode_2D_Linear_Perf((*it).decode, times) << " ms ";
+	// 	os << testDecode_2D_Random_Perf((*it).decode, times) << " ms";
+	// 	cout << "    " << os.str() << " : 64-bit " << (*it).description << endl;
+	// }
+	// cout << "+++ Decoding 32-bit sized morton codes" << endl;
+	// for (auto it = (*funcs32_decode).begin(); it != f2D_32_decode.end(); it++) {
+	// 	os.str("");
+	// 	os << setfill('0') << std::setw(6) << std::fixed << std::setprecision(3);
+	// 	os << testDecode_3D_Linear_Perf((*it).decode, times) << " ms ";
+	// 	os << testDecode_3D_Random_Perf((*it).decode, times) << " ms";
+	// 	cout << "    " << os.str() << " : 32-bit " << (*it).description << endl;
+	// }
 }
