@@ -5,8 +5,10 @@
 
 // Utility headers
 #include "libmorton_test.h"
-#include "libmorton_test_2D.h"
-#include "libmorton_test_3D.h"
+#include "test2D_correctness.h"
+#include "test2D_performance.h"
+#include "test3D_correctness.h"
+#include "test3D_performance.h"
 
 using namespace std;
 using namespace std::chrono;

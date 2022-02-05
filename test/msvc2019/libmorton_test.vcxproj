@@ -172,8 +172,10 @@
     <ClInclude Include="..\..\include\libmorton\morton_common.h" />
     <ClInclude Include="..\libmorton_test.h" />
     <ClInclude Include="..\morton_LUT_generators.h" />
-    <ClInclude Include="..\libmorton_test_2D.h" />
-    <ClInclude Include="..\libmorton_test_3D.h" />
+    <ClInclude Include="..\test2D_performance.h" />
+    <ClInclude Include="..\test3D_performance.h" />
+    <ClInclude Include="..\test2D_correctness.h" />
+    <ClInclude Include="..\test3D_correctness.h" />
     <ClInclude Include="..\timer.h" />
     <ClInclude Include="..\util.h" />
   </ItemGroup>

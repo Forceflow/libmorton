@@ -28,12 +28,14 @@
     <ClInclude Include="..\..\include\libmorton\morton_BMI.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\libmorton_test_3D.h" />
-    <ClInclude Include="..\libmorton_test_2D.h" />
+    <ClInclude Include="..\test3D_performance.h" />
+    <ClInclude Include="..\test2D_performance.h" />
     <ClInclude Include="..\morton_LUT_generators.h" />
     <ClInclude Include="..\..\include\libmorton\morton_AVX512BITALG.h">
       <Filter>libmorton_headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\test2D_correctness.h" />
+    <ClInclude Include="..\test3D_correctness.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\todo.txt" />
