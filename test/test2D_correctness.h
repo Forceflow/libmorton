@@ -102,7 +102,7 @@ inline bool check2D_EncodeCorrectness(std::vector<encode_f_2D_wrapper<morton, co
 	for (auto it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check2D_EncodeFunction<morton, coord, bits>(*it);
 	}
-	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	ok ? printPassed() : printFailed();
 	return ok;
 }
 
@@ -114,48 +114,45 @@ inline bool check2D_DecodeCorrectness(std::vector<decode_f_2D_wrapper<morton, co
 	for (auto it = decoders.begin(); it != decoders.end(); it++) {
 		ok &= check2D_DecodeFunction<morton, coord, bits>(*it);
 	}
-	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	ok ? printPassed() : printFailed();
 	return ok;
 }
 
-//// Check a 2D Encode/Decode function for correct encode-decode process
-//template<typename morton, typename coord, size_t bits>
-//inline bool check2D_Match(const encode_f_2D_wrapper<morton, coord>& encode, decode_f_2D_wrapper<morton, coord>& decode, unsigned int times) {
-//	bool everythingokay = true;
-//	for (unsigned int i = 0; i < times; ++i) {
-//		coord maximum = (coord)(pow(2, floor(bits / 3.0f)) - 1.0f);
-//		// generate random coordinates
-//		coord x = rand() % maximum;
-//		coord y = rand() % maximum;
-//		coord z = rand() % maximum;
-//		coord x_result, y_result, z_result;
-//		morton mortonresult = encode.encode(x, y, z);
-//		decode.decode(mortonresult, x_result, y_result, z_result);
-//		if ((x != x_result) | (y != y_result) | (z != z_result)) {
-//			std::cout << "\n" << "x: " << getBitString<coord>(x) << " (" << x << ")\n";
-//			std::cout << "y: " << getBitString<coord>(y) << " (" << y << ")\n";
-//			std::cout << "z: " << getBitString<coord>(z) << " (" << z << ")\n";
-//			std::cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")\n";
-//			std::cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")\n";
-//			std::cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")\n";
-//			std::cout << "z_result: " << getBitString<coord>(z_result) << " (" << z_result << ")\n";
-//			std::cout << bits << "-bit ";
-//			std::cout << "using methods encode " << encode.description << " and decode " << decode.description << "\n";
-//			everythingokay = false;
-//		}
-//	}
-//	return everythingokay;
-//}
-//
-//template <typename morton, typename coord, size_t bits>
-//inline bool check2D_EncodeDecodeMatch(std::vector<encode_f_2D_wrapper<morton, coord>> encoders, std::vector<decode_f_2D_wrapper<morton, coord>> decoders, unsigned int times) {
-//	printf("++ Checking 3D methods (%zd bit) encode/decode match ... ", bits);
-//	bool ok = true;
-//	for (auto et = encoders.begin(); et != encoders.end(); et++) {
-//		for (auto dt = decoders.begin(); dt != decoders.end(); dt++) {
-//			ok &= check2D_Match<morton, coord, bits>(*et, *dt, times);
-//		}
-//	}
-//	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
-//	return ok;
-//}
+// Check a 2D Encode/Decode function for correct encode-decode process
+template<typename morton, typename coord, size_t bits>
+inline bool check2D_Match(const encode_f_2D_wrapper<morton, coord>& encode, decode_f_2D_wrapper<morton, coord>& decode, unsigned int times) {
+	bool everythingokay = true;
+	for (unsigned int i = 0; i < RAND_POOL_SIZE; ++i) {
+		coord maximum = (coord)(pow(2, floor(bits / 2.0f)) - 1.0f);
+		// generate random coordinates
+		coord x = rand() % maximum;
+		coord y = rand() % maximum;
+		coord x_result, y_result;
+		morton mortonresult = encode.encode(x, y);
+		decode.decode(mortonresult, x_result, y_result);
+		if ((x != x_result) | (y != y_result)) {
+			std::cout << "\n" << "x: " << getBitString<coord>(x) << " (" << x << ")\n";
+			std::cout << "y: " << getBitString<coord>(y) << " (" << y << ")\n";
+			std::cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")\n";
+			std::cout << "x_result: " << getBitString<coord>(x_result) << " (" << x_result << ")\n";
+			std::cout << "y_result: " << getBitString<coord>(y_result) << " (" << y_result << ")\n";
+			std::cout << bits << "-bit ";
+			std::cout << "using methods encode " << encode.description << " and decode " << decode.description << "\n";
+			everythingokay = false;
+		}
+	}
+	return everythingokay;
+}
+
+template <typename morton, typename coord, size_t bits>
+inline bool check2D_EncodeDecodeMatch(std::vector<encode_f_2D_wrapper<morton, coord>> encoders, std::vector<decode_f_2D_wrapper<morton, coord>> decoders, unsigned int times) {
+	printf("++ Checking 2D methods (%zd bit) encode/decode match ...", bits);
+	bool ok = true;
+	for (auto et = encoders.begin(); et != encoders.end(); et++) {
+		for (auto dt = decoders.begin(); dt != decoders.end(); dt++) {
+			ok &= check2D_Match<morton, coord, bits>(*et, *dt, times);
+		}
+	}
+	ok ? printPassed() : printFailed();
+	return ok;
+}
