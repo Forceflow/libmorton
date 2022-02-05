@@ -135,7 +135,7 @@ inline bool check3D_EncodeCorrectness(std::vector<encode_f_3D_wrapper<morton, co
 	for (auto it = encoders.begin(); it != encoders.end(); it++) {
 		ok &= check3D_EncodeFunction<morton, coord, bits>(*it);
 	}
-	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	ok ? printPassed() : printFailed();
 	return ok;
 }
 
@@ -146,7 +146,7 @@ inline bool check3D_DecodeCorrectness(std::vector<decode_f_3D_wrapper<morton, co
 	for (auto it = decoders.begin(); it != decoders.end(); it++) {
 		ok &= check3D_DecodeFunction<morton, coord, bits>(*it);
 	}
-	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	ok ? printPassed() : printFailed();
 	return ok;
 }
 
@@ -159,6 +159,6 @@ inline bool check3D_EncodeDecodeMatch(std::vector<encode_f_3D_wrapper<morton, co
 			ok &= check3D_Match<morton, coord, bits>(*et, *dt, times);
 		}
 	}
-	ok ? printf(" Passed. \n") : printf("    One or more methods failed. \n");
+	ok ? printPassed() : printFailed();
 	return ok;
 }

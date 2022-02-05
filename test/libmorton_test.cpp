@@ -55,17 +55,16 @@ void parseProgramParameters(int argc, char* argv[]) {
 }
 
 void printHeader(){
-	cout << "LIBMORTON TEST SUITE" << endl;
-	cout << "--------------------" << endl;
+	cout << "LIBMORTON TEST SUITE";
 #if defined(_WIN64) || defined(__x86_64__)
-	cout << "++ 64-bit version" << endl;
+	cout << " (64-bit version)";
 #else
-	cout << "++ 32-bit version" << endl;
+	cout << " (32-bit version)";
 #endif
 #if defined(_MSC_VER)
-	cout << "++ Compiled using MSVC " << _MSC_VER << endl;
+	cout << " (Compiler: MSVC " << _MSC_VER << ")" << endl;
 #elif defined(__GNUC__)
-    cout << "++ Compiled using GCC" << endl;
+    cout << " (Compiler: GCC) " << endl;
 #endif
 	cout << "++ Running tests until we've reached " << MAXRUNSIZE << "^3 codes" << endl;
 }
@@ -164,16 +163,23 @@ void registerFunctions() {
 	
 }
 
+void printFunctionStats() {
+	printf("Registered 3D encoders: %ull (64-bit) %i (32-bit) \n", f3D_64_encode.size(), f3D_32_encode.size());
+	printf("Registered 3D decoders: %ull (64-bit) %i (32-bit) \n", f3D_64_decode.size(), f3D_32_decode.size());
+	printf("Registered 2D encoders: %ull (64-bit) %i (32-bit) \n", f2D_64_encode.size(), f2D_32_encode.size());
+	printf("Registered 2D decoders: %ull (64-bit) %i (32-bit) \n", f2D_64_decode.size(), f2D_32_decode.size());
+}
+
 int main(int argc, char *argv[]) {
 
 	// TODO: fix the mess that is the times, average runs, etc ... parameter settings
-
 	times = 1;
 	parseProgramParameters(argc, argv);
 	printHeader();
 
 	// register functions
 	registerFunctions();
+	printFunctionStats();
 
 	// CORRECTNESS TESTS
 	bool correct = true;
@@ -186,6 +192,8 @@ int main(int argc, char *argv[]) {
 	correct = correct && check3D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_decode);
 
 	cout << "++ Checking 2D methods for correctness" << endl;
+	correct = correct && check2D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t, 64>(f2D_64_encode, f2D_64_decode, times);
+	correct = correct && check2D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t, 32>(f2D_32_encode, f2D_32_decode, times);
 	correct = correct && check2D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_encode);
 	correct = correct && check2D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_encode);
 	correct = correct && check2D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_decode);

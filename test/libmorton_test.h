@@ -161,3 +161,15 @@ void printIncorrectDecoding3D(string method_tested, morton m, coord x, coord y, 
 		<< getBitString<coord>(correct_z) << ")\n";
 }
 
+void printFailed() {
+	printf("\033[1;31m");
+	printf("Failed");
+	printf("\033[0m \n");
+}
+
+void printPassed() {
+	printf("\033[1;32m");
+	printf("Passed");
+	printf("\033[0m \n");
+}
+
