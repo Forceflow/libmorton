@@ -20,7 +20,7 @@ static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), 
 	for (size_t t = 0; t < times; t++) {
 		for (coord i = 0; i < CURRENT_TEST_MAX; i++) {
 			for (coord j = 0; j < CURRENT_TEST_MAX; j++) {
-				for (coord k = 0; k < CURRENT_TEST_MAX; k += 8) {
+				for (coord k = 0; k < CURRENT_TEST_MAX; k += 8) { // inner loop is unrolled
 					timer.start();
 					runningsum += function(i, j, k);
 					runningsum += function(i, j, k + 1);
@@ -81,11 +81,12 @@ static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), 
 
 template <typename morton, typename coord>
 static double testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, coord&, coord&), size_t times) {
+	size_t max_morton = CURRENT_TEST_MAX * CURRENT_TEST_MAX * CURRENT_TEST_MAX;
 	Timer timer = Timer();
 	coord x, y, z;
 	coord runningsum = 0;
 	for (size_t t = 0; t < times; t++) {
-		for (morton i = 0; i < total; i += 8) {
+		for (morton i = 0; i < max_morton; i += 8) {
 			timer.start();
 			function(i, x, y, z);
 			runningsum += x + y + z;

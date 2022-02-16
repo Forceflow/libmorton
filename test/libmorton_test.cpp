@@ -207,8 +207,9 @@ int main(int argc, char *argv[]) {
 	cout << "++ Running each performance test " << times << " times and averaging results" << endl;
 	for (int i = 64; i <= MAXRUNSIZE; i = i * 2){
 		CURRENT_TEST_MAX = i;
-		total = CURRENT_TEST_MAX*CURRENT_TEST_MAX*CURRENT_TEST_MAX;
+		total = CURRENT_TEST_MAX * CURRENT_TEST_MAX;
 		test_2D_performance(&f2D_64_encode, &f2D_32_encode, &f2D_64_decode, &f2D_32_decode);
+		total = CURRENT_TEST_MAX * CURRENT_TEST_MAX * CURRENT_TEST_MAX;
 		test_3D_performance(&f3D_64_encode, &f3D_32_encode, &f3D_64_decode, &f3D_32_decode);
 		printRunningSums();
 	}
