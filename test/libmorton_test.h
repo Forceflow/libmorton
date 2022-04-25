@@ -22,7 +22,7 @@
 // Load libraries we're going to test
 #include <libmorton/morton2D.h>
 #include <libmorton/morton3D.h>
-#if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
+#if defined(__BMI2__) || defined(__AVX2__)
 #include <libmorton/morton_BMI.h>
 #endif
 #if defined(__AVX512BITALG__)

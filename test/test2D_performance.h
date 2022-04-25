@@ -10,9 +10,6 @@ extern size_t CURRENT_TEST_MAX;
 extern unsigned int times;
 extern std::vector<uint_fast64_t> running_sums;
 
-
-
-
 // Check 2D encode function performance (linear)
 template <typename morton, typename coord>
 static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
