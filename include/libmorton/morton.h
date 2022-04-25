@@ -9,7 +9,7 @@
 #include "morton2D.h"
 #include "morton3D.h"
 
-#if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
+#if defined(__BMI2__) || defined(__AVX2__)
 #include "morton_BMI.h"
 #elif defined(__AVX512BITALG__)
 #include "morton_AVX512BITALG.h"
@@ -20,7 +20,7 @@ namespace libmorton {
 	//-----------------------------------------------------------------------------------------------
 
 	// ENCODING
-#if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
+#if defined(__BMI2__) || defined(__AVX2__)
 	inline uint_fast32_t morton2D_32_encode(const uint_fast16_t x, const uint_fast16_t y) {
 		return m2D_e_BMI<uint_fast32_t, uint_fast16_t>(x, y);
 	}
@@ -63,7 +63,7 @@ namespace libmorton {
 
 	// DECODING
 
-#if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
+#if defined(__BMI2__) || defined(__AVX2__)
 	inline void morton2D_32_decode(const uint_fast32_t morton, uint_fast16_t& x, uint_fast16_t& y) {
 		m2D_d_BMI<uint_fast32_t, uint_fast16_t>(morton, x, y);
 	}

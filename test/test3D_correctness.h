@@ -112,7 +112,7 @@ inline bool check3D_Match(const encode_f_3D_wrapper<morton, coord>& encode, deco
 		coord x_result, y_result, z_result;
 		morton mortonresult = encode.encode(x, y, z);
 		decode.decode(mortonresult, x_result, y_result, z_result);
-		if ((x != x_result) | (y != y_result) | (z != z_result)) {
+		if ((x != x_result) || (y != y_result) || (z != z_result)) {
 			std::cout << "\n" << "x: " << getBitString<coord>(x) << " (" << x << ")\n";
 			std::cout << "y: " << getBitString<coord>(y) << " (" << y << ")\n";
 			std::cout << "z: " << getBitString<coord>(z) << " (" << z << ")\n";

@@ -1,5 +1,5 @@
 #pragma once
-#if defined(__BMI2__) || (defined(__AVX2__) && defined(_MSC_VER))
+#if defined(__BMI2__) || defined(__AVX2__)
 #include <immintrin.h>
 #include <stdint.h>
 

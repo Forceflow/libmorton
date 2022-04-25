@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\libmorton_test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\libmorton_test.h" />
+    <ClInclude Include="..\util.h" />
+    <ClInclude Include="..\..\include\libmorton\morton_common.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libmorton\morton3D_LUTs.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libmorton\morton2D_LUTs.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\timer.h" />
+    <ClInclude Include="..\..\include\libmorton\morton.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libmorton\morton3D.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libmorton\morton2D.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libmorton\morton_BMI.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\test3D_performance.h" />
+    <ClInclude Include="..\test2D_performance.h" />
+    <ClInclude Include="..\morton_LUT_generators.h" />
+    <ClInclude Include="..\..\include\libmorton\morton_AVX512BITALG.h">
+      <Filter>libmorton_headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\test2D_correctness.h" />
+    <ClInclude Include="..\test3D_correctness.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\todo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="libmorton_headers">
+      <UniqueIdentifier>{fb4eb107-a763-4742-9111-cd941c432a26}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
