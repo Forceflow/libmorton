@@ -130,7 +130,7 @@ inline bool check2D_Match(const encode_f_2D_wrapper<morton, coord>& encode, deco
 		coord x_result, y_result;
 		morton mortonresult = encode.encode(x, y);
 		decode.decode(mortonresult, x_result, y_result);
-		if ((x != x_result) | (y != y_result)) {
+		if ((x != x_result) || (y != y_result)) {
 			std::cout << "\n" << "x: " << getBitString<coord>(x) << " (" << x << ")\n";
 			std::cout << "y: " << getBitString<coord>(y) << " (" << y << ")\n";
 			std::cout << "morton: " << getBitString<morton>(mortonresult) << "(" << mortonresult << ")\n";

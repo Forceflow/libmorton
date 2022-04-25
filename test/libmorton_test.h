@@ -17,7 +17,6 @@
 // Load utils
 #include "util.h"
 #include "timer.h"
-
 #include "morton_LUT_generators.h"
 
 // Load libraries we're going to test
