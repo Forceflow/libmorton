@@ -17,11 +17,11 @@ template <typename morton, typename coord>
 static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), size_t times) {
 	Timer timer = Timer();
 	morton runningsum = 0;
+	timer.start();
 	for (size_t t = 0; t < times; t++) {
 		for (coord i = 0; i < CURRENT_TEST_MAX; i++) {
 			for (coord j = 0; j < CURRENT_TEST_MAX; j++) {
 				for (coord k = 0; k < CURRENT_TEST_MAX; k += 8) { // inner loop is unrolled
-					timer.start();
 					runningsum += function(i, j, k);
 					runningsum += function(i, j, k + 1);
 					runningsum += function(i, j, k + 2);
@@ -30,11 +30,11 @@ static double testEncode_3D_Linear_Perf(morton(*function)(coord, coord, coord), 
 					runningsum += function(i, j, k + 5);
 					runningsum += function(i, j, k + 6);
 					runningsum += function(i, j, k + 7);
-					timer.stop();
 				}
 			}
 		}
 	}
+	timer.stop();
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }
@@ -49,6 +49,7 @@ static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), 
 	coord y[stride];
 	coord z[stride];
 
+	timer.start();
 	for (size_t t = 0; t < times; t++) {
 		// Create a pool of random numbers
       std::vector<coord> randnumbers;
@@ -63,7 +64,6 @@ static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), 
 				y[j] = randnumbers[(i + j + 1) % RAND_POOL_SIZE];
 				z[j] = randnumbers[(i + j + 2) % RAND_POOL_SIZE];
 			}
-			timer.start();
 			runningsum += function(x[0], y[0], z[0]);
 			runningsum += function(x[1], y[1], z[1]);
 			runningsum += function(x[2], y[2], z[2]);
@@ -71,10 +71,10 @@ static double testEncode_3D_Random_Perf(morton(*function)(coord, coord, coord), 
 			runningsum += function(x[4], y[4], z[4]);
 			runningsum += function(x[5], y[5], z[5]);
 			runningsum += function(x[6], y[6], z[6]);
-			runningsum += function(x[7], y[7], z[7]);
-			timer.stop();
+			runningsum += function(x[7], y[7], z[7]);	
 		}
 	}
+	timer.stop();
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }
@@ -85,9 +85,9 @@ static double testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, co
 	Timer timer = Timer();
 	coord x, y, z;
 	coord runningsum = 0;
+	timer.start();
 	for (size_t t = 0; t < times; t++) {
-		for (morton i = 0; i < max_morton; i += 8) {
-			timer.start();
+		for (morton i = 0; i < max_morton; i += 8) {		
 			function(i, x, y, z);
 			runningsum += x + y + z;
 			function(i + 1, x, y, z);
@@ -103,10 +103,10 @@ static double testDecode_3D_Linear_Perf(void(*function)(const morton, coord&, co
 			function(i + 6, x, y, z);
 			runningsum += x + y + z;
 			function(i + 7, x, y, z);
-			runningsum += x + y + z;
-			timer.stop();
+			runningsum += x + y + z;	
 		}
 	}
+	timer.stop();
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }
@@ -124,17 +124,16 @@ static double testDecode_3D_Random_Perf(void(*function)(const morton, coord&, co
 	for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
 		randnumbers.push_back((morton(rand()) + morton(rand())) % maximum);
 	}
-
+	timer.start();
 	// Start performance test
 	for (size_t t = 0; t < times; t++) {
 		for (size_t i = 0; i < total; i++) {
 			m = randnumbers[i % RAND_POOL_SIZE];
-			timer.start();
 			function(m, x, y, z);
-			timer.stop();
 			runningsum += x + y + z;
 		}
 	}
+	timer.stop();
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }

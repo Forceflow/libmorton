@@ -15,15 +15,15 @@ template <typename morton, typename coord>
 static double testEncode_2D_Linear_Perf(morton(*function)(coord, coord), size_t times) {
 	Timer timer = Timer();
 	morton runningsum = 0;
+	timer.start();
 	for (size_t t = 0; t < times; t++) {
 		for (coord i = 0; i < CURRENT_TEST_MAX; i++) {
 			for (coord j = 0; j < CURRENT_TEST_MAX; j++) {
-				timer.start();
-				runningsum += function(i, j);
-				timer.stop();
+				runningsum += function(i, j);	
 			}
 		}
 	}
+	timer.stop();
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }
@@ -42,14 +42,15 @@ static double testEncode_2D_Random_Perf(morton(*function)(coord, coord), size_t 
 		for (size_t i = 0; i < RAND_POOL_SIZE; i++) {
 			randnumbers.push_back(rand() % maximum);
 		}
+		timer.start();
 		// Do the performance test
 		for (size_t i = 0; i < total; i++) {
 			x = randnumbers[i % RAND_POOL_SIZE];
 			y = randnumbers[(i + 1) % RAND_POOL_SIZE];
-			timer.start();
-			runningsum += function(x, y);
-			timer.stop();
+			
+			runningsum += function(x, y);	
 		}
+		timer.stop();
 	}
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
@@ -62,9 +63,9 @@ static double testDecode_2D_Linear_Perf(void(*function)(const morton, coord&, co
 	Timer timer = Timer();
 	coord x, y;
 	coord runningsum = 0;
+	timer.start();
 	for (size_t t = 0; t < times; t++) {
-		for (morton i = 0; i < max_morton; i += 8) {
-			timer.start();
+		for (morton i = 0; i < max_morton; i += 8) {		
 			function(i, x, y);
 			runningsum += x + y;
 			function(i + 1, x, y);
@@ -81,9 +82,9 @@ static double testDecode_2D_Linear_Perf(void(*function)(const morton, coord&, co
 			runningsum += x + y;
 			function(i + 7, x, y);
 			runningsum += x + y;
-			timer.stop();
 		}
 	}
+	timer.stop();
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }
@@ -105,16 +106,17 @@ static double testDecode_2D_Random_Perf(void(*function)(const morton, coord&, co
 		randnumbers.push_back((morton(rand()) + morton(rand())) % maximum);
 	}
 
+	timer.start();
 	// Start performance test
 	for (size_t t = 0; t < times; t++) {
 		for (size_t i = 0; i < max_morton; i++) {
 			m = randnumbers[i % RAND_POOL_SIZE];
-			timer.start();
-			function(m, x, y);
-			timer.stop();
+			function(m, x, y);	
 			runningsum += x + y;
 		}
 	}
+	timer.stop();
+
 	running_sums.push_back(runningsum);
 	return timer.elapsed_time_milliseconds / (float)times;
 }
