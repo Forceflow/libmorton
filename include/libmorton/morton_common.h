@@ -32,7 +32,7 @@ namespace libmorton {
 			return false;
 		}
 		else {
-			*firstbit_location = static_cast<unsigned long>((sizeof(morton) * 8) - __builtin_clzll(x) - 1);
+			*firstbit_location = static_cast<unsigned long>((sizeof(unsigned long long) * 8) - __builtin_clzll(x) - 1);
 			return true;
 		}
 #endif
