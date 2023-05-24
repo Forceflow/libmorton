@@ -253,7 +253,7 @@ namespace libmorton {
 	inline void m3D_d_for(const morton m, coord& x, coord& y, coord& z) {
 		x = 0; y = 0; z = 0;
 		unsigned int checkbits = (sizeof(morton) * 8) / 3;
-		for (unsigned int i = 0; i <= checkbits; ++i) {
+		for (unsigned int i = 0; i < checkbits; ++i) {
 			morton selector = 1;
 			unsigned int shift_selector = 3 * i;
 			unsigned int shiftback = 2 * i;
