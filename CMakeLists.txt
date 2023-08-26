@@ -1,10 +1,10 @@
 # CMake version >= 3.15.0 required because of https://github.com/Forceflow/libmorton/issues/62
 # CMake version >= 3.8.2 required because of c++11
 cmake_minimum_required(VERSION 3.15.0)
-project(libmorton VERSION 0.2.8)
+project(libmorton VERSION 0.2.12)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNOMINMAX=1 -DWIN32_LEAN_AND_MEAN=1")
 endif()
 
 option(BUILD_TESTING "Build unit tests for libmorton" ON)
