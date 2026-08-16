@@ -164,10 +164,10 @@ void registerFunctions() {
 }
 
 void printFunctionStats() {
-	printf("Registered 3D encoders: %ull (64-bit) %i (32-bit) \n", f3D_64_encode.size(), f3D_32_encode.size());
-	printf("Registered 3D decoders: %ull (64-bit) %i (32-bit) \n", f3D_64_decode.size(), f3D_32_decode.size());
-	printf("Registered 2D encoders: %ull (64-bit) %i (32-bit) \n", f2D_64_encode.size(), f2D_32_encode.size());
-	printf("Registered 2D decoders: %ull (64-bit) %i (32-bit) \n", f2D_64_decode.size(), f2D_32_decode.size());
+	printf("Registered 3D encoders: %zu (64-bit) %zu (32-bit) \n", f3D_64_encode.size(), f3D_32_encode.size());
+	printf("Registered 3D decoders: %zu (64-bit) %zu (32-bit) \n", f3D_64_decode.size(), f3D_32_decode.size());
+	printf("Registered 2D encoders: %zu (64-bit) %zu (32-bit) \n", f2D_64_encode.size(), f2D_32_encode.size());
+	printf("Registered 2D decoders: %zu (64-bit) %zu (32-bit) \n", f2D_64_decode.size(), f2D_32_decode.size());
 }
 
 int main(int argc, char *argv[]) {
