@@ -48,16 +48,6 @@ int main() {
         z32[i] = (uint_fast32_t)m3D_e_magicbits<uint_fast32_t, uint_fast32_t>(0, 0, i);
     }
 
-    // 64-bit encode tables
-    uint_fast64_t* x64 = (uint_fast64_t*)std::malloc(total * sizeof(uint_fast64_t));
-    uint_fast64_t* y64 = (uint_fast64_t*)std::malloc(total * sizeof(uint_fast64_t));
-    uint_fast64_t* z64 = (uint_fast64_t*)std::malloc(total * sizeof(uint_fast64_t));
-    for (uint_fast32_t i = 0; i < total; ++i) {
-        x64[i] = (uint_fast64_t)m3D_e_magicbits<uint_fast64_t, uint_fast32_t>(i, 0, 0);
-        y64[i] = (uint_fast64_t)m3D_e_magicbits<uint_fast64_t, uint_fast32_t>(0, i, 0);
-        z64[i] = (uint_fast64_t)m3D_e_magicbits<uint_fast64_t, uint_fast32_t>(0, 0, i);
-    }
-
     // decode tables (512 entries)
     const size_t dtotal = 512;
     uint_fast8_t* dx = (uint_fast8_t*)std::malloc(dtotal * sizeof(uint_fast8_t));
@@ -89,11 +79,6 @@ int main() {
     print_hex_array("Morton3D_encode_x_256_32", x32, total);
     print_hex_array("Morton3D_encode_y_256_32", y32, total);
     print_hex_array("Morton3D_encode_z_256_32", z32, total);
-
-    std::cout << "// 3D Encode LUTs (64-bit)" << std::endl;
-    print_hex_array("Morton3D_encode_x_256_64", x64, total);
-    print_hex_array("Morton3D_encode_y_256_64", y64, total);
-    print_hex_array("Morton3D_encode_z_256_64", z64, total);
 
     std::cout << "// 3D Decode preshifted LUTs (512 entries)" << std::endl;
     print_decode_array("Morton3D_decode_preshifted_x_512_gen", preshifted_dx, dtotal);
