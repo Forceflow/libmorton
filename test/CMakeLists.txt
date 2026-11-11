@@ -70,7 +70,7 @@ add_executable(generate_morton2D_LUTs
 target_compile_options(generate_morton2D_LUTs
   PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>: # GCC and clang
-      -march=znver2 -Wall -Wextra -Wpedantic>
+      -Wall -Wextra -Wpedantic>
   )
 target_link_libraries(generate_morton2D_LUTs
   PRIVATE
@@ -84,7 +84,7 @@ add_executable(generate_morton3D_LUTs
 target_compile_options(generate_morton3D_LUTs
   PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>: # GCC and clang
-      -march=znver2 -Wall -Wextra -Wpedantic>
+      -Wall -Wextra -Wpedantic>
   )
 target_link_libraries(generate_morton3D_LUTs
   PRIVATE
