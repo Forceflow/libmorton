@@ -38,8 +38,21 @@ namespace libmorton {
 			unsigned int shift = (i - 1) * 8;
 			answer =
 				answer << 16 |
-				Morton2D_encode_y_256[(y >> shift) & EIGHTBITMASK] |
-				Morton2D_encode_x_256[(x >> shift) & EIGHTBITMASK];
+				Morton2D_encode_y_256_32[(y >> shift) & EIGHTBITMASK] |
+				Morton2D_encode_x_256_32[(x >> shift) & EIGHTBITMASK];
+		}
+		return answer;
+	}
+
+	template<typename morton, typename coord, typename = std::enable_if_t<std::is_same<coord, uint_fast64_t>::value>>
+	inline morton m2D_e_sLUT(const coord x, const coord y) {
+		morton answer = 0;
+		for (unsigned int i = sizeof(coord); i > 0; --i) {
+			unsigned int shift = (i - 1) * 8;
+			answer =
+				answer << 16 |
+				Morton2D_encode_y_256_64[(y >> shift) & EIGHTBITMASK] |
+				Morton2D_encode_x_256_64[(x >> shift) & EIGHTBITMASK];
 		}
 		return answer;
 	}
@@ -52,22 +65,36 @@ namespace libmorton {
 			unsigned int shift = (i - 1) * 8;
 			answer =
 				answer << 16 |
-				(Morton2D_encode_x_256[(y >> shift) & EIGHTBITMASK] << morton(1)) |
-				(Morton2D_encode_x_256[(x >> shift) & EIGHTBITMASK]);
+				(Morton2D_encode_x_256_32[(y >> shift) & EIGHTBITMASK] << morton(1)) |
+				(Morton2D_encode_x_256_32[(x >> shift) & EIGHTBITMASK]);
+		}
+		return answer;
+	}
+
+	template<typename morton, typename coord, typename = std::enable_if_t<std::is_same<coord, uint_fast64_t>::value>>
+	inline morton m2D_e_LUT(const coord x, const coord y) {
+		morton answer = 0;
+		for (unsigned int i = sizeof(coord); i > 0; --i) {
+			unsigned int shift = (i - 1) * 8;
+			answer =
+				answer << 16 |
+				(Morton2D_encode_x_256_64[(y >> shift) & EIGHTBITMASK] << morton(1)) |
+				(Morton2D_encode_x_256_64[(x >> shift) & EIGHTBITMASK]);
 		}
 		return answer;
 	}
 
 	// HELPER METHOD for Early Termination LUT Encode
-	template<typename morton, typename coord>
-	inline morton compute2D_ET_LUT_encode(const coord c, const coord *LUT) {
+	template<typename morton, typename coord, typename lutT>
+	inline morton compute2D_ET_LUT_encode(const coord c, const lutT *LUT) {
 		unsigned long maxbit = 0;
 		if (findFirstSetBit<coord>(c, &maxbit) == 0) { return 0; }
+		// highest byte index containing any set bit
+		int highest_byte = static_cast<int>((maxbit + 1) / 8);
 		morton answer = 0;
-		unsigned int i = 0;
-		while (maxbit >= i) {
-			answer |= ((morton)LUT[(c >> i) & EIGHTBITMASK]) << i * 2;
-			i += 8;
+		for (int i = highest_byte; i >= 0; --i) {
+			unsigned int shift = i * 8;
+			answer = (answer << 16) | static_cast<morton>(LUT[(c >> shift) & EIGHTBITMASK]);
 		}
 		return answer;
 	}
@@ -77,16 +104,34 @@ namespace libmorton {
 	// Figuring this out is probably too costly in most cases.
 	template<typename morton, typename coord>
 	inline morton m2D_e_sLUT_ET(const coord x, const coord y) {
-		morton answer_x = compute2D_ET_LUT_encode<morton, coord>(x, Morton2D_encode_x_256);
-		morton answer_y = compute2D_ET_LUT_encode<morton, coord>(y, Morton2D_encode_y_256);
+		morton answer_x = compute2D_ET_LUT_encode<morton, coord, uint_fast32_t>(x, Morton2D_encode_x_256_32);
+		morton answer_y = compute2D_ET_LUT_encode<morton, coord, uint_fast32_t>(y, Morton2D_encode_y_256_32);
+		return answer_y | answer_x;
+	}
+
+	template<typename morton, typename coord, typename = std::enable_if_t<std::is_same<coord, uint_fast64_t>::value>>
+	inline morton m2D_e_sLUT_ET(const coord x, const coord y) {
+		morton answer_x = compute2D_ET_LUT_encode<morton, coord, uint_fast64_t>(x, Morton2D_encode_x_256_64);
+		morton answer_y = compute2D_ET_LUT_encode<morton, coord, uint_fast64_t>(y, Morton2D_encode_y_256_64);
 		return answer_y | answer_x;
 	}
 
 	// ENCODE 2D Morton code : LUT (Early termination version)
 	template<typename morton, typename coord>
 	inline morton m2D_e_LUT_ET(const coord x, const coord y) {
-		morton answer_x = compute2D_ET_LUT_encode<morton, coord>(x, Morton2D_encode_x_256);
-		morton answer_y = compute2D_ET_LUT_encode<morton, coord>(y, Morton2D_encode_x_256);
+		morton answer_x = compute2D_ET_LUT_encode<morton, coord, uint_fast32_t>(x, Morton2D_encode_x_256_32);
+		// This is because `Morton2D_encode_(y|z)_256_*` is basically just `Morton3D_encode_x_256_*` with some pre-shifting.
+		// And we don't want any pre-shifting in this case.
+		morton answer_y = compute2D_ET_LUT_encode<morton, coord, uint_fast32_t>(y, Morton2D_encode_x_256_32);
+		return (answer_y << 1) | answer_x;
+	}
+
+	template<typename morton, typename coord, typename = std::enable_if_t<std::is_same<coord, uint_fast64_t>::value>>
+	inline morton m2D_e_LUT_ET(const coord x, const coord y) {
+		morton answer_x = compute2D_ET_LUT_encode<morton, coord, uint_fast64_t>(x, Morton2D_encode_x_256_64);
+		// This is because `Morton2D_encode_(y|z)_256_*` is basically just `Morton3D_encode_x_256_*` with some pre-shifting.
+		// And we don't want any pre-shifting in this case.
+		morton answer_y = compute2D_ET_LUT_encode<morton, coord, uint_fast64_t>(y, Morton2D_encode_x_256_64);
 		return (answer_y << 1) | answer_x;
 	}
 
@@ -176,15 +221,15 @@ namespace libmorton {
 	// DECODE 2D Morton code : Shifted LUT
 	template<typename morton, typename coord>
 	inline void m2D_d_sLUT(const morton m, coord& x, coord& y) {
-		x = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_x_256, 0);
-		y = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_y_256, 0);
+		x = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_preshifted_x_256, 0);
+		y = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_preshifted_y_256, 0);
 	}
 
 	// DECODE 2D 64-bit morton code : LUT
 	template<typename morton, typename coord>
 	inline void m2D_d_LUT(const morton m, coord& x, coord& y) {
 		x = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_x_256, 0);
-		y = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_x_256, 1);
+		y = morton2D_DecodeCoord_LUT256<morton, coord>(m, Morton2D_decode_y_256, 1);
 	}
 
 	// DECODE 2D Morton code : Shifted LUT (early termination)
@@ -197,8 +242,8 @@ namespace libmorton {
 		unsigned int shiftback = 0;
 		while (firstbit_location > i) {
 			morton m_shifted = (m >> i) & EIGHTBITMASK;
-			x |= (coord)Morton2D_decode_x_256[m_shifted] << shiftback;
-			y |= (coord)Morton2D_decode_y_256[m_shifted] << shiftback;
+			x |= (coord)Morton2D_decode_preshifted_x_256[m_shifted] << shiftback;
+			y |= (coord)Morton2D_decode_preshifted_y_256[m_shifted] << shiftback;
 			shiftback += 4;
 			i += 8;
 		}
@@ -214,7 +259,7 @@ namespace libmorton {
 		unsigned int shiftback = 0;
 		while (firstbit_location > i) {
 			x |= (coord)Morton2D_decode_x_256[(m >> i) & EIGHTBITMASK] << shiftback;
-			y |= (coord)Morton2D_decode_x_256[(m >> (i + 1)) & EIGHTBITMASK] << shiftback;
+			y |= (coord)Morton2D_decode_y_256[(m >> (i + 1)) & EIGHTBITMASK] << shiftback;
 			shiftback += 4;
 			i += 8;
 		}
@@ -257,7 +302,7 @@ namespace libmorton {
 	inline void m2D_d_for(const morton m, coord& x, coord& y) {
 		x = 0; y = 0;
 		unsigned int checkbits = sizeof(morton) * 4;
-		for (unsigned int i = 0; i <= checkbits; ++i) {
+		for (unsigned int i = 0; i < checkbits; ++i) {
 			morton selector = 1;
 			unsigned int shift_selector = 2 * i;
 			x |= (m & (selector << shift_selector)) >> i;
@@ -271,7 +316,7 @@ namespace libmorton {
 		x = 0; y = 0;
 		unsigned long firstbit_location = 0;
 		if (!findFirstSetBit<morton>(m, &firstbit_location)) return;
-		float defaultbits = sizeof(morton) * 4;
+		float defaultbits = (sizeof(morton) * 8) / 2;
 		unsigned int checkbits = static_cast<unsigned int>(std::min(defaultbits, firstbit_location / 2.0f));
 		for (unsigned int i = 0; i <= checkbits; ++i) {
 			morton selector = 1;
