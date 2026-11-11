@@ -1,4 +1,4 @@
-# Libmorton v0.2.12
+# Libmorton v0.2.13
 [![CMake](https://github.com/Forceflow/libmorton/actions/workflows/cmake.yml/badge.svg)](https://github.com/Forceflow/libmorton/actions/workflows/cmake.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
  * Libmorton is a **C++ header-only library** with methods to efficiently encode/decode 64, 32 and 16-bit Morton codes and coordinates, in 2D and 3D. *Morton order* is also known as *Z-order* or *[the Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve)*.
