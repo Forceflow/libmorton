@@ -63,30 +63,3 @@ target_link_libraries(libmorton-test-zen2
     libmorton::libmorton
   )
 #add_test(libmorton-test-zen2 libmorton-test-zen2)
-
-add_executable(generate_morton2D_LUTs
-  "generate_morton2D_LUTs.cpp"
-)
-target_compile_options(generate_morton2D_LUTs
-  PRIVATE
-    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>: # GCC and clang
-      -Wall -Wextra -Wpedantic>
-  )
-target_link_libraries(generate_morton2D_LUTs
-  PRIVATE
-    libmorton::libmorton
-  )
-
-add_executable(generate_morton3D_LUTs
-  "generate_morton3D_LUTs.cpp"
-)
-
-target_compile_options(generate_morton3D_LUTs
-  PRIVATE
-    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>: # GCC and clang
-      -Wall -Wextra -Wpedantic>
-  )
-target_link_libraries(generate_morton3D_LUTs
-  PRIVATE
-    libmorton::libmorton
-  )
