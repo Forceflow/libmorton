@@ -47,20 +47,6 @@ namespace libmorton {
 		return answer;
 	}
 
-	template<typename morton, typename coord, typename = std::enable_if_t<std::is_same<coord, uint_fast64_t>::value>>
-	inline morton m3D_e_sLUT(const coord x, const coord y, const coord z) {
-		morton answer = 0;
-		for (unsigned int i = sizeof(coord); i > 0; --i) {
-			unsigned int shift = (i - 1) * 8;
-			answer =
-				answer << 24 |
-				(Morton3D_encode_z_256_64[(z >> shift) & EIGHTBITMASK] |
-					Morton3D_encode_y_256_64[(y >> shift) & EIGHTBITMASK] |
-					Morton3D_encode_x_256_64[(x >> shift) & EIGHTBITMASK]);
-		}
-		return answer;
-	}
-
 	// ENCODE 3D Morton code : LookUpTable (LUT)
 	template<typename morton, typename coord>
 	inline morton m3D_e_LUT(const coord x, const coord y, const coord z) {
@@ -77,19 +63,6 @@ namespace libmorton {
 	}
 
 	// ENCODE 3D Morton code : LookUpTable (LUT)
-	template<typename morton, typename coord, typename = std::enable_if_t<std::is_same<coord, uint_fast64_t>::value>>
-	inline morton m3D_e_LUT(const coord x, const coord y, const coord z) {
-		morton answer = 0;
-		for (unsigned int i = sizeof(coord); i > 0; --i) {
-			unsigned int shift = (i - 1) * 8;
-			answer =
-				answer << 24 |
-				(Morton3D_encode_x_256_64[(z >> shift) & EIGHTBITMASK] << morton(2)) |
-				(Morton3D_encode_x_256_64[(y >> shift) & EIGHTBITMASK] << morton(1)) |
-				Morton3D_encode_x_256_64[(x >> shift) & EIGHTBITMASK];
-		 }
-		return answer;
-	}
 
 	// HELPER METHOD for ET LUT encode
 	template<typename morton, typename coord, typename lutT>
@@ -117,14 +90,6 @@ namespace libmorton {
 		return answer_z | answer_y | answer_x;
 	}
 
-	template<typename morton, typename coord, typename = std::enable_if_t<std::is_same<coord, uint_fast64_t>::value>>
-	inline morton m3D_e_sLUT_ET(const coord x, const coord y, const coord z) {
-		morton answer_x = compute3D_ET_LUT_encode<morton, coord, uint_fast64_t>(x, Morton3D_encode_x_256_64);
-		morton answer_y = compute3D_ET_LUT_encode<morton, coord, uint_fast64_t>(y, Morton3D_encode_y_256_64);
-		morton answer_z = compute3D_ET_LUT_encode<morton, coord, uint_fast64_t>(z, Morton3D_encode_z_256_64);
-		return answer_z | answer_y | answer_x;
-	}
-
 	// ENCODE 3D Morton code : LookUpTable (LUT) (Early termination version)
 	// This version tries to terminate early when there are no more bits to process
 	// Figuring this out is probably too costly in most cases.
@@ -135,16 +100,6 @@ namespace libmorton {
 		// And we don't want any pre-shifting in this case.
 		morton answer_y = compute3D_ET_LUT_encode<morton, coord, uint_fast32_t>(y, Morton3D_encode_x_256_32);
 		morton answer_z = compute3D_ET_LUT_encode<morton, coord, uint_fast32_t>(z, Morton3D_encode_x_256_32);
-		return (answer_z << 2) | (answer_y << 1) | answer_x;
-	}
-
-	template<typename morton, typename coord, typename = std::enable_if_t<std::is_same<coord, uint_fast64_t>::value>>
-	inline morton m3D_e_LUT_ET(const coord x, const coord y, const coord z) {
-		morton answer_x = compute3D_ET_LUT_encode<morton, coord, uint_fast64_t>(x, Morton3D_encode_x_256_64);
-		// This is because `Morton3D_encode_(y|z)_256_*` is basically just `Morton3D_encode_x_256_*` with some pre-shifting.
-		// And we don't want any pre-shifting in this case.
-		morton answer_y = compute3D_ET_LUT_encode<morton, coord, uint_fast64_t>(y, Morton3D_encode_x_256_64);
-		morton answer_z = compute3D_ET_LUT_encode<morton, coord, uint_fast64_t>(z, Morton3D_encode_x_256_64);
 		return (answer_z << 2) | (answer_y << 1) | answer_x;
 	}
 
